@@ -1,0 +1,18 @@
+{
+  "expo": {
+    "userInterfaceStyle": "automatic",
+    "scheme": "acme",
+    "web": {
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "name": "my-app",
+    "slug": "my-app",
+    "android": {
+      "softwareKeyboardLayoutMode": "pan",
+      "package": "com.anonymous.myapps"
+    }
+  }
+}
