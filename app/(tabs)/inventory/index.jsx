@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, FlatList } from "react-native";
+import { View, Text, TextInput, StyleSheet, FlatList, RefreshControl } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { COLORS } from "../../../constants/theme";
-import { data } from '../../../components/mantenimiento/example';
+import Fetchget from '../../../hook/Fetch';
 
 /**
  * InventoryPage es un componente de React que muestra una lista de productos en un inventario.
@@ -20,9 +20,20 @@ import { data } from '../../../components/mantenimiento/example';
  * @returns {JSX.Element} El componente InventoryPage renderizado.
  */
 const InventoryPage = () => {
-  
+   
   // Define el estado para el texto de búsqueda.
   const [searchText, setSearchText] = useState('');
+  const [refeshing, setRefreshing] = React.useState(false);
+  //Fetchind de data 
+  const {data ,refetch} = Fetchget("tasks", "repuestos");
+// Refeshing de datos :
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      refetch();
+      setRefreshing(false);
+    }, 1000); // Espera 2 segundos antes de realizar el refetch
+  }, []);
   
   // Filtra los datos basándose en el texto de búsqueda.
   const filteredData = data.filter(item =>
@@ -36,7 +47,7 @@ const InventoryPage = () => {
     return (
       <View style={styles.itemContainer} >
         <View style={styles.contentitem}>
-          <Text style={styles.itemText}>{item.producto}</Text>
+          <Text style={styles.itemText}>{`${item.producto} (${item.marca})`}</Text>
         </View>
         <View style={[styles.numberContainer, {backgroundColor:containerColor}]}>
           <Text style={styles.numberText}>{item.cantidad}</Text>
@@ -67,6 +78,12 @@ const InventoryPage = () => {
           />
         </View>
         <FlatList
+        refreshControl={ 
+          <RefreshControl
+            refreshing={refeshing}
+            onRefresh={onRefresh}
+          />
+        }
           data={filteredData}
           renderItem={renderItem}
           keyExtractor={(item) => item.id.toString()}

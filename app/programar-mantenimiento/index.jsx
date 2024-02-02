@@ -26,7 +26,7 @@ import { COLORS } from "../../constants/theme";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import Fetchget from "../../hook/Fetch";
 import Fetchpost from "../../hook/Fetch2";
-import { set } from "date-fns";
+
 
 /**
  * RegistroMantenimiento es un componente de React que renderiza un formulario para registrar un mantenimiento.
