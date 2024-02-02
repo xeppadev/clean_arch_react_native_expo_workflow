@@ -13,11 +13,21 @@ import { COLORS } from "../../constants/theme";
  * @param {string} props.placeholder El texto a mostrar cuando no se ha seleccionado ninguna opción.
  * @returns {JSX.Element} El componente DropdownComponent renderizado.
  */
-const DropdownComponent = ({ data, onChange, onBlur, value, placeholder }) => {
+const DropdownComponent = ({
+  data,
+  onChange,
+  onBlur,
+  value,
+  placeholder,
+  refreshing,
+  onRefresh,
+}) => {
   return (
     <Dropdown
       placeholderStyle={styles.placeholderStyle}
       style={styles.dropdown}
+      refreshing={refreshing}
+      onRefresh={onRefresh}
       placeholder={placeholder}
       labelField="label"
       valueField="value"

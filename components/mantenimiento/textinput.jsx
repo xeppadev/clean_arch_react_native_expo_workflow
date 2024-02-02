@@ -1,4 +1,4 @@
-import { StyleSheet, TextInput} from "react-native";
+import { StyleSheet, TextInput } from "react-native";
 import { COLORS } from "../../constants/theme";
 
 /**
@@ -14,20 +14,30 @@ import { COLORS } from "../../constants/theme";
  * @param {boolean} editable - Indica si el campo de texto es editable.
  * @returns {JSX.Element} El componente TextInputs renderizado.
  */
-const TextInputs = ({ style, placeholder,onChangeText, onBlur,value, onPressOut, editable }) => {
+const TextInputs = ({
+  style = styles.input,
+  
+  placeholder,
+  onChangeText,
+  onBlur,
+  value,
+  onPressOut,
+  editable,
+  segurity = false,
+  keyboardType = "default",
+}) => {
   return (
     <TextInput
       placeholderTextColor={COLORS.gray} // El color del marcador de posición es gris
-      style={[
-        styles.input,
-        { paddingVertical: Platform.OS === "ios" ? 14 : 10 }, // El padding vertical depende del sistema operativo
-      ]}
+      style={style} // Los estilos
       placeholder={placeholder} // El marcador de posición
       onPressOut={onPressOut} // Función que se ejecuta al dejar de presionar
       onChangeText={onChangeText} // Función que se ejecuta al cambiar el texto
       onBlur={onBlur} // Función que se ejecuta al dejar de enfocar
       value={value} // El valor actual
       editable={editable} // Si es editable
+      secureTextEntry={segurity} // Si es una contraseña
+      keyboardType={keyboardType}
     />
   );
 };
@@ -36,12 +46,13 @@ export default TextInputs;
 
 // Estilos del componente
 export const styles = StyleSheet.create({
-    input: {
-        marginHorizontal: 24, // Margen horizontal de 24
-        marginVertical: 6, // Margen vertical de 6
-        backgroundColor: COLORS.bg, // El fondo es el color de fondo definido en COLORS
-        paddingHorizontal: 15, // Padding horizontal de 15
-        borderRadius: 14, // Borde redondeado con radio de 14
-        fontSize: 14, // Tamaño de fuente de 14
-      },
+  input: {
+    marginHorizontal: 24, // Margen horizontal de 24
+    marginVertical: 6, // Margen vertical de 6
+    backgroundColor: COLORS.bg, // El fondo es el color de fondo definido en COLORS
+    paddingHorizontal: 15, // Padding horizontal de 15
+    borderRadius: 14, // Borde redondeado con radio de 14
+    fontSize: 14, // Tamaño de fuente de 14
+    paddingVertical: Platform.OS === "ios" ? 14 : 10
+  },
 });

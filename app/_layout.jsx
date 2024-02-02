@@ -10,17 +10,27 @@ const StackLayout = () => {
       {/* Crea una pantalla en la pila con el nombre "login".
       La opción "headerShown: false" oculta el encabezado para esta pantalla. */}
       <Stack.Screen
-        name="register"
+        name="login"
         options={{
-          headerShown: false
+          headerShown: false,
         }}
       />
+        {/* Crea una pantalla en la pila con el nombre "(tabs)". 
+      La opción "headerShown: false" oculta el encabezado para esta pantalla. */}
+      <Stack.Screen
+        name="exit"
+        options={{
+          headerShown: false,
+        }}
+      />
+
+     
       {/* Crea una pantalla en la pila con el nombre "(tabs)". 
       La opción "headerShown: false" oculta el encabezado para esta pantalla. */}
       <Stack.Screen
         name="(tabs)"
         options={{
-          headerShown: false
+          headerShown: false,
         }}
       />
       {/* Crea una pantalla en la pila con el nombre "registro-mantenimiento". 

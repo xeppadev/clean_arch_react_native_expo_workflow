@@ -2,12 +2,15 @@ import { Stack } from "expo-router";
 import ScreenHeader from "../../../components/common/header/ScreenHeader";
 import TimeHeader from "../../../components/common/header/TimeHeader";
 import { COLORS } from "../../../constants/theme";
+import { useRouter } from 'expo-router';
 
 /**
  * Renderiza un componente de StackLayout que utiliza el componente Stack de expo-router.
  * @returns {JSX.Element} El componente StackLayout renderizado.
  */
 const StackLayout = () => {
+  // Obtiene el objeto router de expo-router para la navegación entre páginas.
+  const router = useRouter();
   return (
     <Stack>
       {/* Crea una pantalla en la pila con el nombre "index". 
@@ -25,7 +28,7 @@ const StackLayout = () => {
           headerShadowVisible: false,
           headerLeft: () => <TimeHeader />,
           headerRight: () => (
-            <ScreenHeader profileName="Pablo Rodriguez" role="Admin" />
+            <ScreenHeader profileName="Pablo Rodriguez" role="Admin" handlePress={ () => { router.push("/exit")  }} />
           ),
         }}
       />

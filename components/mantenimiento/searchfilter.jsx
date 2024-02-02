@@ -7,9 +7,9 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import { COLORS } from "../../constants/theme";
-import { data } from "./example";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { Dropdown } from "react-native-element-dropdown";
+
 
 /**
  * SearchFilter es un componente que permite buscar y seleccionar repuestos.
@@ -20,9 +20,13 @@ import { Dropdown } from "react-native-element-dropdown";
  * @param {function} onChange - Función que se ejecuta cuando cambia el valor del filtro de búsqueda.
  * @returns {JSX.Element} El componente SearchFilter renderizado.
  */
-const SearchFilter = ({ value, onBlur, onChange }) => {
+const SearchFilter = ({ value, onBlur, onChange , data }) => {
   const [searchText, setSearchText] = useState(""); // Estado para el texto de búsqueda
   const [selectedItems, setSelectedItems] = useState([]); // Estado para los elementos seleccionados
+
+  
+
+
 
   // Filtra los datos basándose en el texto de búsqueda
   const filteredData = searchText
@@ -64,11 +68,11 @@ const SearchFilter = ({ value, onBlur, onChange }) => {
                 ) {
                   setSelectedItems([...selectedItems, item]);// Agrega el elemento seleccionado
                   // Agrega un nuevo objeto al array value para el nuevo elemento seleccionado
-                  onChange([...value, { producto: item.producto, quanty: null }]);
+                  onChange([...value, { producto: item.producto, cantidad: null , marca: item.marca , id: item.id }]);
                 }
               }}
             >
-              <Text style={styles.itemText}>{item.producto}</Text>
+              <Text style={styles.itemText}>{`${item.producto} (${item.marca}) `}</Text>
               {/*  */}
             </TouchableOpacity>
           );
@@ -107,7 +111,7 @@ const SearchFilter = ({ value, onBlur, onChange }) => {
               <Dropdown
                 style={styles.dropdown}
                 data={cantidadArray}
-                value={value[index] ? value[index].quanty : null}
+                value={value[index] ? value[index].cantidad : null}
                 labelField="label"
                 placeholder=""
                 placeholderStyle={{ fontSize: 14 }}
@@ -120,7 +124,7 @@ const SearchFilter = ({ value, onBlur, onChange }) => {
                       (prod) => prod.producto === selectedItems[index].producto
                     );
                     if (productIndex !== -1) {
-                      newCantidad[productIndex].quanty = item.value;
+                      newCantidad[productIndex].cantidad = item.value;
                     }
                     onChange(newCantidad);
                   }

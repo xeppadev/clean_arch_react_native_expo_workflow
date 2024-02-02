@@ -72,6 +72,7 @@ const HomePage = () => {
           </View>
         </View>
       </View>
+      
     </View>
   );
 };

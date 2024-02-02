@@ -22,9 +22,9 @@ const CalendarComponent = ({ values, setFieldValue, onBlur  }) => {
           placeholder="Seleccione la fecha y hora"
           onPressOut={() => setOpen(true)}
           value={
-            values.fechaMantenimiento
+            values.fecha
               ? format(
-                  values.fechaMantenimiento,
+                  values.fecha,
                   "yyyy-MM-dd HH:mm"
                 )
               : ""
@@ -37,9 +37,9 @@ const CalendarComponent = ({ values, setFieldValue, onBlur  }) => {
           <TextInputs
             placeholder="Seleccione la fecha y hora"
             value={
-              values.fechaMantenimiento
+              values.fecha
                 ? format(
-                    values.fechaMantenimiento,
+                    values.fecha,
                     "yyyy-MM-dd HH:mm"
                   )
                 : ""
@@ -54,10 +54,10 @@ const CalendarComponent = ({ values, setFieldValue, onBlur  }) => {
         display="inline"
         mode="datetime"
         isVisible={open}
-        date={values.fechaMantenimiento || new Date()}
+        date={values.fecha || new Date()}
         onConfirm={(date) => {
           setOpen(false);
-          setFieldValue("fechaMantenimiento", date);
+          setFieldValue("fecha", date);
         }}
         onCancel={() => {
           setOpen(false);

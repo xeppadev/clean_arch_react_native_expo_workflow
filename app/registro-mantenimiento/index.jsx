@@ -1,36 +1,126 @@
 // Importa los componentes y módulos necesarios
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 import SearchFilter from "../../components/mantenimiento/searchfilter";
 import TextInputs from "../../components/mantenimiento/textinput";
 import ModalComponent from "../../components/mantenimiento/modal";
 import DocumentComponent from "../../components/mantenimiento/document";
-import { soat, mantenimientos, placas } from "../../components/mantenimiento/dataDropdown";
+
+import {
+  soat,
+  mantenimientos,
+} from "../../components/mantenimiento/dataDropdown";
 import DropdownComponent from "../../components/mantenimiento/dropdown";
 import TitleIcon from "../../components/mantenimiento/titleIcon";
-import { Text, View, TouchableOpacity, StyleSheet, Platform, Keyboard, TouchableWithoutFeedback } from "react-native";
+import {
+  Text,
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  Platform,
+  Keyboard,
+  TouchableWithoutFeedback,
+  RefreshControl,
+} from "react-native";
+
 import { Formik } from "formik";
 import * as Yup from "yup";
 import { COLORS } from "../../constants/theme";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import Fetchget from "../../hook/Fetch";
+import Fetchpost from "../../hook/Fetch2";
+import {  parse, format} from "date-fns";
+
 
 // Define el componente RegistroMantenimiento
 const RegistroMantenimiento = () => {
   // Define el estado y las referencias necesarias
   const formikRef = React.useRef();
-  const [images, setImage] = React.useState({ selectedImage: null, isImagePreviewVisible: false });
+  const [newmantenimientos, setMantenimientos] = React.useState(false);
+  const [refeshing, setRefreshing] = React.useState(false);
+  const [images, setImage] = React.useState({
+    selectedImage: null,
+    isImagePreviewVisible: false,
+  });
+
+  const { data, refetch } = Fetchget("tasks", "placas");
+  const { data: data2, refetch: refetch2 } = Fetchget("tasks", "repuestos");
+
+  const { data: data3, refetch: refetchPost } = Fetchpost(
+    "tasks",
+    "manprogramados"
+  );
+  const { refetch: refetchregistrar, redirect } = Fetchpost(
+    "tasks",
+    "registrar"
+  );
+
+  // Refeshing de datos :
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    refetch();
+    refetch2();
+    setRefreshing(false);
+  }, []);
+  // Define las placas de identificación
+  const placas = useMemo(
+    () =>
+      data.map((item) => {
+        return {
+          label: item,
+          value: item,
+        };
+      }),
+    [data]
+  );
+
+  // Desestructura el objeto data3 para extraer el array mantenimientos
+  let mantenimientosFormatted = [];
+  let kmActual;
+  let soat;
+  if (data3 && data3.mantenimientos) {
+    const { mantenimientos, datosCar } = data3;
+
+    // Mapea el array mantenimientos para crear un nuevo array de objetos
+    mantenimientosFormatted = mantenimientos.map((mantenimiento) => {
+      // Formatea la fecha para que se muestre en el formato que necesitas
+
+      const fecha = format(new Date(mantenimiento.fecha), "dd/MM/yyyy");
+
+      // Crea un nuevo objeto con las propiedades label y value
+      return {
+        label: `${mantenimiento.tipoMantenimiento} - ${fecha}`,
+        value: `${mantenimiento.tipoMantenimiento} - ${fecha}`,
+        id: mantenimiento.idMant,
+      };
+    });
+
+    // Obtencion del kmActual
+    kmActual = datosCar.kmActual.toString();
+    soat = format(new Date(datosCar.fechaSoat), "dd/MM/yyyy");
+  }
+
+  React.useEffect(() => {
+    if (kmActual) {
+      formikRef.current.setFieldValue("kmPrevio", kmActual);
+      formikRef.current.setFieldValue("fechaSoat", soat);
+    }
+  }, [kmActual]);
 
   // Define el esquema de validación para el formulario utilizando Yup
   const validationSchema = Yup.object().shape({
+    idMant: Yup.string().required("Este campo es requerido."),
     tipoMantenimiento: Yup.string().required("Este campo es requerido."),
-    placaIdentificacion: Yup.string().required("Este campo es requerido."),
-    kmInicial: Yup.string().required("Este campo es requerido."),
-    kmFinal: Yup.string().required("Este campo es requerido."),
-    observaciones: Yup.string().required("Este campo es requerido."),
+    Mantenimientos: Yup.string().required("Este campo es requerido."),
+    fecha: Yup.string().required("Este campo es requerido."),
+    placa: Yup.string().required("Este campo es requerido."),
+    kmPrevio: Yup.string().required("Este campo es requerido."),
+    kmMedido: Yup.string().required("Este campo es requerido."),
+    diagnostico: Yup.string().required("Este campo es requerido."),
     documentos: Yup.array().min(1, "Debe subir al menos un documento."),
-    soat: Yup.string().required("Este campo es requerido."),
-    cantidad: Yup.array().min(1, "Debe seleccionar al menos un repuesto."),
+    fechaSoat: Yup.string().required("Este campo es requerido."),
+    repuestos: Yup.array().min(1, "Debe seleccionar al menos un repuesto."),
   });
-  
+
   // Renderiza el componente
 
   return (
@@ -39,6 +129,9 @@ const RegistroMantenimiento = () => {
         enableOnAndroid={true}
         extraScrollHeight={50}
         enableAutomaticScroll={Platform.OS === "ios"}
+        refreshControl={
+          <RefreshControl refreshing={refeshing} onRefresh={onRefresh} />
+        }
         style={styles.container3}
         resetScrollToCoords={{ x: 0, y: 0 }}
         contentContainerStyle={styles.container3}
@@ -51,17 +144,47 @@ const RegistroMantenimiento = () => {
             <Formik
               innerRef={formikRef}
               initialValues={{
+                idMant: "",
+                placa: "",
+                Mantenimientos: "",
                 tipoMantenimiento: "",
-                placaIdentificacion: "",
-                kmInicial: "",
-                kmFinal: "",
-                soat: "",
-                observaciones: "",
-                cantidad: [],
+                fecha: "",
+                fechaSoat: "",
+                diagnostico: "",
+                repuestos: [],
                 documentos: [],
               }}
               validationSchema={validationSchema}
-              onSubmit={(values) => console.log(values)}
+              onSubmit={(values) => {
+                const fechaDate = parse(values.fecha, "dd/MM/yyyy", new Date());
+                const fechaUTC = format(
+                  fechaDate,
+                  "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+                );
+
+                const fechaSoatDate = parse(
+                  values.fechaSoat,
+                  "dd/MM/yyyy",
+                  new Date()
+                );
+                const fechaSoatUTC = format(
+                  fechaSoatDate,
+                  "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+                );
+                const dataToSend = {
+                  idMant: values.idMant,
+                  placa: values.placa,
+                  tipoMantenimiento: values.tipoMantenimiento,
+                  fecha: fechaUTC,
+                  diagnostico: values.diagnostico,
+                  fechaSoat: fechaSoatUTC,
+                  kmMedido: values.kmMedido,
+                  kmPrevio: values.kmPrevio,
+                  repuestos: values.repuestos,
+                };
+                refetchregistrar(dataToSend);
+                redirect();
+              }}
             >
               {({
                 handleChange,
@@ -73,33 +196,63 @@ const RegistroMantenimiento = () => {
                 touched,
               }) => (
                 <>
-                  <TitleIcon title="Tipo de mantenimiento" icon="wrench" />
-                  <DropdownComponent
-                    onBlur={() => handleBlur("tipoMantenimiento")}
-                    placeholder="Seleccione un mantenimiento"
-                    data={mantenimientos}
-                    value={values.tipoMantenimiento}
-                    onChange={(item) =>
-                      handleChange("tipoMantenimiento")(item.value)
-                    }
-                  />
-
-                  {errors.tipoMantenimiento && touched.tipoMantenimiento && (
-                    <Text style={styles.error}>{errors.tipoMantenimiento}</Text>
-                  )}
-
                   <TitleIcon title="Placa de Identificación" icon="car" />
 
                   <DropdownComponent
-                    onBlur={() => handleBlur("placaIdentificacion")}
+                    onBlur={() => handleBlur("placa")}
                     placeholder="Seleccione una placa"
                     data={placas}
-                    value={values.placaIdentificacion}
-                    onChange={(item) =>
-                      handleChange("placaIdentificacion")(item.value)
-                    }
+                    value={values.placa}
+                    onChange={(item) => {
+                      handleChange("placa")(item.value);
+                      refetchPost({ placa: item.value });
+                    }}
                   />
+                  {errors.placa && touched.placa && (
+                    <Text style={styles.error}>{errors.placa}</Text>
+                  )}
 
+                  <TitleIcon title="Mantenimientos Programados" icon="wrench" />
+                  <DropdownComponent
+                    onBlur={() => handleBlur("Mantenimientos")}
+                    placeholder="Seleccione una programacion"
+                    data={mantenimientosFormatted}
+                    value={values.Mantenimientos}
+                    onChange={(item) => {
+                      handleChange("Mantenimientos")(item.value);
+                      setFieldValue("idMant", item.id);
+                      setFieldValue(
+                        "tipoMantenimiento",
+                        item.value.split(" - ")[0]
+                      );
+                      setFieldValue("fecha", item.value.split(" - ")[1]);
+                    }}
+                  />
+                  {errors.Mantenimientos && touched.Mantenimientos && (
+                    <Text style={styles.error}>{errors.Mantenimientos}</Text>
+                  )}
+
+                  {newmantenimientos && (
+                    <>
+                      <TitleIcon title="Tipo de mantenimiento" icon="wrench" />
+                      <DropdownComponent
+                        onBlur={() => handleBlur("tipoMantenimiento")}
+                        placeholder="Seleccione un mantenimiento"
+                        data={mantenimientos}
+                        value={values.tipoMantenimiento}
+                        onChange={(item) =>
+                          handleChange("tipoMantenimiento")(item.value)
+                        }
+                      />
+
+                      {errors.tipoMantenimiento &&
+                        touched.tipoMantenimiento && (
+                          <Text style={styles.error}>
+                            {errors.tipoMantenimiento}
+                          </Text>
+                        )}
+                    </>
+                  )}
                   {errors.placaIdentificacion &&
                     touched.placaIdentificacion && (
                       <Text style={styles.error}>
@@ -110,38 +263,42 @@ const RegistroMantenimiento = () => {
                   <TitleIcon title="Kilometraje" icon="calendar" />
 
                   <TextInputs
-                    placeholder="Km Inicial"
-                    onChangeText={handleChange("kmInicial")}
-                    onBlur={handleBlur("kmInicial")}
-                    value={values.kmInicial}
+                    placeholder="Km Previo"
+                    onChangeText={handleChange("kmPrevio")}
+                    onBlur={handleBlur("kmPrevio")}
+                    editable={false}
+                    value={values.kmPrevio}
+                    KeyboardType="numeric"
                   />
-
-                  {errors.kmInicial && touched.kmInicial && (
-                    <Text style={styles.error}>{errors.kmInicial}</Text>
+                  {errors.kmPrevio && touched.kmPrevio && (
+                    <Text style={styles.error}>{errors.kmPrevio}</Text>
                   )}
                   <TextInputs
-                    placeholder="Km Final"
-                    onChangeText={handleChange("kmFinal")}
-                    onBlur={handleBlur("kmFinal")}
-                    value={values.kmFinal}
+                    placeholder="Km Medido"
+                    onChangeText={handleChange("kmMedido")}
+                    onBlur={handleBlur("kmMedido")}
+                    value={values.kmMedido}
+                    keyboardType={
+                      Platform.OS === "ios" ? "number-pad" : "numeric"
+                    }
                   />
 
-                  {errors.kmFinal && touched.kmFinal && (
-                    <Text style={styles.error}>{errors.kmFinal}</Text>
+                  {errors.kmMedido && touched.kmMedido && (
+                    <Text style={styles.error}>{errors.kmMedido}</Text>
                   )}
 
-                  <TitleIcon title="SOAT" icon="id-card" />
+                  <TitleIcon title="Vigencia SOAT" icon="id-card" />
 
-                  <DropdownComponent
-                    onBlur={() => handleBlur("soat")}
-                    placeholder="Seleccione si dispone de soat"
-                    data={soat}
-                    value={values.soat}
-                    onChange={(item) => handleChange("soat")(item.value)}
+                  <TextInputs
+                    placeholder="fecha de vencimiento SOAT"
+                    onChangeText={handleChange("fechaSoat")}
+                    onBlur={() => handleBlur("fechaSoat")}
+                    value={values.fechaSoat}
+                    editable={false}
                   />
 
-                  {errors.soat && touched.soat && (
-                    <Text style={styles.error}>{errors.soat}</Text>
+                  {errors.fechaSoat && touched.fechaSoat && (
+                    <Text style={styles.error}>{errors.fechaSoat}</Text>
                   )}
 
                   <TitleIcon
@@ -151,26 +308,27 @@ const RegistroMantenimiento = () => {
 
                   <TextInputs
                     placeholder="Ingrese el diagnostico"
-                    onChangeText={handleChange("observaciones")}
-                    onBlur={handleBlur("observaciones")}
-                    value={values.observaciones}
+                    onChangeText={handleChange("diagnostico")}
+                    onBlur={handleBlur("diagnostico")}
+                    value={values.diagnostico}
                   />
 
-                  {errors.observaciones && touched.observaciones && (
-                    <Text style={styles.error}>{errors.observaciones}</Text>
+                  {errors.diagnostico && touched.diagnostico && (
+                    <Text style={styles.error}>{errors.diagnostico}</Text>
                   )}
 
                   <TitleIcon title="Solicitar Repuestos" icon="cog" />
 
                   <SearchFilter
-                    value={values.cantidad}
-                    onBlur={() => handleBlur("cantidad")}
+                    data={data2}
+                    value={values.repuestos}
+                    onBlur={() => handleBlur("repuestos")}
                     onChange={(newCantidad) =>
-                      setFieldValue("cantidad", newCantidad)
+                      setFieldValue("repuestos", newCantidad)
                     }
                   />
-                  {errors.cantidad && touched.cantidad && (
-                    <Text style={styles.error}>{errors.cantidad}</Text>
+                  {errors.repuestos && touched.repuestos && (
+                    <Text style={styles.error}>{errors.repuestos}</Text>
                   )}
 
                   <TitleIcon title="Documentos" icon="file" />
@@ -203,7 +361,7 @@ const RegistroMantenimiento = () => {
 };
 
 // Exporta el componente para que pueda ser utilizado en otros archivos
-export default RegistroMantenimiento;
+export default React.memo(RegistroMantenimiento);
 
 // Exporta el componente para que pueda ser utilizado en otros archivos
 const styles = StyleSheet.create({

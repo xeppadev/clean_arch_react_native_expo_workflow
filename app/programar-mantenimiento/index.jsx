@@ -5,7 +5,7 @@ import DocumentComponent from "../../components/mantenimiento/document";
 import CalendarComponent from "../../components/mantenimiento/DateTimePicker";
 import {
   mantenimientos,
-  placas,
+  
 } from "../../components/mantenimiento/dataDropdown";
 import DropdownComponent from "../../components/mantenimiento/dropdown";
 import TitleIcon from "../../components/mantenimiento/titleIcon";
@@ -17,18 +17,51 @@ import {
   Platform,
   Keyboard,
   TouchableWithoutFeedback,
+  RefreshControl,
 } from "react-native";
+import { useState } from "react";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import { COLORS } from "../../constants/theme";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import Fetchget from "../../hook/Fetch";
+import Fetchpost from "../../hook/Fetch2";
+import { set } from "date-fns";
 
 /**
  * RegistroMantenimiento es un componente de React que renderiza un formulario para registrar un mantenimiento.
- * 
+ *
  * @returns {JSX.Element} El componente RegistroMantenimiento renderizado.
  */
 const ProgramarMantenimiento = () => {
+  // Define el estado para los tipos de mantenimiento.
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  // Define la actualización de estado para los tipos de mantenimiento.
+  const { data, isLoading, error, refetch } = Fetchget("tasks", "placas"); 
+ 
+  
+    // Mueve la llamada al hook Fetchpost al nivel superior
+    const { refetch: refetchPost, redirect } = Fetchpost("tasks", "programar");
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    refetch();
+    
+    setRefreshing(false)
+  }, []);
+ 
+   console.log(data)
+   
+  const placas = data.map((item) => {
+    return {
+      label: item,
+      value: item,
+    }
+  })
+  // Define el valor actual de las placas.
+
   // Define el estado para las imágenes y el modal de vista previa de la imagen.
   const formikRef = React.useRef();
   const [images, setImage] = React.useState({
@@ -39,11 +72,11 @@ const ProgramarMantenimiento = () => {
   // Define el esquema de validación para el formulario utilizando Yup.
   const validationSchema = Yup.object().shape({
     tipoMantenimiento: Yup.string().required("Este campo es requerido."),
-    placaIdentificacion: Yup.string().required("Este campo es requerido."),
-    fechaMantenimiento: Yup.date()
+    placa: Yup.string().required("Este campo es requerido."),
+    fecha: Yup.date()
       .nullable(true)
       .required("Este campo es requerido."),
-    observaciones: Yup.string().required("Este campo es requerido."),
+    anotaciones: Yup.string().required("Este campo es requerido."),
     documentos: Yup.array().min(1, "Debe subir al menos un documento."),
   });
 
@@ -52,6 +85,9 @@ const ProgramarMantenimiento = () => {
       <KeyboardAwareScrollView
         enableOnAndroid={true}
         extraScrollHeight={50}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
         enableAutomaticScroll={Platform.OS === "ios"}
         style={styles.container3}
         resetScrollToCoords={{ x: 0, y: 0 }}
@@ -66,13 +102,23 @@ const ProgramarMantenimiento = () => {
               innerRef={formikRef}
               initialValues={{
                 tipoMantenimiento: "",
-                placaIdentificacion: "",
-                fechaMantenimiento: null,
-                observaciones: "",
+                placa: "",
+                fecha: null,
+                anotaciones: "",
                 documentos: [],
               }}
               validationSchema={validationSchema}
-              onSubmit={(values) => console.log(values)}
+              onSubmit={(values) => {
+                const dataToSend = {
+                  tipoMantenimiento: values.tipoMantenimiento,
+                  placa: values.placa,
+                  fecha: values.fecha ? values.fecha.toISOString() : null,
+                  anotaciones: values.anotaciones,
+                };
+                console.log(dataToSend);
+                refetchPost(dataToSend);
+                redirect();
+              }}
             >
               {({
                 handleChange,
@@ -86,6 +132,8 @@ const ProgramarMantenimiento = () => {
                 <>
                   <TitleIcon title="Tipo de mantenimiento" icon="wrench" />
                   <DropdownComponent
+                     onRefresh={onRefresh}
+                      refreshing={refreshing}
                     onBlur={() => handleBlur("tipoMantenimiento")}
                     placeholder="Seleccione un mantenimiento"
                     data={mantenimientos}
@@ -102,19 +150,19 @@ const ProgramarMantenimiento = () => {
                   <TitleIcon title="Placa de Identificación" icon="car" />
 
                   <DropdownComponent
-                    onBlur={() => handleBlur("placaIdentificacion")}
+                    onBlur={() => handleBlur("placa")}
                     placeholder="Seleccione una placa"
-                    data={placas}
-                    value={values.placaIdentificacion}
+                    data={ placas }
+                    value={values.placa}
                     onChange={(item) =>
-                      handleChange("placaIdentificacion")(item.value)
+                      handleChange("placa")(item.value)
                     }
                   />
 
-                  {errors.placaIdentificacion &&
-                    touched.placaIdentificacion && (
+                  {errors.placa &&
+                    touched.placa && (
                       <Text style={styles.error}>
-                        {errors.placaIdentificacion}
+                        {errors.placa}
                       </Text>
                     )}
 
@@ -123,25 +171,21 @@ const ProgramarMantenimiento = () => {
                   <CalendarComponent
                     values={values}
                     setFieldValue={setFieldValue}
-                    onBlur={() => handleBlur("fechaMantenimiento")}
+                    onBlur={() => handleBlur("fecha")}
                   />
 
-                  <TitleIcon
-                    title=" Observaciones"
-                    icon="pencil"
-                  />
+                  <TitleIcon title=" Observaciones" icon="pencil" />
 
                   <TextInputs
                     placeholder="Ingrese el diagnostico"
-                    onChangeText={handleChange("observaciones")}
-                    onBlur={handleBlur("observaciones")}
-                    value={values.observaciones}
+                    onChangeText={handleChange("anotaciones")}
+                    onBlur={handleBlur("anotaciones")}
+                    value={values.anotaciones}
                   />
 
-                  {errors.observaciones && touched.observaciones && (
-                    <Text style={styles.error}>{errors.observaciones}</Text>
+                  {errors.anotaciones && touched.anotaciones && (
+                    <Text style={styles.error}>{errors.anotaciones}</Text>
                   )}
-
 
                   <TitleIcon title="Documentos" icon="file" />
 

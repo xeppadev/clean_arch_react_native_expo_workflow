@@ -8,6 +8,11 @@
     "plugins": [
       "expo-router"
     ],
+     "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#050E20"
+    },
     "name": "my-app",
     "slug": "my-app",
     "android": {
