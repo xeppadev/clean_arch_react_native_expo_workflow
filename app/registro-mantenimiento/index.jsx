@@ -49,9 +49,10 @@ const RegistroMantenimiento = () => {
     "tasks",
     "manprogramados"
   );
-  const { refetch: refetchregistrar, redirect } = Fetchpost(
+  const { refetch: refetchregistrar, redirect  } = Fetchpost(
     "tasks",
-    "registrar"
+    "registrar",
+   "formData"
   );
 
   // Refeshing de datos :
@@ -152,37 +153,40 @@ const RegistroMantenimiento = () => {
                 fechaSoat: "",
                 diagnostico: "",
                 repuestos: [],
-                documentos: [],
+                files: [],
               }}
               validationSchema={validationSchema}
               onSubmit={(values) => {
                 const fechaDate = parse(values.fecha, "dd/MM/yyyy", new Date());
-                const fechaUTC = format(
-                  fechaDate,
-                  "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
-                );
-
-                const fechaSoatDate = parse(
-                  values.fechaSoat,
-                  "dd/MM/yyyy",
-                  new Date()
-                );
-                const fechaSoatUTC = format(
-                  fechaSoatDate,
-                  "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
-                );
-                const dataToSend = {
-                  idMant: values.idMant,
-                  placa: values.placa,
-                  tipoMantenimiento: values.tipoMantenimiento,
-                  fecha: fechaUTC,
-                  diagnostico: values.diagnostico,
-                  fechaSoat: fechaSoatUTC,
-                  kmMedido: values.kmMedido,
-                  kmPrevio: values.kmPrevio,
-                  repuestos: values.repuestos,
-                };
-                refetchregistrar(dataToSend);
+                const fechaUTC = format(fechaDate, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+              
+                const fechaSoatDate = parse(values.fechaSoat, "dd/MM/yyyy", new Date());
+                const fechaSoatUTC = format(fechaSoatDate, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+              
+                const formData = new FormData();
+                formData.append("idMant", values.idMant);
+                formData.append("placa", values.placa);
+                formData.append("tipoMantenimiento", values.tipoMantenimiento);
+                formData.append("fecha", fechaUTC);
+                formData.append("diagnostico", values.diagnostico);
+                formData.append("fechaSoat", fechaSoatUTC);
+                formData.append("kmMedido", values.kmMedido);
+                formData.append("kmPrevio", values.kmPrevio);
+                formData.append(`repuestos`, JSON.stringify(values.repuestos));
+              
+              
+                // Si tienes archivos para subir, puedes hacerlo de la siguiente manera:
+                // Asegúrate de que 'selectedImage' es un objeto con las propiedades 'uri', 'name' y 'type'.
+              
+                  formData.append("files", {
+                    uri: Platform.OS === "android" ? values.files[0].uri : values.files[0].uri.replace("file://", ""),
+                    name: values.files[0].name,
+                    type: values.files[0].type,
+                  });
+               
+                console.log(formData);
+              
+                refetchregistrar(formData);
                 redirect();
               }}
             >
@@ -338,8 +342,8 @@ const RegistroMantenimiento = () => {
                     setImage={setImage}
                   />
 
-                  {errors.documentos && touched.documentos && (
-                    <Text style={styles.error}>{errors.documentos}</Text>
+                  {errors.files && touched.files && (
+                    <Text style={styles.error}>{errors.files}</Text>
                   )}
                 </>
               )}

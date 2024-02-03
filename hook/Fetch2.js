@@ -4,7 +4,7 @@ import axios from "axios";
 import { useRouter } from 'expo-router'
 import * as SecureStore from 'expo-secure-store';
 
-const Fetchpost = (endpoint1, endpoint2, initialBody) => {
+const Fetchpost = (endpoint1, endpoint2,  modo = "json", initialBody  ) => {
   const router = useRouter();
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -19,7 +19,10 @@ const Fetchpost = (endpoint1, endpoint2, initialBody) => {
         method: "POST",
         url: `http://192.168.18.204:4000/api/${endpoint1}/${endpoint2}`,
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": 
+          
+          modo === "json" ? "application/json" :
+          "multipart/form-data",
           Authorization: `Bearer ${token}`,
         },
         data: bodyRef.current,
@@ -36,7 +39,7 @@ const Fetchpost = (endpoint1, endpoint2, initialBody) => {
 
    
   const redirect = () => {
-    router.push("/home");
+    router.back();
   }
 
   const refetch = (newBody) => {

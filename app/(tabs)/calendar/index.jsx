@@ -1,4 +1,3 @@
- 
 import {
   addDays,
   eachDayOfInterval,
@@ -9,10 +8,10 @@ import {
 } from "date-fns";
 import { es } from "date-fns/locale";
 import React from "react";
-import { Platform, StyleSheet, Text, View } from "react-native";
+import { Platform, StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import { COLORS } from "../../../constants/theme";
 import TabPage from "../../../components/calendar/ScreenCalendar";
-import ConfirmadosPage from '../../../components/calendar/optionCalendar/Confirmados';
+import ConfirmadosPage from "../../../components/calendar/optionCalendar/Confirmados";
 
 // Genera un arreglo de fechas que representan cada semana en un intervalo de 14 días a partir de hoy.
 const dates = eachWeekOfInterval(
@@ -54,34 +53,39 @@ const ListPage = () => {
               <View key={weekIndex} style={style.row}>
                 {/* Mapea cada día en la semana a un componente de vista. */}
                 {week.map((day, dayIndex) => (
-                  <View
+                  <TouchableOpacity
                     key={dayIndex}
-                    style={isToday(day) ? style.today : null}
+                    onPress={() => {
+                      if (isToday(day)) {
+                        // Aquí puedes agregar las acciones que quieras ejecutar cuando se presione el día actual
+                        console.log("El día actual fue presionado");
+                      }
+                    }}
                   >
-                    <View style={style.week}>
-                      {/* Si es el primer día de la semana, muestra el nombre del día. */}
-                      {weekIndex === 0 && (
-                        <Text
-                          style={
-                            isToday(day) ? style.todayText : style.weekText
-                          }
-                        >
-                          {format(day, "EEEE", { locale: es })
-                            .charAt(0)
-                            .toUpperCase()}
-                        </Text>
-                      )}
-                    </View>
+                    <View style={isToday(day) ? style.today : null}>
+                      <View style={style.week}>
+                        {weekIndex === 0 && (
+                          <Text
+                            style={
+                              isToday(day) ? style.todayText : style.weekText
+                            }
+                          >
+                            {format(day, "EEEE", { locale: es })
+                              .charAt(0)
+                              .toUpperCase()}
+                          </Text>
+                        )}
+                      </View>
 
-                    {/* Muestra el número del día. */}
-                    <View style={style.day}>
-                      <Text
-                        style={isToday(day) ? style.todayText : style.dayText}
-                      >
-                        {format(day, "dd")}
-                      </Text>
+                      <View style={style.day}>
+                        <Text
+                          style={isToday(day) ? style.todayText : style.dayText}
+                        >
+                          {format(day, "dd")}
+                        </Text>
+                      </View>
                     </View>
-                  </View>
+                  </TouchableOpacity>
                 ))}
               </View>
             ))}
@@ -91,9 +95,17 @@ const ListPage = () => {
         {/* Renderiza un componente TabPage con tres pestañas: "Programados", "Todos" y "Confirmados". */}
         <TabPage
           tabs={[
-            { key: 'programados', title: 'Programados', component: ConfirmadosPage },
-            { key: 'todos', title: 'Todos', component: ConfirmadosPage },
-            { key: 'confirmados', title: 'Confirmados', component: ConfirmadosPage },
+            {
+              key: "programados",
+              title: "Programados",
+              component: ConfirmadosPage,
+            },
+            { key: "todos", title: "Todos", component: ConfirmadosPage },
+            {
+              key: "confirmados",
+              title: "Confirmados",
+              component: ConfirmadosPage,
+            },
           ]}
         />
       </View>
@@ -117,8 +129,7 @@ const style = StyleSheet.create({
     marginTop: 16,
     borderRadius: 20,
     paddingTop: 10,
-    paddingBottom: Platform.OS === 'ios' ? 90 : 95,
-    
+    paddingBottom: Platform.OS === "ios" ? 90 : 95,
   },
   row: {
     flexDirection: "row",
@@ -127,7 +138,6 @@ const style = StyleSheet.create({
   },
   day: {
     alignItems: "center",
-    
   },
   dayText: {
     fontSize: 16,
@@ -153,7 +163,6 @@ const style = StyleSheet.create({
     paddingVertical: 3,
   },
   todayText: {
-    
     color: "white",
     fontWeight: "500",
     fontSize: 16,

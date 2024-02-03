@@ -1,63 +1,60 @@
-export const data = [
-  {
-    id: 1,
-    producto: "Refrigerante",
-    cantidad: Math.floor(Math.random() * 100) + 1,
-    marca: "Castrol",
-  },
-  {
-    id: 2,
-    producto: "Luz de Freno",
-    cantidad: Math.floor(Math.random() * 100) + 1,
-    marca: "Bosh",
-  },
-  {
-    id: 3,
-    producto: "Pastillas de Frenos",
-    cantidad: Math.floor(Math.random() * 100) + 1,
-    marca: "Bosh",
-  },
-  {
-    id: 4,
-    producto: "Bateria Bosh 42MP",
-    cantidad: Math.floor(Math.random() * 100) + 1,
-    marca: "Bosh",
-  },
-  {
-    id: 5,
-    producto: "Repuesto 1",
-    cantidad: Math.floor(Math.random() * 100) + 1,
-    marca: "qualitas"
-  },
-  {
-    id: 6,
-    producto: "Repuesto 2",
-    cantidad: Math.floor(Math.random() * 100) + 1,
-    marca: "qualitas"
+import React from 'react';
+import { Button, TextInput } from 'react-native';
+import { Formik } from 'formik';
+import axios from 'axios';
+import { Platform } from 'react-native';
 
-  },
-  {
-    id: 7,
-    producto: "Repuesto 3",
-    cantidad: Math.floor(Math.random() * 100) + 1,
-    marca: "pioneer"
-  },
-  {
-    id: 8,
-    producto: "Repuesto 4",
-    cantidad: Math.floor(Math.random() * 100) + 1,
-    marca: "pioneer"
-  },
-  {
-    id: 9,
-    producto: "Repuesto 5",
-    cantidad: Math.floor(Math.random() * 100) + 1,
-    marca: "pioneer"
-  },
-  {
-    id: 10,
-    producto: "Repuesto 6",
-    cantidad: Math.floor(Math.random() * 100) + 1,
-    marca: "pioneer"
-  },
-];
+const MyForm = () => (
+  <Formik
+    initialValues={{ idMant: '', placa: '', fecha: '', tipoMantenimiento: '', kmPrevio: '', kmMedido: '', fechaSoat: '', diagnostico: '', repuestos: [], documentos: [] }}
+    onSubmit={async (values) => {
+      // Crear un objeto FormData
+      const formData = new FormData();
+
+      // Agregar los campos del formulario
+      Object.keys(values).forEach((key) => {
+        if (key !== 'documentos') {
+          formData.append(key, values[key]);
+        }
+      });
+
+      // Agregar los archivos
+      values.documentos.forEach((doc, index) => {
+        // Para cada archivo, agregarlo al objeto FormData
+        // Asegúrate de que 'doc' es un objeto con las propiedades 'uri', 'name' y 'type'
+        formData.append('files', {
+          uri: Platform.OS === 'android' ? doc.uri : doc.uri.replace('file://', ''),
+          name: doc.name,
+          type: doc.type,
+        });
+      });
+
+      // Enviar la solicitud POST
+      try {
+        const response = await axios.post('http://your-server.com/registrar', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+
+        console.log(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    }}
+  >
+    {({ handleChange, handleBlur, handleSubmit, values }) => (
+      <React.Fragment>
+        <TextInput
+          onChangeText={handleChange('idMant')}
+          onBlur={handleBlur('idMant')}
+          value={values.idMant}
+        />
+        {/* Agrega aquí los demás campos del formulario */}
+        <Button onPress={handleSubmit} title="Submit" />
+      </React.Fragment>
+    )}
+  </Formik>
+);
+
+export default MyForm;

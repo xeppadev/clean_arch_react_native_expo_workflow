@@ -23,14 +23,14 @@ const DocumentComponent= ({ formikRef, setImage }) => {
         if (result) {
           let newDocuments = [...documents, result.assets[0]];
           setDocuments(newDocuments);
-          formikRef.current.setFieldValue("documentos", newDocuments);
+          formikRef.current.setFieldValue("files", newDocuments);
         }
       };
       
       const removeDocument = (uri) => {
         let newDocuments = documents.filter((document) => document.uri !== uri);
         setDocuments(newDocuments);
-        formikRef.current.setFieldValue("documentos", newDocuments);
+        formikRef.current.setFieldValue("files", newDocuments);
       };
 
   return (
