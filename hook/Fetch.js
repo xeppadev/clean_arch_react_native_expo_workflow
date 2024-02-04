@@ -3,14 +3,12 @@ import axios from "axios";
 import * as SecureStore from 'expo-secure-store';
 
 const Fetchget = (endpoint1, endpoint2) => {
-  const [state, setState] = useState({
-    data: [],
-    isLoading: false,
-    error: null
-  });
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const fetchData = async () => {
-    setState({ ...state, isLoading: true });
+    setIsLoading(true);
     try {
       const token = await SecureStore.getItemAsync('token');
       const options = {
@@ -22,9 +20,11 @@ const Fetchget = (endpoint1, endpoint2) => {
         },
       };
       const response = await axios.request(options);
-      setState({ data: response.data, isLoading: false, error: null });
+      setData(response.data);
     } catch (error) {
-      setState({ ...state, isLoading: false, error });
+      setError(error);
+    }finally{
+      setIsLoading(false);
     }
   };
 
@@ -33,12 +33,12 @@ const Fetchget = (endpoint1, endpoint2) => {
   }, []);
 
   const refetch = () => {
-    setState({ ...state, isLoading: true });
+    setIsLoading(true);
     fetchData();
     console.log("refetch");
   };
 
-  return { ...state, refetch };
+  return { data, refetch ,  isLoading, error};
 };
 
 export default Fetchget;

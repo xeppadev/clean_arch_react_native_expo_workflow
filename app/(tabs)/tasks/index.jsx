@@ -37,11 +37,11 @@ const style = StyleSheet.create({
   container2: {
     flex: 1,
     backgroundColor: COLORS.white,
-    marginHorizontal: 18,
+    marginHorizontal: Platform.OS === 'ios' ? 18 : 18,
     marginTop:Platform.OS == "ios" ? 15 : 7,
     borderRadius: 20,
     paddingTop: Platform.OS == "ios"? 5 : 0,
     paddingBottom: 8,
-    paddingBottom: Platform.OS === 'ios' ? 90 : 95,
+    paddingBottom: Platform.OS === 'ios' ? 90 : 68,
   },
 });

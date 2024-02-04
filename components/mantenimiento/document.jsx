@@ -4,7 +4,7 @@ import { TouchableOpacity, View, Text,  StyleSheet } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { Iconify } from "react-native-iconify";
-
+import * as MediaLibrary from "expo-media-library";
 /**
  * DocumentComponent es un componente de React que permite seleccionar y mostrar documentos.
  *
@@ -18,14 +18,20 @@ const DocumentComponent= ({ formikRef, setImage }) => {
     const [documents, setDocuments] = React.useState([]);
 
     const pickDocument = async () => {
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (status === "granted") {
         let result = await DocumentPicker.getDocumentAsync({});
-    
         if (result) {
+
+          console.log(result);
           let newDocuments = [...documents, result.assets[0]];
           setDocuments(newDocuments);
           formikRef.current.setFieldValue("files", newDocuments);
         }
-      };
+      } else {
+        alert("Permission to access media library is required.");
+      }
+    };
       
       const removeDocument = (uri) => {
         let newDocuments = documents.filter((document) => document.uri !== uri);

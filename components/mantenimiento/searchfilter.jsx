@@ -4,11 +4,13 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 import React, { useState } from "react";
 import { COLORS } from "../../constants/theme";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { Dropdown } from "react-native-element-dropdown";
+import { pl } from "date-fns/locale";
 
 
 /**
@@ -160,7 +162,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    padding: 14,
+    padding: Platform.OS === "ios" ? 14 : 10,
     color: "#424242",
   },
   item: {
@@ -181,7 +183,8 @@ const styles = StyleSheet.create({
     width: "20%",
     backgroundColor: COLORS.bg,
     paddingHorizontal: 9,
-    borderRadius: 14,
+    paddingVertical: 2,
+    borderRadius: 11,
   },
   result: {
     flex: 1,
@@ -217,7 +220,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     backgroundColor: COLORS.bg,
     padding: 10,
-    borderRadius: 14,
+    borderRadius: 11,
     width: "60%",
   },
 });

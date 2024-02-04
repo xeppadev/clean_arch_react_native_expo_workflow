@@ -35,6 +35,7 @@ const styles = StyleSheet.create({
       },
       profileName: {
         fontSize: 14,
+        marginBottom: 4,
         fontWeight: '500',
       },
       profileRole: {

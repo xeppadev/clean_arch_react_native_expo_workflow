@@ -11,7 +11,7 @@ import { Iconify } from "react-native-iconify";
 const Notificacion = ({handlePress, badgeCount}) => {
   return (
     <TouchableOpacity style={styles.notificacion} onPress={handlePress}>
-      <Iconify icon="solar:bell-bold-duotone" size={30} color="#0F1217" />
+      <Iconify icon="solar:bell-bold" size={30} color="#0F1217" />
       {badgeCount > 0 && (
         <View style={styles.badge}>
           <Text style={styles.badgeText}>{badgeCount}</Text>
@@ -20,6 +20,8 @@ const Notificacion = ({handlePress, badgeCount}) => {
     </TouchableOpacity>
   );
 };
+
+
 
 // Exporta el componente Notificacion para que pueda ser utilizado en otros archivos.
 export default Notificacion;

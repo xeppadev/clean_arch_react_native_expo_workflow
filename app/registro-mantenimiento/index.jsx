@@ -4,7 +4,9 @@ import SearchFilter from "../../components/mantenimiento/searchfilter";
 import TextInputs from "../../components/mantenimiento/textinput";
 import ModalComponent from "../../components/mantenimiento/modal";
 import DocumentComponent from "../../components/mantenimiento/document";
-
+import * as FileSystem from "expo-file-system";
+import * as SecureStore from "expo-secure-store";
+import axios from "axios";
 import {
   soat,
   mantenimientos,
@@ -20,6 +22,7 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
   RefreshControl,
+  ActivityIndicator,
 } from "react-native";
 
 import { Formik } from "formik";
@@ -28,8 +31,7 @@ import { COLORS } from "../../constants/theme";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import Fetchget from "../../hook/Fetch";
 import Fetchpost from "../../hook/Fetch2";
-import {  parse, format} from "date-fns";
-
+import { parse, format } from "date-fns";
 
 // Define el componente RegistroMantenimiento
 const RegistroMantenimiento = () => {
@@ -42,17 +44,17 @@ const RegistroMantenimiento = () => {
     isImagePreviewVisible: false,
   });
 
-  const { data, refetch } = Fetchget("tasks", "placas");
+  const { data, refetch, error, isLoading } = Fetchget("tasks", "placas");
   const { data: data2, refetch: refetch2 } = Fetchget("tasks", "repuestos");
 
   const { data: data3, refetch: refetchPost } = Fetchpost(
     "tasks",
     "manprogramados"
   );
-  const { refetch: refetchregistrar, redirect  } = Fetchpost(
+  const { refetch: refetchregistrar, redirect } = Fetchpost(
     "tasks",
     "registrar",
-   "formData"
+    "formData"
   );
 
   // Refeshing de datos :
@@ -125,242 +127,290 @@ const RegistroMantenimiento = () => {
   // Renderiza el componente
 
   return (
-    <View style={styles.container}>
-      <KeyboardAwareScrollView
-        enableOnAndroid={true}
-        extraScrollHeight={50}
-        enableAutomaticScroll={Platform.OS === "ios"}
-        refreshControl={
-          <RefreshControl refreshing={refeshing} onRefresh={onRefresh} />
-        }
-        style={styles.container3}
-        resetScrollToCoords={{ x: 0, y: 0 }}
-        contentContainerStyle={styles.container3}
-        scrollEnabled={true}
-      >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View style={styles.container2}>
-            <Text style={styles.title}>Registrar Mantenimiento</Text>
+    <>
+      {isLoading ? (
+        <View style={[styles.containerIndicator, styles.horizontalIndicator]}>
+          <ActivityIndicator size="large" color={COLORS.blue} />
+        </View>
+      ) : error ? (
+        <View style={[styles.containerIndicator, styles.horizontalIndicator]}>
+        <Text>Error al cargar los datos</Text>
+        </View>
+      ) : data.length === 0 ? (
+        <Text>No hay datos</Text>
+      ) : (
+        <View style={styles.container}>
+          <KeyboardAwareScrollView
+            enableOnAndroid={true}
+            extraScrollHeight={50}
+            enableAutomaticScroll={Platform.OS === "ios"}
+            refreshControl={
+              <RefreshControl refreshing={refeshing} onRefresh={onRefresh} />
+            }
+            style={styles.container3}
+            resetScrollToCoords={{ x: 0, y: 0 }}
+            contentContainerStyle={styles.container3}
+            scrollEnabled={true}
+          >
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+              <View style={styles.container2}>
+                <Text style={styles.title}>Registrar Mantenimiento</Text>
 
-            <Formik
-              innerRef={formikRef}
-              initialValues={{
-                idMant: "",
-                placa: "",
-                Mantenimientos: "",
-                tipoMantenimiento: "",
-                fecha: "",
-                fechaSoat: "",
-                diagnostico: "",
-                repuestos: [],
-                files: [],
-              }}
-              validationSchema={validationSchema}
-              onSubmit={(values) => {
-                const fechaDate = parse(values.fecha, "dd/MM/yyyy", new Date());
-                const fechaUTC = format(fechaDate, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-              
-                const fechaSoatDate = parse(values.fechaSoat, "dd/MM/yyyy", new Date());
-                const fechaSoatUTC = format(fechaSoatDate, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-              
-                const formData = new FormData();
-                formData.append("idMant", values.idMant);
-                formData.append("placa", values.placa);
-                formData.append("tipoMantenimiento", values.tipoMantenimiento);
-                formData.append("fecha", fechaUTC);
-                formData.append("diagnostico", values.diagnostico);
-                formData.append("fechaSoat", fechaSoatUTC);
-                formData.append("kmMedido", values.kmMedido);
-                formData.append("kmPrevio", values.kmPrevio);
-                formData.append(`repuestos`, JSON.stringify(values.repuestos));
-              
-              
-                // Si tienes archivos para subir, puedes hacerlo de la siguiente manera:
-                // Asegúrate de que 'selectedImage' es un objeto con las propiedades 'uri', 'name' y 'type'.
-              
-                  formData.append("files", {
-                    uri: Platform.OS === "android" ? values.files[0].uri : values.files[0].uri.replace("file://", ""),
-                    name: values.files[0].name,
-                    type: values.files[0].type,
-                  });
-               
-                console.log(formData);
-              
-                refetchregistrar(formData);
-                redirect();
-              }}
-            >
-              {({
-                handleChange,
-                handleBlur,
-                handleSubmit,
-                setFieldValue,
-                values,
-                errors,
-                touched,
-              }) => (
-                <>
-                  <TitleIcon title="Placa de Identificación" icon="car" />
+                <Formik
+                  innerRef={formikRef}
+                  initialValues={{
+                    idMant: "",
+                    placa: "",
+                    Mantenimientos: "",
+                    tipoMantenimiento: "",
+                    fecha: "",
+                    fechaSoat: "",
+                    diagnostico: "",
+                    repuestos: [],
+                    files: [],
+                  }}
+                  validationSchema={validationSchema}
+                  onSubmit={async (values) => {
+                    const fechaDate = parse(
+                      values.fecha,
+                      "dd/MM/yyyy",
+                      new Date()
+                    );
+                    const fechaUTC = format(
+                      fechaDate,
+                      "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+                    );
 
-                  <DropdownComponent
-                    onBlur={() => handleBlur("placa")}
-                    placeholder="Seleccione una placa"
-                    data={placas}
-                    value={values.placa}
-                    onChange={(item) => {
-                      handleChange("placa")(item.value);
-                      refetchPost({ placa: item.value });
-                    }}
-                  />
-                  {errors.placa && touched.placa && (
-                    <Text style={styles.error}>{errors.placa}</Text>
-                  )}
+                    const fechaSoatDate = parse(
+                      values.fechaSoat,
+                      "dd/MM/yyyy",
+                      new Date()
+                    );
+                    const fechaSoatUTC = format(
+                      fechaSoatDate,
+                      "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+                    );
 
-                  <TitleIcon title="Mantenimientos Programados" icon="wrench" />
-                  <DropdownComponent
-                    onBlur={() => handleBlur("Mantenimientos")}
-                    placeholder="Seleccione una programacion"
-                    data={mantenimientosFormatted}
-                    value={values.Mantenimientos}
-                    onChange={(item) => {
-                      handleChange("Mantenimientos")(item.value);
-                      setFieldValue("idMant", item.id);
-                      setFieldValue(
-                        "tipoMantenimiento",
-                        item.value.split(" - ")[0]
-                      );
-                      setFieldValue("fecha", item.value.split(" - ")[1]);
-                    }}
-                  />
-                  {errors.Mantenimientos && touched.Mantenimientos && (
-                    <Text style={styles.error}>{errors.Mantenimientos}</Text>
-                  )}
+                    const formData = new FormData();
+                    formData.append("idMant", values.idMant);
+                    formData.append("placa", values.placa);
+                    formData.append(
+                      "tipoMantenimiento",
+                      values.tipoMantenimiento
+                    );
+                    formData.append("fecha", fechaUTC);
+                    formData.append("diagnostico", values.diagnostico);
+                    formData.append("fechaSoat", fechaSoatUTC);
+                    formData.append("kmMedido", values.kmMedido);
+                    formData.append("kmPrevio", values.kmPrevio);
+                    formData.append(
+                      `repuestos`,
+                      JSON.stringify(values.repuestos)
+                    );
 
-                  {newmantenimientos && (
+                    // Si tienes archivos para subir, puedes hacerlo de la siguiente manera:
+                    // Asegúrate de que 'selectedImage' es un objeto con las propiedades 'uri', 'name' y 'type'.
+
+                    //Platforms
+                    if (Platform.OS === "android") {
+                      formData.append("files", {
+                        uri: values.files[0].uri,
+                        name: values.files[0].name,
+                        type: values.files[0].mimeType,
+                      });
+                    } else {
+                      formData.append("files", {
+                        uri: values.files[0].uri,
+                        name: values.files[0].name,
+                        type: values.files[0].type,
+                      });
+                    }
+
+                    refetchregistrar(formData);
+                    redirect();
+                  }}
+                >
+                  {({
+                    handleChange,
+                    handleBlur,
+                    handleSubmit,
+                    setFieldValue,
+                    values,
+                    errors,
+                    touched,
+                  }) => (
                     <>
-                      <TitleIcon title="Tipo de mantenimiento" icon="wrench" />
+                      <TitleIcon title="Placa de Identificación" icon="car" />
+
                       <DropdownComponent
-                        onBlur={() => handleBlur("tipoMantenimiento")}
-                        placeholder="Seleccione un mantenimiento"
-                        data={mantenimientos}
-                        value={values.tipoMantenimiento}
-                        onChange={(item) =>
-                          handleChange("tipoMantenimiento")(item.value)
+                        onBlur={() => handleBlur("placa")}
+                        placeholder="Seleccione una placa"
+                        data={placas}
+                        value={values.placa}
+                        onChange={(item) => {
+                          handleChange("placa")(item.value);
+                          refetchPost({ placa: item.value });
+                        }}
+                      />
+                      {errors.placa && touched.placa && (
+                        <Text style={styles.error}>{errors.placa}</Text>
+                      )}
+
+                      <TitleIcon
+                        title="Mantenimientos Programados"
+                        icon="wrench"
+                      />
+                      <DropdownComponent
+                        onBlur={() => handleBlur("Mantenimientos")}
+                        placeholder="Seleccione una programacion"
+                        data={mantenimientosFormatted}
+                        value={values.Mantenimientos}
+                        onChange={(item) => {
+                          handleChange("Mantenimientos")(item.value);
+                          setFieldValue("idMant", item.id);
+                          setFieldValue(
+                            "tipoMantenimiento",
+                            item.value.split(" - ")[0]
+                          );
+                          setFieldValue("fecha", item.value.split(" - ")[1]);
+                        }}
+                      />
+                      {errors.Mantenimientos && touched.Mantenimientos && (
+                        <Text style={styles.error}>
+                          {errors.Mantenimientos}
+                        </Text>
+                      )}
+
+                      {newmantenimientos && (
+                        <>
+                          <TitleIcon
+                            title="Tipo de mantenimiento"
+                            icon="wrench"
+                          />
+                          <DropdownComponent
+                            onBlur={() => handleBlur("tipoMantenimiento")}
+                            placeholder="Seleccione un mantenimiento"
+                            data={mantenimientos}
+                            value={values.tipoMantenimiento}
+                            onChange={(item) =>
+                              handleChange("tipoMantenimiento")(item.value)
+                            }
+                          />
+
+                          {errors.tipoMantenimiento &&
+                            touched.tipoMantenimiento && (
+                              <Text style={styles.error}>
+                                {errors.tipoMantenimiento}
+                              </Text>
+                            )}
+                        </>
+                      )}
+                      {errors.placaIdentificacion &&
+                        touched.placaIdentificacion && (
+                          <Text style={styles.error}>
+                            {errors.placaIdentificacion}
+                          </Text>
+                        )}
+
+                      <TitleIcon title="Kilometraje" icon="calendar" />
+
+                      <TextInputs
+                        placeholder="Km Previo"
+                        onChangeText={handleChange("kmPrevio")}
+                        onBlur={handleBlur("kmPrevio")}
+                        editable={false}
+                        value={values.kmPrevio}
+                        KeyboardType="numeric"
+                      />
+                      {errors.kmPrevio && touched.kmPrevio && (
+                        <Text style={styles.error}>{errors.kmPrevio}</Text>
+                      )}
+                      <TextInputs
+                        placeholder="Km Medido"
+                        onChangeText={handleChange("kmMedido")}
+                        onBlur={handleBlur("kmMedido")}
+                        value={values.kmMedido}
+                        keyboardType={
+                          Platform.OS === "ios" ? "number-pad" : "numeric"
                         }
                       />
 
-                      {errors.tipoMantenimiento &&
-                        touched.tipoMantenimiento && (
-                          <Text style={styles.error}>
-                            {errors.tipoMantenimiento}
-                          </Text>
-                        )}
+                      {errors.kmMedido && touched.kmMedido && (
+                        <Text style={styles.error}>{errors.kmMedido}</Text>
+                      )}
+
+                      <TitleIcon title="Vigencia SOAT" icon="id-card" />
+
+                      <TextInputs
+                        placeholder="fecha de vencimiento SOAT"
+                        onChangeText={handleChange("fechaSoat")}
+                        onBlur={() => handleBlur("fechaSoat")}
+                        value={values.fechaSoat}
+                        editable={false}
+                      />
+
+                      {errors.fechaSoat && touched.fechaSoat && (
+                        <Text style={styles.error}>{errors.fechaSoat}</Text>
+                      )}
+
+                      <TitleIcon
+                        title=" Diagnostico de Estado de la unidad"
+                        icon="pencil"
+                      />
+
+                      <TextInputs
+                        placeholder="Ingrese el diagnostico"
+                        onChangeText={handleChange("diagnostico")}
+                        onBlur={handleBlur("diagnostico")}
+                        value={values.diagnostico}
+                      />
+
+                      {errors.diagnostico && touched.diagnostico && (
+                        <Text style={styles.error}>{errors.diagnostico}</Text>
+                      )}
+
+                      <TitleIcon title="Solicitar Repuestos" icon="cog" />
+
+                      <SearchFilter
+                        data={data2}
+                        value={values.repuestos}
+                        onBlur={() => handleBlur("repuestos")}
+                        onChange={(newCantidad) =>
+                          setFieldValue("repuestos", newCantidad)
+                        }
+                      />
+                      {errors.repuestos && touched.repuestos && (
+                        <Text style={styles.error}>{errors.repuestos}</Text>
+                      )}
+
+                      <TitleIcon title="Documentos" icon="file" />
+
+                      <DocumentComponent
+                        formikRef={formikRef}
+                        setImage={setImage}
+                      />
+
+                      {errors.files && touched.files && (
+                        <Text style={styles.error}>{errors.files}</Text>
+                      )}
                     </>
                   )}
-                  {errors.placaIdentificacion &&
-                    touched.placaIdentificacion && (
-                      <Text style={styles.error}>
-                        {errors.placaIdentificacion}
-                      </Text>
-                    )}
+                </Formik>
+              </View>
+            </TouchableWithoutFeedback>
+          </KeyboardAwareScrollView>
 
-                  <TitleIcon title="Kilometraje" icon="calendar" />
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => formikRef.current.handleSubmit()}
+          >
+            <Text style={styles.buttonText}>Registrar</Text>
+          </TouchableOpacity>
 
-                  <TextInputs
-                    placeholder="Km Previo"
-                    onChangeText={handleChange("kmPrevio")}
-                    onBlur={handleBlur("kmPrevio")}
-                    editable={false}
-                    value={values.kmPrevio}
-                    KeyboardType="numeric"
-                  />
-                  {errors.kmPrevio && touched.kmPrevio && (
-                    <Text style={styles.error}>{errors.kmPrevio}</Text>
-                  )}
-                  <TextInputs
-                    placeholder="Km Medido"
-                    onChangeText={handleChange("kmMedido")}
-                    onBlur={handleBlur("kmMedido")}
-                    value={values.kmMedido}
-                    keyboardType={
-                      Platform.OS === "ios" ? "number-pad" : "numeric"
-                    }
-                  />
-
-                  {errors.kmMedido && touched.kmMedido && (
-                    <Text style={styles.error}>{errors.kmMedido}</Text>
-                  )}
-
-                  <TitleIcon title="Vigencia SOAT" icon="id-card" />
-
-                  <TextInputs
-                    placeholder="fecha de vencimiento SOAT"
-                    onChangeText={handleChange("fechaSoat")}
-                    onBlur={() => handleBlur("fechaSoat")}
-                    value={values.fechaSoat}
-                    editable={false}
-                  />
-
-                  {errors.fechaSoat && touched.fechaSoat && (
-                    <Text style={styles.error}>{errors.fechaSoat}</Text>
-                  )}
-
-                  <TitleIcon
-                    title=" Diagnostico de Estado de la unidad"
-                    icon="pencil"
-                  />
-
-                  <TextInputs
-                    placeholder="Ingrese el diagnostico"
-                    onChangeText={handleChange("diagnostico")}
-                    onBlur={handleBlur("diagnostico")}
-                    value={values.diagnostico}
-                  />
-
-                  {errors.diagnostico && touched.diagnostico && (
-                    <Text style={styles.error}>{errors.diagnostico}</Text>
-                  )}
-
-                  <TitleIcon title="Solicitar Repuestos" icon="cog" />
-
-                  <SearchFilter
-                    data={data2}
-                    value={values.repuestos}
-                    onBlur={() => handleBlur("repuestos")}
-                    onChange={(newCantidad) =>
-                      setFieldValue("repuestos", newCantidad)
-                    }
-                  />
-                  {errors.repuestos && touched.repuestos && (
-                    <Text style={styles.error}>{errors.repuestos}</Text>
-                  )}
-
-                  <TitleIcon title="Documentos" icon="file" />
-
-                  <DocumentComponent
-                    formikRef={formikRef}
-                    setImage={setImage}
-                  />
-
-                  {errors.files && touched.files && (
-                    <Text style={styles.error}>{errors.files}</Text>
-                  )}
-                </>
-              )}
-            </Formik>
-          </View>
-        </TouchableWithoutFeedback>
-      </KeyboardAwareScrollView>
-
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => formikRef.current.handleSubmit()}
-      >
-        <Text style={styles.buttonText}>Registrar</Text>
-      </TouchableOpacity>
-
-      <ModalComponent images={images} setImage={setImage} />
-    </View>
+          <ModalComponent images={images} setImage={setImage} />
+        </View>
+      )}
+    </>
   );
 };
 
@@ -411,5 +461,16 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 20,
     fontWeight: "600",
+  },
+  containerIndicator: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  horizontalIndicator: {
+    backgroundColor: "#FFFFFF",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    padding: 10,
   },
 });

@@ -1,32 +1,39 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, FlatList, RefreshControl } from "react-native";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  FlatList,
+  RefreshControl,
+  ActivityIndicator,
+} from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { COLORS } from "../../../constants/theme";
-import Fetchget from '../../../hook/Fetch';
+import Fetchget from "../../../hook/Fetch";
 
 /**
  * InventoryPage es un componente de React que muestra una lista de productos en un inventario.
- * 
+ *
  * Este componente utiliza el estado de React para manejar el texto de búsqueda ingresado por el usuario.
- * 
+ *
  * Los productos se filtran basándose en el texto de búsqueda, y sólo se muestran los productos cuyo nombre incluye el texto de búsqueda.
- * 
+ *
  * Cada producto se muestra con su nombre y cantidad. El color del contenedor del producto varía dependiendo de la cantidad de producto:
  * - Si la cantidad es menor a 5, el color del contenedor es '#D9AA02'.
  * - Si la cantidad es 5 o más, el color del contenedor es COLORS.blue.
- * 
+ *
  * El componente InventoryPage también incluye un campo de entrada para el texto de búsqueda y un icono de búsqueda.
- * 
+ *
  * @returns {JSX.Element} El componente InventoryPage renderizado.
  */
 const InventoryPage = () => {
-   
   // Define el estado para el texto de búsqueda.
-  const [searchText, setSearchText] = useState('');
+  const [searchText, setSearchText] = useState("");
   const [refeshing, setRefreshing] = React.useState(false);
-  //Fetchind de data 
-  const {data ,refetch} = Fetchget("tasks", "repuestos");
-// Refeshing de datos :
+  //Fetchind de data
+  const { data, refetch, isLoading, error } = Fetchget("tasks", "repuestos");
+  // Refeshing de datos :
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     setTimeout(() => {
@@ -34,27 +41,37 @@ const InventoryPage = () => {
       setRefreshing(false);
     }, 1000); // Espera 2 segundos antes de realizar el refetch
   }, []);
-  
+
   // Filtra los datos basándose en el texto de búsqueda.
-  const filteredData = data.filter(item =>
+  const filteredData = data.filter((item) =>
     item.producto.toLowerCase().includes(searchText.toLowerCase())
   );
 
   // Define cómo se debe renderizar cada elemento de la lista.
   const renderItem = ({ item }) => {
     // Define el color del contenedor basándose en la cantidad de producto.
-    const containerColor = item.cantidad < 5 ? '#D9AA02' : COLORS.blue;
+    const containerColor = item.cantidad < 5 ? "#D9AA02" : COLORS.blue;
     return (
-      <View style={styles.itemContainer} >
-        <View style={styles.contentitem}>
-          <Text style={styles.itemText}>{`${item.producto} (${item.marca})`}</Text>
-        </View>
-        <View style={[styles.numberContainer, {backgroundColor:containerColor}]}>
-          <Text style={styles.numberText}>{item.cantidad}</Text>
-        </View>
-      </View>
-    )
-  }
+      
+          <View style={styles.itemContainer}>
+            <View style={styles.contentitem}>
+              <Text
+                style={styles.itemText}
+              >{`${item.producto} (${item.marca})`}</Text>
+            </View>
+            <View
+              style={[
+                styles.numberContainer,
+                { backgroundColor: containerColor },
+              ]}
+            >
+              <Text style={styles.numberText}>{item.cantidad}</Text>
+            </View>
+          </View>
+        
+      
+    );
+  };
 
   // Renderiza el componente.
   return (
@@ -67,7 +84,7 @@ const InventoryPage = () => {
             placeholder="Buscar Repuesto"
             cursorColor={COLORS.blue}
             placeholderTextColor={COLORS.blue}
-            onChangeText={text => setSearchText(text)}
+            onChangeText={(text) => setSearchText(text)}
             value={searchText}
           />
           <Icon
@@ -77,17 +94,27 @@ const InventoryPage = () => {
             color={COLORS.blue}
           />
         </View>
+        
+        {isLoading ? (
+          <View style={[styles.containerIndicator, styles.horizontalIndicator]}>
+            <ActivityIndicator size="large" color={COLORS.blue} />
+          </View>
+        ) : error ? (
+          <View style={[styles.containerIndicator, styles.horizontalIndicator]}>
+            <Text>Error al cargar los datos</Text>
+          </View>
+        ) : data.length === 0 ? (
+          <Text>No hay datos</Text>
+        ) : (
         <FlatList
-        refreshControl={ 
-          <RefreshControl
-            refreshing={refeshing}
-            onRefresh={onRefresh}
-          />
-        }
+          refreshControl={
+            <RefreshControl refreshing={refeshing} onRefresh={onRefresh} />
+          }
           data={filteredData}
           renderItem={renderItem}
           keyExtractor={(item) => item.id.toString()}
         />
+        )}
       </View>
     </View>
   );
@@ -96,7 +123,7 @@ const InventoryPage = () => {
 // Exporta el componente InventoryPage para que pueda ser utilizado en otros archivos.
 export default InventoryPage;
 
-// Define los estilos del componente. 
+// Define los estilos del componente.
 
 const styles = StyleSheet.create({
   container: {
@@ -134,11 +161,11 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    paddingTop: 10,
+    paddingTop: 8,
     paddingRight: 10,
-    paddingBottom: 10,
+    paddingBottom: 8,
     paddingLeft: 10,
-    color: "#242424",
+    color: "#393939",
   },
   itemContainer: {
     flexDirection: "row",
@@ -171,5 +198,16 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 14,
     fontWeight: "500",
+  },
+  containerIndicator: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  horizontalIndicator: {
+    backgroundColor: "#FFFFFF",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    padding: 10,
   },
 });

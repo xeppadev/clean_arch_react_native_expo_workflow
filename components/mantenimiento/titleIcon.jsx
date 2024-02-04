@@ -1,5 +1,5 @@
 import { StyleSheet, View, Text } from "react-native";
-// import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 /**
  * TitleIcon es un componente que muestra un título con un ícono.
@@ -13,7 +13,7 @@ const TitleIcon = ({ title, icon }) => {
   return (
     <View style={styles.viewtitle2}>
       <Text style={styles.title2}>{title}</Text>
-      {/* <Icon name={icon} size={19} color="gray" style={styles.icon} /> */}
+      <Icon name={icon} size={19} color="gray" style={styles.icon} />
     </View>
   );
 };

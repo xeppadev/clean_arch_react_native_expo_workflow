@@ -28,7 +28,7 @@ const StackLayout = () => {
           headerShadowVisible: false,
           headerLeft: () => <TimeHeader />,
           headerRight: () => (
-            <ScreenHeader profileName="Pablo Rodriguez" role="Admin" handlePress={ () => { router.push("/exit")  }} />
+            <ScreenHeader profileName="Pablo Rodriguez" role="Mecanico" handlePress={ () => { router.push("/exit")  }} />
           ),
         }}
       />
