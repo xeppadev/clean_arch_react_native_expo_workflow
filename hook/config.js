@@ -1,1 +1,0 @@
-export const SOCKET_URI = 'http://192.168.18.204:4000';
