@@ -14,7 +14,7 @@ export function useSessionViewModel() {
     try {
       const decodedToken = await authRepo.authenticate(username, password);
       const user = decodedToken.username;
-      const nivel = decodedToken.nivel;
+      const nivel = decodedToken.nivelUser;
       const exp = decodedToken.exp;
       const expDate = new Date(exp * 1000);
       console.log(expDate);

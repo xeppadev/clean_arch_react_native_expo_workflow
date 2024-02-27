@@ -1,6 +1,6 @@
 export interface MyToken {
     username: string;
-    nivel: "admin" | "tecnico";
+    nivelUser: "admin" | "tecnico";
     exp: number; // Añade este campo a tu interfaz
   }
 
