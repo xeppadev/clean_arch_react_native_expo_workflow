@@ -33,6 +33,7 @@ const DropdownComponent = ({
       confirmSelectItem={false}
       value={value}
       onChange={onChange}
+      activeColor="transparent"
     />
   );
 };
@@ -47,6 +48,7 @@ export const styles = StyleSheet.create({
     borderRadius: 12,
     paddingVertical: 7,
     marginVertical: 6,
+
   },
   placeholderStyle: {
     color: COLORS.gray,
@@ -56,5 +58,8 @@ export const styles = StyleSheet.create({
   dropdownContainer: {
     borderRadius: 10,
     shadowOpacity: 0.05,
+    shadowRadius: 5,
+    
+
   },
 });

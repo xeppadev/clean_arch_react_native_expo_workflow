@@ -29,15 +29,17 @@ const CalendarComponent = ({ values, setFieldValue, onBlur, state } :CalendarCom
       {Platform.OS === "ios" ? (
         <TextInputs
           placeholder="Seleccione la fecha y hora"
+          style={{ color: "black" }}
           onPressOut={() => setOpen(true)}
           value={values ? format(values, "dd MMM yyyy HH:mm") : ""}
           onBlur={onBlur}
           editable={false}
         />
       ) : (
-        <Pressable onPressOut={() => setOpen(true)}>
+        <Pressable onPress={() => setOpen(true)}>
           <TextInputs
             placeholder="Seleccione la fecha y hora"
+            style={{ color: "black" }}
             value={
               values ? format(values, "dd MMM yyyy HH:mm") : ""
             }
@@ -51,6 +53,7 @@ const CalendarComponent = ({ values, setFieldValue, onBlur, state } :CalendarCom
         display="inline"
         mode="datetime"
         isVisible={open}
+
         date={values ? new Date(values) : undefined}
         onConfirm={date => {
             setOpen(false)

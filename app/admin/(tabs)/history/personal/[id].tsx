@@ -6,269 +6,112 @@ import {
   StyleSheet,
   FlatList,
   Platform,
+  RefreshControl,
+  ActivityIndicator,
 } from "react-native";
 import { COLORS } from "@/constants/Colors";
 import { Iconify } from "react-native-iconify";
 import { useLocalSearchParams } from "expo-router";
-import { differenceInDays, parseISO, parse } from "date-fns";
-
-const data = [
-  {
-    id: "132434",
-    cliente: "Minera Yanacocha",
-    placas: [
-      {
-        name: "CON-123",
-        vigencia: "02/03/2024",
-        tipecontrato: "Contrato 1",
-      },
-      {
-        name: "CON-124",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 2",
-      },
-    ],
-    status: "Mal estado",
-    contrato: "Contrato 1",
-  },
-  {
-    id: "4341414",
-    cliente: "Minera Antamina",
-    placas: [
-      {
-        name: "CON-126",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 1",
-      },
-      {
-        name: "CON-126",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 2",
-      },
-    ],
-    status: "Buen estado",
-    contrato: "Contrato 2",
-  },
-  {
-    id: "4134134",
-    cliente: "Minera Las Bambas",
-    placas: [
-      {
-        name: "CON-128",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 1",
-      },
-      {
-        name: "CON-143",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 2",
-      },
-    ],
-    status: "Mal estado",
-    contrato: "Contrato 3",
-  },
-  {
-    id: "14134143",
-    cliente: "Minera Cerro Verde",
-    placas: [
-      {
-        name: "CON-345",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 1",
-      },
-      {
-        name: "CON-5435",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 2",
-      },
-    ],
-    status: "Revision",
-    contrato: "Contrato 4",
-  },
-  {
-    id: "14314134",
-    cliente: "Minera Apumayo",
-    placas: [
-      {
-        name: "CON-875",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 1",
-      },
-      {
-        name: "CON-643",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 2",
-      },
-    ],
-    status: "Buen estado",
-    contrato: "Contrato 5",
-  },
-  {
-    id: "1414134",
-    cliente: "Minera  Brocal",
-    placas: [
-      {
-        name: "CON-636",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 1",
-      },
-      {
-        name: "CON-696",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 2",
-      },
-    ],
-    status: "Buen estado",
-    contrato: "Contrato 6",
-  },
-  {
-    id: "1431414",
-    cliente: "Minera Las Bambas",
-    placas: [
-      {
-        name: "CON-7G2",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 1",
-      },
-      {
-        name: "CON-676",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 2",
-      },
-    ],
-    status: "Revision",
-    contrato: "Contrato 7",
-  },
-  {
-    id: "14134141",
-    cliente: "Minera Apumayo",
-    placas: [
-      {
-        name: "CON-126",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 1",
-      },
-      {
-        name: "CON-126",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 2",
-      },
-    ],
-    status: "Mal estado",
-    contrato: "Contrato 8",
-  },
-  {
-    id: "1431413",
-    cliente: "Minera Yanacocha",
-    placas: [
-      {
-        name: "CON-126",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 1",
-      },
-      {
-        name: "CON-126",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 2",
-      },
-    ],
-    status: "Revision",
-    contrato: "Contrato 9",
-  },
-  {
-    id: "134341434",
-    cliente: "Minera Cerro Verde",
-    placas: [
-      {
-        name: "CON-126",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 1",
-      },
-      {
-        name: "CON-126",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 2",
-      },
-    ],
-    status: "Revision",
-    contrato: "Contrato 10",
-  },
-];
+import { differenceInDays, parseISO, parse, format } from "date-fns";
+import { usePersonalIDViewModel } from "@/src/Presentation/viewmodels/personal/data_id_personalViewModal";
 
 export default function Personalid() {
   const { id } = useLocalSearchParams();
+  const {
+    data: personal,
+    loading,
+    error,
+    refetch,
+  } = usePersonalIDViewModel(id as string);
+  const [refreshing, setRefreshing] = React.useState(false);
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    refetch().then(() => setRefreshing(false));
+  }, []);
 
-  const cliente = data.find((item) => item.id === id);
+  if (loading) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator size="large" color={COLORS.blue2} />
+      </View>
+    );
+  }
+  if (!personal) {
+    return (
+      <View style={styles.center}>
+        <Text>Sin datos</Text>
+      </View>
+    );
+  }
+  if (error) {
+    return (
+      <View style={styles.center}>
+        <Text>Error: {error.message}</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
       showsVerticalScrollIndicator={false}
       style={{ flex: 1, backgroundColor: COLORS.bg2 }}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
     >
       <View style={styles.container}>
         <View style={styles.column}>
           <View style={[styles.row, { marginBottom: 10 }]}>
             <Iconify icon="fa6-solid:user" size={38} color={COLORS.blue2} />
             <Text style={styles.title} numberOfLines={2}>
-              Pedro{"\n"}Gutierrez Suarez
+              {personal?.nombre}
             </Text>
           </View>
-          <View style={styles.row}>
-            <View style={styles.column2}>
-              <Text style={styles.title2}>Numero de DNI:</Text>
-              <Text style={styles.title2}>63424562</Text>
-            </View>
-            <View style={[styles.column2, { marginLeft: 20 }]}>
-              <Text style={styles.title2}>Numero de Telefono:</Text>
-              <Text style={styles.title2}>+51 987654321</Text>
-            </View>
+
+          <View style={[styles.column2]}>
+            <Text style={styles.title2}>Numero de Telefono:</Text>
+            <Text style={styles.title2}>{personal?.numero}</Text>
           </View>
-          <View style={styles.column2}>
+
+          {/* <View style={styles.column2}>
             <Text style={styles.title2}>Direccion:</Text>
-            <Text style={styles.title2}>
-              Av. Manuel Olguin 853, Piso 12- Surco
-            </Text>
-          </View>
+            <Text style={styles.title2}></Text>
+          </View> */}
 
           <View style={styles.column2}>
             <Text style={styles.title2}>Correo de Contacto:</Text>
-            <Text style={styles.title2}>Pedro_123@barrick.com</Text>
+            <Text style={styles.title2}>{personal?.email}</Text>
           </View>
           <View style={styles.column2}>
-            <Text style={styles.title2}>Fecha de Registro:</Text>
-            <Text style={styles.title2}>10/01/2023</Text>
+            <Text style={styles.title2}>Fecha de Ingreso:</Text>
+            <Text style={styles.title2}>
+              {format(parseISO(personal?.fechaIngreso), "dd/MM/yyyy")}
+            </Text>
           </View>
         </View>
-        <Text style={styles.subtitle}>Contratos Actuales</Text>
+        <Text style={styles.subtitle}>Salarios </Text>
         <FlatList
           style={{ paddingTop: 8 }}
-          data={cliente ? cliente.placas : []}
+          data={personal?.salarioFecha}
           scrollEnabled={false}
           showsVerticalScrollIndicator={false}
           keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => {
-            const vigenciaDate = parse(item.vigencia, "dd/MM/yyyy", new Date());
-            const today = new Date();
-            const daysUntilVigencia = differenceInDays(vigenciaDate, today);
+          renderItem={({ item,index }) => {
+            const salariosOrdenados = personal?.salarioFecha
+              ?.slice()
+              .sort(
+                (a, b) =>
+                  parseISO(b!.fecha).getTime() - parseISO(a!.fecha).getTime()
+              );
+            let color;
+            let backgroundColor;
+            item?.fecha === salariosOrdenados?.[0]?.fecha
+              ? ((color = COLORS.green), (backgroundColor = COLORS.green2))
+              : ((color = COLORS.red2), (backgroundColor = COLORS.red));
 
-            let textColor;
-            if (daysUntilVigencia >= 5) {
-              textColor = {
-                color: COLORS.green,
-                backgroundColor: COLORS.green2,
-              };
-            } else if (daysUntilVigencia <= 5 && daysUntilVigencia > 0) {
-              textColor = {
-                color: COLORS.wellow,
-                backgroundColor: COLORS.wellowlg,
-              };
-            } else {
-              textColor = {
-                color: COLORS.red2,
-                backgroundColor: COLORS.red,
-              };
-            }
+              const idConsecutivo = `SALARIO-${personal?._id.slice(-3)}${String(index + 1).padStart(4, '0')}`;
+
             return (
               <View style={styles.listItem}>
                 <View style={styles.icon}>
@@ -279,19 +122,19 @@ export default function Personalid() {
                   />
                 </View>
                 <View style={styles.dates}>
-                  <Text style={styles.listItemTitle}>{item.tipecontrato}</Text>
-                  <Text style={styles.listItemTitle}>{item.name}</Text>
+                  <Text style={styles.listItemTitle}>{idConsecutivo}</Text>
+                  <Text style={styles.listItemTitle}>
+                    Salario: S/.{item?.salario}
+                  </Text>
                 </View>
                 <View
                   style={[
                     styles.contentstatus,
-                    { backgroundColor: textColor.backgroundColor },
+                    { backgroundColor: backgroundColor },
                   ]}
                 >
-                  <Text
-                    style={[styles.listItemStatus, { color: textColor.color }]}
-                  >
-                    {item.vigencia}
+                  <Text style={[styles.listItemStatus, { color: color }]}>
+                    {format(parseISO(item?.fecha), "dd/MM/yyyy")}
                   </Text>
                 </View>
               </View>
@@ -399,5 +242,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 3,
     borderRadius: 7,
+  },
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

@@ -1,4 +1,4 @@
-const tintColorLight = "#0e2572";
+const tintColorLight = "#0D224E";
 const tintColorDark = "#1C49A8";
 
 export default {
@@ -29,7 +29,7 @@ export const COLORS = {
   white: "#FFFFFF",
   blue: "#0b1d5b",
   blue2: "#0b1e62",
-  blue3: "#0b1d5b",
+  blue3: "#0D224E",
   bluef: "#0C2049",
   wellow: "#D9AA02",
   wellow2: "#FFA929",

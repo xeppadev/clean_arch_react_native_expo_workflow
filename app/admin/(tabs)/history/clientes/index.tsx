@@ -4,88 +4,60 @@ import {
   FlatList,
   Platform,
   ScrollView,
+  RefreshControl,
+  ActivityIndicator,
 } from "react-native";
-
+import * as React from "react";
 import { COLORS } from "@/constants/Colors";
 import { Iconify } from "react-native-iconify";
 import { Text, View } from "@/components/Themed";
 import { useRouter } from "expo-router";
+import { useClientesViewModel } from "@/src/Presentation/viewmodels/clientes/clientesViewModel";
+import { differenceInDays, parseISO, parse } from "date-fns";
 
-const data = [
-  {
-    id: "12313123",
-    cliente: "Minera Yanacocha",
-    contacto: "Pedro vasquez",
-    status: "Vencido",
-  },
-  {
-    id: "1f365223",
-    cliente: "Minera Antamina",
-    contacto: "Jose Rodriguez",
-    status: "Activo",
-  },
-  {
-    id: "145erq41",
-    cliente: "Minera Las Bambas",
-    contacto: "Pedro vasquez",
-    status: "Activo",
-  },
-  {
-    id: "14134df3",
-    cliente: "Minera Cerro Verde",
-    contacto: "Pedro vasquez",
-    status: "Activo",
-  },
-  {
-    id: "234324f3",
-    cliente: "Minera Apumayo",
-    contacto: "Jose Martinez",
-    status: "Activo",
-  },
-  {
-    id: "14332das1",
-    cliente: "Minera  Brocal",
-    contacto: "Enrique Gutierrez",
-    status: "Por Vencer",
-  },
-  {
-    id: "1134df3",
-    cliente: "Minera Las Bambas",
-    contacto: "Pedro vasquez",
-    status: "Activo",
-  },
-  {
-    id: "213432f3",
-    cliente: "Minera Apumayo",
-    contacto: "Pedro vasquez",
-    status: "Activo",
-  },
-  {
-    id: "24336ff3",
-    cliente: "Minera Yanacocha",
-    contacto: "Pedro vasquez",
-    status: "Vencido",
-  },
-  {
-    id: "634gf123",
-    cliente: "Minera Cerro Verde",
-    contacto: "Pedro vasquez",
-    status: "Por Vencer",
-  },
-];
 
 export default function ClientScreen() {
   const router = useRouter();
+  const [refreshing, setRefreshing] = React.useState(false);
+  const { data, loading, error, refetch } = useClientesViewModel();
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    refetch().then(() => setRefreshing(false));
+  }, []);
+  if (loading) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator size="large" color={COLORS.blue2} />
+      </View>
+    );
+  }
+  if (data?.length === 0) {
+    return (
+      <View style={styles.center}>
+        <Text>Sin datos</Text>
+      </View>
+    );
+  }
+  if (error) {
+    return (
+      <View style={styles.center}>
+        <Text>Error: {error.message}</Text>
+      </View>
+    );
+  }
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
       showsVerticalScrollIndicator={false}
       style={{ flex: 1, backgroundColor: COLORS.bg2 }}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
     >
       <View style={styles.container}>
         <View style={styles.row}>
           <Text style={styles.dataLengthText}>
-            {data.length} clientes encontradas
+            {data?.length} Clientes encontrados
           </Text>
         </View>
         <FlatList
@@ -95,19 +67,30 @@ export default function ClientScreen() {
           showsVerticalScrollIndicator={false}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => {
-            const texColor =
-              item.status === "Activo"
-                ? { color: COLORS.green, backgroundColor: COLORS.green2 }
-                : item.status === "Por Vencer"
-                ? { color: COLORS.wellow, backgroundColor: COLORS.wellowlg }
-                : item.status === "Vencido"
-                ? { color: COLORS.red2, backgroundColor: COLORS.red }
-                : { color: COLORS.red2, backgroundColor: COLORS.blue };
+            const vigenciaDate = item.contratos && item.contratos[0] ? parseISO(item.contratos[0].fechaFin) : new Date();
+            const today = new Date();
+            const daysUntilVigencia = differenceInDays(vigenciaDate, today);
+            let statusText;
+            let color;
+            let backgroundColor;
+            if (daysUntilVigencia < 0) {
+              statusText = "Vencido";
+              color = COLORS.red2;
+              backgroundColor = COLORS.red;
+            } else if (daysUntilVigencia < 5) {
+              statusText = "Por Vencer";
+              color = COLORS.wellow;
+              backgroundColor = COLORS.wellowlg;
+            } else {
+              statusText = "Activo";
+              color = COLORS.green;
+              backgroundColor = COLORS.green2;
+            }
             return (
               <Pressable
                 style={styles.listItem}
                 onPress={() =>
-                  router.push("/admin/history/clientes/" + item.id)
+                  router.push("/admin/history/clientes/" + item._id)
                 }
               >
                 <View style={styles.icon}>
@@ -118,19 +101,19 @@ export default function ClientScreen() {
                   />
                 </View>
                 <View style={styles.dates}>
-                  <Text style={styles.listItemTitle}>{item.cliente}</Text>
-                  <Text style={styles.listItemStatus}>{item.contacto}</Text>
+                  <Text style={styles.listItemTitle}>{item.nombreCliente}</Text>
+                  <Text style={styles.listItemStatus}>{item.nombre}</Text>
                 </View>
                 <View
                   style={[
                     styles.contentstatus,
-                    { backgroundColor: texColor.backgroundColor },
+                    { backgroundColor: backgroundColor },
                   ]}
                 >
                   <Text
-                    style={[styles.listItemStatus, { color: texColor.color }]}
+                    style={[styles.listItemStatus, { color: color }]}
                   >
-                    {item.status}
+                    {statusText}
                   </Text>
                 </View>
               </Pressable>
@@ -237,4 +220,5 @@ const styles = StyleSheet.create({
     padding: 3,
     borderRadius: 7,
   },
+  center: { flex: 1, justifyContent: "center", alignItems: "center" },
 });

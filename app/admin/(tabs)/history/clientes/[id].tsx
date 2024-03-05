@@ -6,253 +6,123 @@ import {
   StyleSheet,
   FlatList,
   Platform,
+  RefreshControl,
+  ActivityIndicator,
 } from "react-native";
 import { COLORS } from "@/constants/Colors";
 import { Iconify } from "react-native-iconify";
 import { useLocalSearchParams } from "expo-router";
-import { differenceInDays, parseISO, parse } from "date-fns";
-
-const data = [
-  {
-    id: "12313123",
-    cliente: "Minera Yanacocha",
-    placas: [
-      {
-        name: "IDH-123",
-        vigencia: "02/03/2024",
-        tipecontrato: "Contrato 1",
-      },
-      {
-        name: "IDH-161",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 2",
-      },
-    ],
-    status: "Mal estado",
-    contrato: "Contrato 1",
-  },
-  {
-    id: "1f365223",
-    cliente: "Minera Antamina",
-    placas: [
-      {
-        name: "IDH-126",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 1",
-      },
-      {
-        name: "IDH-1891",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 2",
-      },
-    ],
-    status: "Buen estado",
-    contrato: "Contrato 2",
-  },
-  {
-    id: "145erq41",
-    cliente: "Minera Las Bambas",
-    placas: [
-      {
-        name: "IDH-127",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 1",
-      },
-      {
-        name: "IDH-161",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 2",
-      },
-    ],
-    status: "Mal estado",
-    contrato: "Contrato 3",
-  },
-  {
-    id: "14134df3",
-    cliente: "Minera Cerro Verde",
-    placas: [
-      {
-        name: "IDH-453",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 1",
-      },
-      {
-        name: "IDH-161",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 2",
-      },
-    ],
-    status: "Revision",
-    contrato: "Contrato 4",
-  },
-  {
-    id: "234324f3",
-    cliente: "Minera Apumayo",
-    placas: [
-      {
-        name: "IDH-734",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 1",
-      },
-      {
-        name: "IDH-161",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 2",
-      },
-    ],
-    status: "Buen estado",
-    contrato: "Contrato 5",
-  },
-  {
-    id: "14332das1",
-    cliente: "Minera  Brocal",
-    placas: [
-      {
-        name: "IDH-234",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 1",
-      },
-      {
-        name: "IDH-161",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 2",
-      },
-    ],
-    status: "Buen estado",
-    contrato: "Contrato 6",
-  },
-  {
-    id: "1134df3",
-    cliente: "Minera Las Bambas",
-    placas: [
-      {
-        name: "IDH-754",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 1",
-      },
-      {
-        name: "IDH-161",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 2",
-      },
-    ],
-    status: "Revision",
-    contrato: "Contrato 7",
-  },
-  {
-    id: "213432f3",
-    cliente: "Minera Apumayo",
-    placas: [
-      {
-        name: "IDH-8456",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 1",
-      },
-      {
-        name: "IDH-161",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 2",
-      },
-    ],
-    status: "Mal estado",
-    contrato: "Contrato 8",
-  },
-  {
-    id: "24336ff3",
-    cliente: "Minera Yanacocha",
-    placas: [
-      {
-        name: "IDH-423",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 1",
-      },
-      {
-        name: "IDH-161",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 2",
-      },
-    ],
-    status: "Revision",
-    contrato: "Contrato 9",
-  },
-  {
-    id: "634gf123",
-    cliente: "Minera Cerro Verde",
-    placas: [
-      {
-        name: "IDH-634",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 1",
-      },
-      {
-        name: "IDH-856",
-        vigencia: "12/01/2024",
-        tipecontrato: "Contrato 2",
-      },
-    ],
-    status: "Revision",
-    contrato: "Contrato 10",
-  },
-];
+import { differenceInDays, parseISO, format } from "date-fns";
+import { useClientePorIdViewModel } from "@/src/Presentation/viewmodels/clientes/clienteporIdViewModel";
+import { sl } from "date-fns/locale";
 
 export default function clientid() {
   const { id } = useLocalSearchParams();
-
-  const cliente = data.find((item) => item.id === id);
-  
+  const {
+    data: cliente,
+    loading,
+    error,
+    refetch,
+  } = useClientePorIdViewModel(id as string);
+  const [refreshing, setRefreshing] = React.useState(false);
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    refetch().then(() => setRefreshing(false));
+  }, []);
+  if (loading) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator size="large" color={COLORS.blue2} />
+      </View>
+    );
+  }
+  if (!cliente) {
+    return (
+      <View style={styles.center}>
+        <Text>Sin datos</Text>
+      </View>
+    );
+  }
+  if (error) {
+    return (
+      <View style={styles.center}>
+        <Text>Error: {error.message}</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
       showsVerticalScrollIndicator={false}
       style={{ flex: 1, backgroundColor: COLORS.bg2 }}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
     >
       <View style={styles.container}>
         <View style={styles.column}>
           <View style={[styles.row, { marginBottom: 10 }]}>
             <Iconify icon="solar:shop-2-bold" size={40} color={COLORS.blue2} />
             <Text style={styles.title} numberOfLines={2}>
-              Minera Barrick{"\n"}Peru S.A.
+              {cliente?.nombreCliente}
             </Text>
           </View>
           <View style={styles.row}>
             <View style={styles.column2}>
               <Text style={styles.title2}>Numero de RUC:</Text>
-              <Text style={styles.title2}>20100123456</Text>
+              <Text style={styles.title2}>{cliente.ruc}</Text>
             </View>
             <View style={[styles.column2, { marginLeft: 20 }]}>
               <Text style={styles.title2}>Nombre de Contacto:</Text>
-              <Text style={styles.title2}>Angelica Suarez</Text>
+              <Text style={styles.title2}>{cliente.nombre}</Text>
             </View>
           </View>
           <View style={styles.column2}>
-            <Text style={styles.title2}>Direccion:</Text>
+            <Text style={styles.title2}>Direccion del Cliente:</Text>
             <Text style={styles.title2}>
-              Av. Manuel Olguin 853, Piso 12- Surco
+              {cliente.direccion ? cliente.direccion : "Sin direccion"}
             </Text>
           </View>
           <View style={styles.column2}>
             <Text style={styles.title2}>Telefono de Contacto:</Text>
-            <Text style={styles.title2}>+51 987654321</Text>
+            <Text style={styles.title2}>{cliente.numeroContacto}</Text>
           </View>
           <View style={styles.column2}>
             <Text style={styles.title2}>Correo de Contacto:</Text>
-            <Text style={styles.title2}>Angelica.Suarez@barrick.com</Text>
+            <Text style={styles.title2}>{cliente.email}</Text>
           </View>
           <View style={styles.column2}>
             <Text style={styles.title2}>Fecha de Registro:</Text>
-            <Text style={styles.title2}>10/01/2023</Text>
+            <Text style={styles.title2}>
+              {
+                cliente.contratos
+                  ?.filter((contrato) => contrato !== null)
+                  .sort(
+                    (a, b) =>
+                      parseISO(a!.fechaInicio).getTime() -
+                      parseISO(b!.fechaInicio).getTime()
+                  )
+                  .map((item) =>
+                    format(parseISO(item!.fechaInicio), "dd/MM/yyyy")
+                  )[0]
+              }
+            </Text>
           </View>
         </View>
         <Text style={styles.subtitle}>Contratos Actuales</Text>
         <FlatList
           style={{ paddingTop: 8 }}
-          data={cliente ? cliente.placas : []}
+          data={cliente ? cliente.contratos : []}
           scrollEnabled={false}
           showsVerticalScrollIndicator={false}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => {
-            const vigenciaDate = parse(item.vigencia, 'dd/MM/yyyy', new Date());
+            const fechaFinFormatted = format(
+              parseISO(item?.fechaFin),
+              "dd/MM/yyyy"
+            );
+            const vigenciaDate = parseISO(item?.fechaFin);
             const today = new Date();
             const daysUntilVigencia = differenceInDays(vigenciaDate, today);
 
@@ -279,8 +149,10 @@ export default function clientid() {
                   <Iconify icon="bxs:car" size={23} color={COLORS.blue2} />
                 </View>
                 <View style={styles.dates}>
-                  <Text style={styles.listItemTitle}>{item.tipecontrato}</Text>
-                  <Text style={styles.listItemTitle}>{item.name}</Text>
+                  <Text style={styles.listItemTitle}>{item?.__typename}</Text>
+                  <Text style={styles.listItemTitle}>
+                    {item?.numeroContrato}
+                  </Text>
                 </View>
                 <View
                   style={[
@@ -291,7 +163,7 @@ export default function clientid() {
                   <Text
                     style={[styles.listItemStatus, { color: textColor.color }]}
                   >
-                    {item.vigencia}
+                    {fechaFinFormatted}
                   </Text>
                 </View>
               </View>
@@ -399,5 +271,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 3,
     borderRadius: 7,
+  },
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

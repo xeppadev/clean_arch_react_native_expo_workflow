@@ -18,31 +18,12 @@ import {
   RefreshControl,
   ScrollView,
 } from "react-native";
-
+import { validationSchemaPlacas } from "../../viewmodels/validation/formularplacas";
 import { Formik } from "formik";
-import * as Yup from "yup";
+
 import { COLORS } from "@/constants/Colors";
-
-import { format } from "date-fns";
-
-const mantenimientos = [
-  { label: "Pago Mantenimiento Parcial", value: "Pago Mantenimiento Parcial" },
-  { label: "Pago Mantenimiento 2", value: "Pago Mantenimiento 2" },
-  { label: "Pago Mantenimiento 3", value: "Pago Mantenimiento 3" },
-];
-
-const placas = [
-  { label: "FPG-636", value: "FPG-636" },
-  { label: "FRE-633", value: "FRE-633" },
-  { label: "IRE-634", value: "IRE-634" },
-];
-const elementos = [
-  "Elemento 1",
-  "Elemento 2",
-  "Elemento 3",
-  "Elemento 4",
-  "Elemento 5",
-];
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { RegistrarAutoViewModel } from "../../viewmodels/cars/onSubmit";
 
 /**
  * RegistroMantenimiento es un componente de React que renderiza un formulario para registrar un mantenimiento.
@@ -52,16 +33,15 @@ const elementos = [
 
 const RegistrarUnidad = () => {
   // Define el estado para los tipos de mantenimiento.
-  // Define el estado para las imágenes y el modal de vista previa de la imagen.
-  const formikRef = React.useRef<
+   const formikRef = React.useRef<
     FormikProps<{
       tipocontrato: string;
       placa: string;
       km: string;
       vigenciaSoat: string | Date;
       propietario: string;
-      anotaciones: string;
-      iniciofecha: string | Date;
+      cliente: string;
+      fechaRevision: string | Date;
       finalfecha: string | Date;
       estados: any[];
       average: string;
@@ -76,74 +56,24 @@ const RegistrarUnidad = () => {
     selectedImage: null,
     isImagePreviewVisible: false,
   });
-  //   const [refreshing, setRefreshing] = React.useState(false)
-  //   const [placasstate, setPlacas] = React.useState([])
-
-  //   // Define la actualización de estado para los tipos de mantenimiento.
-  //   const { data, refetch } = Fetchget("tasks", "placas");
-
-  //   // Mueve la llamada al hook Fetchpost al nivel superior
-  //   const { refetch: refetchPost, redirect } = Fetchpost(
-  //     "tasks",
-  //     "programar",
-  //     "formData"
-  //   );
-
-  //   const onRefresh = React.useCallback(() => {
-  //     setRefreshing(true)
-  //     refetch()
-
-  //     setRefreshing(false)
-  //   }, [])
-  //   useEffect(() => {
-  //     console.log("placas", data)
-
-  //     // Define las placas de identificación
-  //     const placas = () =>
-  //       data.map(item => {
-  //         return {
-  //           label: item,
-  //           value: item,
-  //         }
-  //       })
-  //     setPlacas(placas)
-  //   }, [data])
-
-  // Define el valor actual de las placas.
-
-  // Define el esquema de validación para el formulario utilizando Yup.
-  const validationSchema = Yup.object().shape({
-    tipocontrato: Yup.string().required("Este campo es requerido."),
-    placa: Yup.string().required("Este campo es requerido."),
-    vigenciaSoat: Yup.date().nullable().required("Este campo es requerido."),
-    iniciofecha: Yup.date().nullable().required("Este campo es requerido."),
-    finalfecha: Yup.date().nullable().required("Este campo es requerido."),
-    km: Yup.string().required("Este campo es requerido."),
-    anotaciones: Yup.string().required("Este campo es requerido."),
-    propietario: Yup.string().required("Este campo es requerido."),
-    average: Yup.number().required("Este campo es requerido."),
-    files: Yup.array().min(1, "Debe subir al menos un documento."),
-    estados: Yup.array()
-      .of(Yup.string().required("Este campo es requerido."))
-      .required("Debe seleccionar al menos un elemento.")
-      .test(
-        "todos-llenados",
-        "Todos los campos deben estar llenos",
-        (value) =>
-          value &&
-          value.length === elementos.length &&
-          value.every((v) => v !== "")
-      ),
-  });
+  // Define las mutaciones de Apollo Client para programar un mantenimiento.
+  const viewModelregistrar = new RegistrarAutoViewModel();
+  // Trae los tipos de Contrato
+  const mantenimientos = viewModelregistrar.getContratos();
 
   return (
     <View style={styles.container}>
-      <ScrollView
-        style={styles.container3}
+      <KeyboardAwareScrollView
+        resetScrollToCoords={{ x: 0, y: 0 }}
+        contentContainerStyle={styles.container3}
         scrollEnabled
         contentInsetAdjustmentBehavior="automatic"
+        enableOnAndroid
+        style={styles.container3}
+        enableAutomaticScroll={Platform.OS === "ios"}
+        extraScrollHeight={50}
         showsVerticalScrollIndicator={false}
-        
+        keyboardShouldPersistTaps="handled"
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={styles.container2}>
@@ -154,56 +84,16 @@ const RegistrarUnidad = () => {
                 placa: "",
                 km: "",
                 vigenciaSoat: "",
-                iniciofecha: "",
                 finalfecha: "",
-                anotaciones: "",
+                fechaRevision: "",
+                cliente: "",
                 propietario: "",
                 average: "",
                 estados: [],
                 files: [],
               }}
-              validationSchema={validationSchema}
-              onSubmit={async (values) => {
-                const fecha = format(
-                  values.vigenciaSoat,
-                  "yyyy-MM-dd'T'HH:mm:ss.SSS-05:00"
-                );
-
-                const formData = new FormData();
-                formData.append("tipocontrato", values.tipocontrato);
-                formData.append("placa", values.placa);
-                formData.append("km", values.km);
-                formData.append("vigenciaSoat", fecha);
-                formData.append(
-                  "iniciofecha",
-                  format(values.iniciofecha, "yyyy-MM-dd'T'HH:mm:ss.SSS-05:00")
-                );
-                formData.append(
-                  "finalfecha",
-                  format(values.finalfecha, "yyyy-MM-dd'T'HH:mm:ss.SSS-05:00")
-                );
-                formData.append("anotaciones", values.anotaciones);
-                formData.append("propietario", values.propietario);
-                formData.append("average", values.average);
-
-                //Platforms
-                if (Platform.OS === "android") {
-                  formData.append(
-                    "files",
-                    new Blob([values.files[0]], {
-                      type: values.files[0].mimeType,
-                    })
-                  );
-                } else {
-                  formData.append(
-                    "files",
-                    new Blob([values.files[0]], { type: values.files[0].type })
-                  );
-                }
-                console.log("formdata", formData);
-                // refetchPost(formData);
-                // redirect();
-              }}
+              validationSchema={validationSchemaPlacas}
+              onSubmit={viewModelregistrar.onSubmit.bind(viewModelregistrar)}
             >
               {({
                 handleChange,
@@ -232,12 +122,12 @@ const RegistrarUnidad = () => {
 
                   <TitleIcon title="Placa de Identificación" icon="car" />
 
-                  <DropdownComponent
-                    onBlur={() => handleBlur("placa")}
-                    placeholder="Seleccione una placa"
-                    data={placas}
+                  <TextInputs
+                    placeholder="Ingrese la placa de la unidad"
+                    onChangeText={handleChange("placa")}
+                    onBlur={handleBlur("placa")}
+                    editable
                     value={values.placa}
-                    onChange={(item) => handleChange("placa")(item.value)}
                   />
 
                   {errors.placa && touched.placa && (
@@ -245,7 +135,7 @@ const RegistrarUnidad = () => {
                   )}
                   <TitleIcon title="Kilometraje" icon="tachometer" />
                   <TextInputs
-                    placeholder="kilometraje actual"
+                    placeholder="Ingrese el kilometraje actual"
                     onChangeText={handleChange("km")}
                     onBlur={handleBlur("km")}
                     editable
@@ -254,6 +144,18 @@ const RegistrarUnidad = () => {
                   />
                   {errors.km && touched.km && (
                     <Text style={styles.error}>{errors.km}</Text>
+                  )}
+
+                  <TitleIcon title="Fecha de Ultima Revisión" icon="calendar" />
+
+                  <CalendarComponent
+                    values={values.fechaRevision}
+                    setFieldValue={setFieldValue}
+                    onBlur={() => handleBlur("fechaRevision")}
+                    state="fechaRevision"
+                  />
+                  {errors.fechaRevision && touched.fechaRevision && (
+                    <Text style={styles.error}>{errors.fechaRevision}</Text>
                   )}
 
                   <TitleIcon title="Vigencia Soat" icon="calendar" />
@@ -268,17 +170,17 @@ const RegistrarUnidad = () => {
                     <Text style={styles.error}>{errors.vigenciaSoat}</Text>
                   )}
 
-                  <TitleIcon title="Descripcion de la unidad" icon="pencil" />
+                  <TitleIcon title="Cliente" icon="user" />
 
                   <TextInputs
-                    placeholder="Ingrese el diagnostico"
-                    onChangeText={handleChange("anotaciones")}
-                    onBlur={handleBlur("anotaciones")}
-                    value={values.anotaciones}
+                    placeholder="Ingrese el Cliente"
+                    onChangeText={handleChange("cliente")}
+                    onBlur={handleBlur("cliente")}
+                    value={values.cliente}
                   />
 
-                  {errors.anotaciones && touched.anotaciones && (
-                    <Text style={styles.error}>{errors.anotaciones}</Text>
+                  {errors.cliente && touched.cliente && (
+                    <Text style={styles.error}>{errors.cliente}</Text>
                   )}
 
                   <TitleIcon title="Propietario" icon="user" />
@@ -292,28 +194,18 @@ const RegistrarUnidad = () => {
                     <Text style={styles.error}>{errors.propietario}</Text>
                   )}
 
-                  <TitleIcon title="Duración del contrato" icon="calendar" />
-
-                  <CalendarComponent
-                    values={values.iniciofecha}
-                    setFieldValue={setFieldValue}
-                    onBlur={() => handleBlur("iniciofecha")}
-                    state="iniciofecha"
-                  />
-                  {errors.iniciofecha && touched.iniciofecha && (
-                    <Text style={styles.error}>{errors.iniciofecha}</Text>
-                  )}
+                  <TitleIcon title="Vigencia del Contrato" icon="calendar" />
 
                   <CalendarComponent
                     values={values.finalfecha}
                     setFieldValue={setFieldValue}
-                    onBlur={() => handleBlur("finalfecha")}
+                    onBlur={() => handleBlur(" finalfecha")}
                     state="finalfecha"
                   />
                   {errors.finalfecha && touched.finalfecha && (
                     <Text style={styles.error}>{errors.finalfecha}</Text>
                   )}
-                  
+
                   <Rating
                     values={values}
                     setFieldValue={setFieldValue}
@@ -347,7 +239,7 @@ const RegistrarUnidad = () => {
             </Formik>
           </View>
         </TouchableWithoutFeedback>
-      </ScrollView>
+      </KeyboardAwareScrollView>
 
       <TouchableOpacity
         style={styles.button}
@@ -367,15 +259,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.white,
+    justifyContent: "space-between",
   },
   container2: {
-    
     backgroundColor: COLORS.white,
     position: "relative",
+    flex: 1,
   },
   container3: {
     flexGrow: 1,
-    marginBottom:Platform.OS === "ios" ? 70 : 60,
+    marginBottom: Platform.OS === "ios" ? 70 : 60,
     backgroundColor: COLORS.white,
   },
 
@@ -400,7 +293,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     width: "90%",
     position: "absolute",
-    bottom: 15,
+    bottom: Platform.OS === "ios" ? 15 : 0,
     left: 20,
   },
   buttonText: {
@@ -408,5 +301,4 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "600",
   },
-  
 });

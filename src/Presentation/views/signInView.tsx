@@ -1,4 +1,4 @@
-import useSignInViewModel from "../viewmodels/signInViewModel";
+import useSignInViewModel from "../viewmodels/login/signInViewModel";
 import {
   Text,
   View,

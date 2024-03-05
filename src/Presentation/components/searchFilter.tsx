@@ -12,6 +12,9 @@ import React, { useState } from "react";
 import { COLORS } from "@/constants/Colors";
 import { Dropdown } from "react-native-element-dropdown";
 import { TabBarIcon } from "@/app/tecnico/(tabs)/_layout";
+
+import { Iconify } from "react-native-iconify";
+
 /**
  * SearchFilter es un componente que permite buscar y seleccionar repuestos.
  *
@@ -62,7 +65,12 @@ const SearchFilter = ({
           value={searchText}
         />
 
-        <TabBarIcon name="search" size={20} color={COLORS.blue} />
+        <Iconify
+          icon="prime:search"
+          size={20}
+          color="gray"
+          style={styles.searchIcon}
+        />
       </View>
       <View style={styles.result}>
         {filteredData.map((item, index) => {
@@ -130,11 +138,13 @@ const SearchFilter = ({
               </View>
               <Dropdown
                 style={styles.dropdown}
+                containerStyle={styles.dropdownContainer}
                 data={cantidadArray}
                 labelField="label"
                 valueField="value"
                 value={value[index] ? value[index].cantidad : null}
                 placeholder=""
+                activeColor="transparent"
                 placeholderStyle={{ fontSize: 14 }}
                 onBlur={onBlur}
                 onChange={(item) => {
@@ -176,6 +186,7 @@ const styles = StyleSheet.create({
   },
   searchIcon: {
     padding: 10,
+    paddingRight: 30 ,
   },
   input: {
     flex: 1,
@@ -236,8 +247,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     backgroundColor: COLORS.bg,
-    padding: 10,
+    padding: 11,
     borderRadius: 11,
     width: "60%",
+  },
+  dropdownContainer: {
+    borderRadius: 10,
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+    
   },
 });

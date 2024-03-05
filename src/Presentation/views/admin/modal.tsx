@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Platform, StyleSheet, Pressable } from "react-native";
+import { Platform, StyleSheet, Pressable,TouchableOpacity } from "react-native";
 import { Text, View } from "@/components/Themed";
 import { BlurView } from "expo-blur";
 import { useRouter } from "expo-router";
@@ -25,10 +25,10 @@ const ModalScreen: React.FC<ModalScreenProps> = ({ setModalVisible }) => {
           style={({ pressed }) => [
             {
               backgroundColor: pressed
-                ? "rgba(147, 176, 237, 0.7)" // Color cuando el botón está presionado
+                ? "rgba(147, 176, 237, 0.8)" // Color cuando el botón está presionado
                 : Platform.OS === "ios"
-                ? "rgba(147, 176, 237, 0.9)"
-                : "rgba(147, 176, 237, 0.95)", // Color normal
+                ? "rgba(147, 176, 237, 0.85)"
+                : "rgba(147, 176, 237, 1)", // Color normal
             },
 
             styles.openButton,
@@ -37,8 +37,7 @@ const ModalScreen: React.FC<ModalScreenProps> = ({ setModalVisible }) => {
               marginTop: 25,
               borderTopLeftRadius: 20,
               borderTopRightRadius: 20,
-              borderBottomWidth: 1,
-              borderBottomColor: "rgba(120, 157, 233, 0.85)",
+           
             },
           ]}
           onPress={() => {
@@ -56,15 +55,13 @@ const ModalScreen: React.FC<ModalScreenProps> = ({ setModalVisible }) => {
               backgroundColor: pressed
                 ? "rgba(147, 176, 237, 0.8)" // Color cuando el botón está presionado
                 : Platform.OS === "ios"
-                ? "rgba(147, 176, 237, 0.9)"
-                : "rgba(147, 176, 237, 0.95)", // Color normal
+                ? "rgba(147, 176, 237, 0.85)"
+                : "rgba(147, 176, 237, 1)", // Color normal
             },
             styles.openButton,
             {
               justifyContent: "flex-start",
-              marginBottom: 15,
-              borderBottomLeftRadius: 20,
-              borderBottomRightRadius: 20,
+              
             },
           ]}
           onPress={() => {
@@ -83,11 +80,38 @@ const ModalScreen: React.FC<ModalScreenProps> = ({ setModalVisible }) => {
         </Pressable>
         <Pressable
           style={({ pressed }) => [
+            {
+              backgroundColor: pressed
+                ? "rgba(147, 176, 237, 0.8)" // Color cuando el botón está presionado
+                : Platform.OS === "ios"
+                ? "rgba(147, 176, 237, 0.85)"
+                : "rgba(147, 176, 237, 1)", // Color normal
+            },
+            styles.openButton,
+            {
+              justifyContent: "flex-start",
+              marginBottom: 15,
+              borderBottomLeftRadius: 20,
+              borderBottomRightRadius: 20,
+            },
+          ]}
+          onPress={() => {
+            setModalVisible(false);
+            router.push("/admin/registrarfactura");
+          }}
+        >
+          {/* Aquí definimos el contenido de cada opción */}
+
+          <Iconify icon="solar:file-text-bold" size={25} color={COLORS.blue} />
+          <Text style={styles.optionText}>Registrar Facturacion</Text>
+        </Pressable>
+        <Pressable
+          style={({ pressed }) => [
             styles.openButton,
             {
               backgroundColor: pressed
-                ? "rgba(6, 15, 66, 0.85)" // Color cuando el botón está presionado
-                : "rgba(6, 15, 66, 0.9)", // Color normal
+                ? "rgba(6, 15, 66, 0.9)" // Color cuando el botón está presionado
+                : "rgba(6, 15, 66, 1)", // Color normal
             },
             { borderRadius: 18 },
           ]}
@@ -121,7 +145,7 @@ const styles = StyleSheet.create({
   },
   openButton: {
     padding: 18, // Espacio interior alrededor del contenido del botón
-    elevation: 2, // Crea una sombra alrededor del botón para darle un efecto "elevado"
+    
     flexDirection: "row", // Organiza el contenido en una fila (horizontalmente)
     alignItems: "center", // Alinea verticalmente los elementos en el centro
     justifyContent: "center", // Alinea horizontalmente los elementos en el centro

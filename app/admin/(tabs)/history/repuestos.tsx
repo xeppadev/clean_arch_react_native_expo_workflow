@@ -5,100 +5,65 @@ import {
   Platform,
   ScrollView,
   TextInput,
+  RefreshControl,
+  ActivityIndicator,
 } from "react-native";
 import React from "react";
 import { COLORS } from "@/constants/Colors";
 import { Iconify } from "react-native-iconify";
 import { Text, View } from "@/components/Themed";
+import { useRepuestoViewModel } from "@/src/Presentation/viewmodels/repuestos/repuestoViewModel";
 
-const data = [
-  {
-    repuesto: "Refrigerante",
-    marca: "marca",
-    codigo: "323214",
-    status: "Mal estado",
-    cantidad: 2,
-  },
-  {
-    repuesto: "Luz de Freno",
-    marca: "marca",
-    codigo: "5424324",
-    status: "Buen estado",
-    cantidad: 7,
-  },
-  {
-    repuesto: "Pastillas de Frenos",
-    marca: "marca",
-    codigo: "9080935",
-    status: "Mal estado",
-    cantidad: 9,
-  },
-  {
-    repuesto: "Refrigerante",
-    marca: "marca",
-    codigo: "4754654",
-    status: "Revision",
-    cantidad: 12,
-  },
-  {
-    repuesto: "Tambor",
-    marca: "marca",
-    codigo: "645656",
-    status: "Buen estado",
-    cantidad: 5,
-  },
-  {
-    repuesto: "Repuesto 1",
-    marca: "marca",
-    codigo: "53456",
-    status: "Buen estado",
-    cantidad: 12,
-  },
-  {
-    repuesto: "Repuesto 2",
-    marca: "marca",
-    codigo: "234523",
-    status: "Revision",
-    cantidad: 5,
-  },
-  {
-    repuesto: "Repuesto 3",
-    marca: "marca",
-    codigo: "121434",
-    status: "Mal estado",
-    cantidad: 4,
-  },
-  {
-    repuesto: "Repuesto 4",
-    marca: "marca",
-    codigo: "652542",
-    status: "Revision",
-    cantidad: 1,
-  },
-  {
-    repuesto: "Repuesto 5",
-    marca: "marca",
-    codigo: "1234354",
-    status: "Revision",
-    cantidad: 0,
-  },
-];
 export default function RepuestosScreen() {
   const [searchText, setSearchText] = React.useState("");
+  const { data, loading, error, refetch } = useRepuestoViewModel();
+  const [refreshing, setRefreshing] = React.useState(false);	
+  // Función para refrescar los datos.
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    refetch().then(() => setRefreshing(false));
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+         <ActivityIndicator size="large" color={COLORS.blue2} />
+      </View>
+    );
+  }
+  if (!data) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>Sin datos</Text>
+      </View>
+    );
+  }
+  if (error) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>Error: {error.message}</Text>
+      </View>
+    );
+  }
 
   // Filtra los datos basándose en el texto de búsqueda.
   const filteredData = data.filter((item) =>
-    item.repuesto.toLowerCase().includes(searchText.toLowerCase())
+    item.producto && item.producto.toLowerCase().includes(searchText.toLowerCase())
   );
 
+  function capitalizeFirstLetter(string: string) {
+    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+  }
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
       showsVerticalScrollIndicator={false}
       style={{ flex: 1, backgroundColor: COLORS.bg2 }}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
     >
       <View style={styles.container}>
-        
         <View style={styles.searchSection}>
           <Iconify
             icon="prime:search"
@@ -146,10 +111,10 @@ export default function RepuestosScreen() {
                   />
                 </View>
                 <View style={styles.dates}>
-                  <Text
-                    style={styles.listItemTitle}
-                  >{`${item.repuesto} (${item.marca})`}</Text>
-                  <Text style={styles.listItemStatus}>ID:{item.codigo}</Text>
+                  <Text style={styles.listItemTitle}>{`${capitalizeFirstLetter(
+                    item.producto ?? ''
+                  )} (${item.marca})`}</Text>
+                  <Text style={styles.listItemStatus}>ID:{item.id}</Text>
                 </View>
                 <View
                   style={[
@@ -217,7 +182,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 5,
     backgroundColor: "rgba(11, 29, 91, 0.1)",
-    borderRadius: 100,
+    borderRadius: 15
   },
   row: {
     flexDirection: "row",
@@ -261,7 +226,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: Platform.OS === "ios" ? 10 : 7,
     paddingLeft: 5,
-    
+
     color: "#393939",
     fontSize: 16,
   },

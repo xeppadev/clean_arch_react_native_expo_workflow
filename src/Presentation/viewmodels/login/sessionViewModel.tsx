@@ -1,5 +1,5 @@
 // presentation/viewmodels/sessionViewModel.ts
-import { useStorageState } from "../context/useStorageState";
+import { useStorageState } from "../../context/useStorageState";
 import { AuthenticationRepository } from "@/src/Data/api/authenticationRepository";
 import { Alert } from "react-native";
 

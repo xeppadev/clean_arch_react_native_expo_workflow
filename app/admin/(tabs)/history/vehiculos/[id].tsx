@@ -6,240 +6,67 @@ import {
   StyleSheet,
   FlatList,
   Platform,
-  Pressable
+  Pressable,
+  RefreshControl,
+  ActivityIndicator,
+
 } from "react-native";
 import { COLORS } from "@/constants/Colors";
 import { Iconify } from "react-native-iconify";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { useMantenimientoViewModel } from "@/src/Presentation/viewmodels/cars/vehiculosViewModel";
+import { format, parse, parseISO } from "date-fns";
 
-const data = [
-  {
-    id: "12313123",
-    cliente: "Minera Yanacocha",
-    mantenimientos: [
-      {
-        id: "fdswe34234",
-        tipo: "Mantenimiento Preventivo",
-        fecha: "02/03/2024",
-        reparaciones: "2",
-      },
-      {
-        id: "fe23424324",
-        tipo: "Mantenimiento Correctivo",
-        fecha: "12/01/2024",
-        reparaciones: "1",
-      },
-    ],
-    status: "Mal estado",
-    contrato: "Contrato 1",
-  },
-  {
-    id: "1f365223",
-    cliente: "Minera Antamina",
-    mantenimientos: [
-      {
-        id: "7363tfdf2",
-        tipo: "Mantenimiento Preventivo",
-        fecha: "02/03/2024",
-        reparaciones: "2",
-      },
-      {
-        id: "872343",
-        tipo: "Mantenimiento Correctivo",
-        fecha: "12/01/2024",
-        reparaciones: "1",
-      },
-    ],
-    status: "Buen estado",
-    contrato: "Contrato 2",
-  },
-  {
-    id: "145erq41",
-    cliente: "Minera Las Bambas",
-    mantenimientos: [
-      {
-        id: "876e424a1",
-        tipo: "Mantenimiento Preventivo",
-        fecha: "02/03/2024",
-        reparaciones: "2",
-      },
-      {
-        id: "876ehrr2",
-        tipo: "Mantenimiento Correctivo",
-        fecha: "12/01/2024",
-        reparaciones: "1",
-      },
-    ],
-    status: "Mal estado",
-    contrato: "Contrato 3",
-  },
-  {
 
-    id: "14134df3",
-    cliente: "Minera Cerro Verde",
-    mantenimientos: [
-      {
-        id: "876vas24a1",
-        tipo: "Mantenimiento Preventivo",
-        fecha: "02/03/2024",
-        reparaciones: "2",
-      },
-      {
-        id: "9567ehrr2",
-        tipo: "Mantenimiento Correctivo",
-        fecha: "12/01/2024",
-        reparaciones: "1",
-      },
-    ],
-    status: "Revision",
-    contrato: "Contrato 4",
-  },
-  {
-    id: "234324f3",
-    cliente: "Minera Apumayo",
-    mantenimientos: [
-      {
-        id: "bsfddf4a1",
-        tipo: "Mantenimiento Preventivo",
-        fecha: "02/03/2024",
-        reparaciones: "2",
-      },
-      {
-        id: "765farr2",
-        tipo: "Mantenimiento Correctivo",
-        fecha: "12/01/2024",
-        reparaciones: "1",
-      },
-    ],
-    status: "Buen estado",
-    contrato: "Contrato 5",
-  },
-  {
-    id: "14332das1",
-    cliente: "Minera  Brocal",
-    mantenimientos: [
-      {
-        id: "876v0jgfhga1",
-        tipo: "Mantenimiento Preventivo",
-        fecha: "02/03/2024",
-        reparaciones: "2",
-      },
-      {
-        id: "9234hrr2",
-        tipo: "Mantenimiento Correctivo",
-        fecha: "12/01/2024",
-        reparaciones: "1",
-      },
-    ],
-    status: "Buen estado",
-    contrato: "Contrato 6",
-  },
-  {
-    id: "1134df3",
-    cliente: "Minera Las Bambas",
-    mantenimientos: [
-      {
-        id: "876v32x1",
-        tipo: "Mantenimiento Preventivo",
-        fecha: "02/03/2024",
-        reparaciones: "2",
-      },
-      {
-        id: "867df2x1",
-        tipo: "Mantenimiento Correctivo",
-        fecha: "12/01/2024",
-        reparaciones: "1",
-      },
-    ],
-    status: "Revision",
-    contrato: "Contrato 7",
-  },
-  {
-    id: "213432f3",
-    cliente: "Minera Apumayo",
-    mantenimientos: [
-      {
-        id: "863432423d1",
-        tipo: "Mantenimiento Preventivo",
-        fecha: "02/03/2024",
-        reparaciones: "2",
-      },
-      {
-        id: "86364566fd1",
-        tipo: "Mantenimiento Correctivo",
-        fecha: "12/01/2024",
-        reparaciones: "1",
-      },
-    ],
-    status: "Mal estado",
-    contrato: "Contrato 8",
-  },
-  {
-    id: "24336ff3",
-    cliente: "Minera Yanacocha",
-    mantenimientos: [
-      {
-        id: "84gs56fd1",
-        tipo: "Mantenimiento Preventivo",
-        fecha: "02/03/2024",
-        reparaciones: "2",
-      },
-      {
-        id: "863w4131",
-        tipo: "Mantenimiento Correctivo",
-        fecha: "12/01/2024",
-        reparaciones: "1",
-      },
-    ],
-    status: "Revision",
-    contrato: "Contrato 9",
-  },
-  {
-    id: "634gf123",
-    cliente: "Minera Cerro Verde",
-    mantenimientos: [
-      {
-        id: "863456fd1",
-        tipo: "Mantenimiento Preventivo",
-        fecha: "02/03/2024",
-        reparaciones: "2",
-      },
-      {
-        id: "876as24a1",
-        tipo: "Mantenimiento Correctivo",
-        fecha: "12/01/2024",
-        reparaciones: "1",
-      },
-    ],
-    status: "Revision",
-    contrato: "Contrato 10",
-  },
-];
 
 export default function Vehiculoid() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
-  const cliente = data.find((item) => item.id === id);
+  const { data, loading, error, refetch } = useMantenimientoViewModel(id as string);
+  const [refreshing, setRefreshing] = React.useState(false);
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    refetch().then(() => setRefreshing(false));
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={styles.center}>
+         <ActivityIndicator size="large" color={COLORS.blue2} />
+      </View>
+    );
+  }
+    if (!data) {
+    return (
+      <View style={styles.center}>
+        <Text>Sin datos</Text>
+      </View>
+    );
+  }
+  if (error) {
+    return (
+      <View style={styles.center}>
+        <Text>Error: {error.message}</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
       showsVerticalScrollIndicator={false}
       style={{ flex: 1, backgroundColor: COLORS.bg2 }}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
     >
-     
       <View style={styles.container}>
-      <Text style={styles.subtitle}>Detalles</Text>
+        <Text style={styles.subtitle}>Detalles</Text>
         <View style={styles.column}>
-          <View
-            style={[
-              styles.row,
-              { marginBottom: 10,  },
-            ]}
-          >
+          <View style={[styles.row, { marginBottom: 10 }]}>
             <View style={{ flexDirection: "row" }}>
               <Iconify icon="bxs:car" size={35} color={COLORS.blue2} />
-              <Text style={styles.title}>PLACA: ADH-123</Text>
+              <Text style={styles.title}>PLACA: {data.placa}</Text>
             </View>
             <View style={styles.row2}>
               <Iconify
@@ -247,63 +74,90 @@ export default function Vehiculoid() {
                 size={25}
                 color={COLORS.wellow2}
               />
-              <Text style={styles.title}>7.0</Text>
+              <Text style={styles.title}>
+                {" "}
+                {Number.isInteger(data.Puntaje)
+                  ? data.Puntaje + ".0"
+                  : data.Puntaje}{" "}
+              </Text>
             </View>
           </View>
           <View style={styles.row}>
             <View style={styles.column2}>
               <Text style={styles.title2}>Vigencia de SOAT:</Text>
-              <Text style={styles.title2}>DD/MM/AAAA</Text>
+              <Text style={styles.title2}>
+                {format(parseISO(data.fechaSoat), "dd/MM/yyyy")}
+              </Text>
             </View>
             <View style={[styles.column2, { marginLeft: 20 }]}>
               <Text style={styles.title2}>Vigencia de Contrato:</Text>
-              <Text style={styles.title2}>DD/MM/AAAA</Text>
+              <Text style={styles.title2}>
+                {format(parseISO(data.vigenciaContrato), "dd/MM/yyyy")}
+              </Text>
             </View>
           </View>
           <View style={styles.row}>
             <View style={styles.column2}>
               <Text style={styles.title2}>Revisión Técnica:</Text>
-              <Text style={styles.title2}>DD/MM/AAAA</Text>
+              <Text style={styles.title2}>
+                {
+                  data.Mantenimientos?.slice()
+                    .sort(
+                      (a: { fecha: string }, b: { fecha: string }) =>
+                        parseISO(b.fecha).getTime() -
+                        parseISO(a.fecha).getTime()
+                    )
+                    .map((item: { fecha: string }) =>
+                      format(parseISO(item.fecha), "dd/MM/yyyy")
+                    )[0]
+                }
+              </Text>
             </View>
             <View style={[styles.column2, { marginLeft: 20 }]}>
-              <Text style={styles.title2}>Kilometraje Inicial:</Text>
-              <Text style={styles.title2}>12 000 Km</Text>
+              <Text style={styles.title2}>Kilometraje Actual:</Text>
+              <Text style={styles.title2}>{data.kmActual}.00 km</Text>
             </View>
           </View>
           <View style={styles.row}>
             <View style={styles.column2}>
               <Text style={styles.title2}>Propietario:</Text>
-              <Text style={styles.title2}>Luis Rojas Quispe</Text>
+              <Text style={styles.title2}>{data.propietario}</Text>
             </View>
             <View style={[styles.column2, { marginLeft: 20 }]}>
-              <Text style={styles.title2}>Kilometraje Actual:</Text>
-              <Text style={styles.title2}>25 000 Km</Text>
+              <Text style={styles.title2}>Cliente:</Text>
+              <Text style={styles.title2}>{data.cliente}</Text>
             </View>
-          </View>
-          <View style={styles.column2}>
-            <Text style={styles.title2}>Cliente:</Text>
-            <Text style={styles.title2}>Minera Yanacocha</Text>
           </View>
         </View>
         <Text style={styles.subtitle}>Historial de Mantenimientos</Text>
         <FlatList
           style={{ paddingTop: 8 }}
-          data={cliente ? cliente.mantenimientos : []}
+          data={data?.Mantenimientos}
           scrollEnabled={false}
           showsVerticalScrollIndicator={false}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => {
-                      
             return (
-              <Pressable style={styles.listItem}
-               onPress={() => router.push("/admin/history/mantenimientos/" + item.id)}
+              <Pressable
+                style={styles.listItem}
+                onPress={() =>
+                  router.push("/admin/history/mantenimientos/"+item.id)
+                }
               >
                 <View style={styles.icon}>
-                  <Iconify icon="bxs:car-mechanic" size={23} color={COLORS.blue2} />
+                  <Iconify
+                    icon="bxs:car-mechanic"
+                    size={23}
+                    color={COLORS.blue2}
+                  />
                 </View>
                 <View style={styles.dates}>
-                  <Text style={styles.listItemTitle}>{item.tipo}</Text>
-                  <Text style={styles.listItemTitle}>{item.reparaciones} repuestos cambiados</Text>
+                  <Text style={styles.listItemTitle}>
+                     {item.tipo}
+                  </Text>
+                  <Text style={styles.listItemTitle}>
+                    {item.repuestosUsados} repuestos cambiados
+                  </Text>
                 </View>
                 <View
                   style={[
@@ -314,14 +168,13 @@ export default function Vehiculoid() {
                   <Text
                     style={[styles.listItemStatus, { color: COLORS.green }]}
                   >
-                    {item.fecha}
+                    {format(parseISO(item.fecha), "dd/MM/yyyy")}
                   </Text>
                 </View>
               </Pressable>
             );
           }}
         />
-       
       </View>
     </ScrollView>
   );
@@ -362,7 +215,7 @@ const styles = StyleSheet.create({
     color: COLORS.bluef,
   },
   title2: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "500",
     color: COLORS.bluef,
   },
@@ -405,6 +258,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     fontFamily: "Inter_500Medium",
     marginVertical: 2,
+    color: COLORS.bluef,
   },
   listItem: {
     flexDirection: "row",
@@ -425,9 +279,10 @@ const styles = StyleSheet.create({
   row2: {
     flexDirection: "row",
     marginLeft: Platform.OS === "ios" ? 75 : 80,
-    backgroundColor:COLORS.wellowlg,
+    backgroundColor: COLORS.wellowlg,
     paddingHorizontal: 5,
     paddingVertical: 3,
     borderRadius: 9,
   },
+  center: { flex: 1, justifyContent: "center", alignItems: "center" },
 });

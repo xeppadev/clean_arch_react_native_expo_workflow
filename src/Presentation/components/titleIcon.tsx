@@ -20,7 +20,7 @@ const TitleIcon = ({ title, icon, color = "black", style }: TitleIconProps) => {
   return (
     <View style={[styles.viewtitle2, style]}>
       <Text style={[styles.title2, { color }]}>{title}</Text>
-      {icon && <TabBarIcon name={icon} color={color} size={20} />}
+      {icon && <TabBarIcon name={icon} color={color} size={18} />}
     </View>
   );
 };

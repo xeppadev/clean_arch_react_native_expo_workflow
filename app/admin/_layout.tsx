@@ -87,6 +87,23 @@ export default function AppLayout() {
           headerBackTitle: "Inicio",
         }}
       />
+        <Stack.Screen
+        name="registrarfactura"
+        options={{
+          headerLargeTitle: true,
+          headerTitle: "Registrar Facturación",
+          headerTransparent: Platform.OS === "ios" ? true : false,
+          headerBlurEffect: "regular",
+
+          headerLargeTitleStyle: {
+            fontSize: 25,
+          },
+          headerShadowVisible: false,
+
+          headerBackTitle: "Inicio",
+        }}
+      />
+
       
     </Stack>
   );

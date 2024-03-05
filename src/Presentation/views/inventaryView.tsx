@@ -1,99 +1,58 @@
 import {
   StyleSheet,
-  Pressable,
   FlatList,
   Platform,
-  ScrollView,
-  TextInput,
+   TextInput,
+  RefreshControl,
+  ActivityIndicator,
 } from "react-native";
 import React from "react";
 import { COLORS } from "@/constants/Colors";
 import { Iconify } from "react-native-iconify";
 import { Text, View } from "@/components/Themed";
+import { useRepuestoViewModel } from "@/src/Presentation/viewmodels/repuestos/repuestoViewModel";
 
-const data = [
-  {
-    repuesto: "Refrigerante",
-    marca: "marca",
-    codigo: "323214",
-    status: "Mal estado",
-    cantidad: 2,
-  },
-  {
-    repuesto: "Luz de Freno",
-    marca: "marca",
-    codigo: "5424324",
-    status: "Buen estado",
-    cantidad: 7,
-  },
-  {
-    repuesto: "Pastillas de Frenos",
-    marca: "marca",
-    codigo: "9080935",
-    status: "Mal estado",
-    cantidad: 9,
-  },
-  {
-    repuesto: "Refrigerante",
-    marca: "marca",
-    codigo: "4754654",
-    status: "Revision",
-    cantidad: 12,
-  },
-  {
-    repuesto: "Tambor",
-    marca: "marca",
-    codigo: "645656",
-    status: "Buen estado",
-    cantidad: 5,
-  },
-  {
-    repuesto: "Repuesto 1",
-    marca: "marca",
-    codigo: "53456",
-    status: "Buen estado",
-    cantidad: 12,
-  },
-  {
-    repuesto: "Repuesto 2",
-    marca: "marca",
-    codigo: "234523",
-    status: "Revision",
-    cantidad: 5,
-  },
-  {
-    repuesto: "Repuesto 3",
-    marca: "marca",
-    codigo: "121434",
-    status: "Mal estado",
-    cantidad: 4,
-  },
-  {
-    repuesto: "Repuesto 4",
-    marca: "marca",
-    codigo: "652542",
-    status: "Revision",
-    cantidad: 1,
-  },
-  {
-    repuesto: "Repuesto 5",
-    marca: "marca",
-    codigo: "1234354",
-    status: "Revision",
-    cantidad: 0,
-  },
-];
 export default function InventoryPage() {
   const [searchText, setSearchText] = React.useState("");
+  const { data, loading, error, refetch } = useRepuestoViewModel();
+  const [refreshing, setRefreshing] = React.useState(false);
+  // Función para refrescar los datos.
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    refetch().then(() => setRefreshing(false));
+  }, []);
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+         <ActivityIndicator size="large" color={COLORS.blue2} />
+      </View>
+    );
+  }
+  if (!data) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>Sin datos</Text>
+      </View>
+    );
+  }
+  if (error) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>Error: {error.message}</Text>
+      </View>
+    );
+  }
 
   // Filtra los datos basándose en el texto de búsqueda.
   const filteredData = data.filter((item) =>
-    item.repuesto.toLowerCase().includes(searchText.toLowerCase())
+    item.producto?.toLowerCase().includes(searchText.toLowerCase())
   );
+  function capitalizeFirstLetter(string: string) {
+    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+  }
 
   return (
     <View style={styles.container}>
-      
       <View style={styles.searchSection}>
         <Iconify
           icon="prime:search"
@@ -114,6 +73,9 @@ export default function InventoryPage() {
         style={{ paddingTop: 8 }}
         data={filteredData}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => {
           const containerColor =
@@ -142,13 +104,15 @@ export default function InventoryPage() {
               <View style={styles.dates}>
                 <Text
                   style={styles.listItemTitle}
-                >{`${item.repuesto} (${item.marca})`}</Text>
-                <Text style={styles.listItemStatus}>ID:{item.codigo}</Text>
+                >{`${capitalizeFirstLetter(
+                  item.producto || ""
+                )} (${item.marca})`}</Text>
+                <Text style={styles.listItemStatus}>ID:{item.id}</Text>
               </View>
               <View
                 style={[
                   styles.icon,
-                  { backgroundColor: backgroundColor, width: 30, height:30 },
+                  { backgroundColor: backgroundColor, height: 30  },
                 ]}
               >
                 <Text
@@ -168,15 +132,16 @@ export default function InventoryPage() {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: COLORS.bg,
-    paddingHorizontal: 15,
-    paddingTop: 8,
+    paddingHorizontal: 18,
+    
     flex: 1,
   },
   listItem: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 12,
+    padding: 7,
+    paddingHorizontal: 10,
     marginVertical: 5,
     backgroundColor: COLORS.white,
     borderRadius: 15,
@@ -210,7 +175,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 5,
     backgroundColor: "rgba(11, 29, 91, 0.1)",
-    borderRadius: 100,
+    borderRadius: 50,
   },
   row: {
     flexDirection: "row",
@@ -252,7 +217,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    paddingTop: 10,
+    paddingTop: Platform.OS === "ios" ? 10 : 5,
     paddingLeft: 5,
     paddingBottom: 10,
     color: "#393939",

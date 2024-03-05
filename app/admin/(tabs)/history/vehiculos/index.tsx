@@ -4,86 +4,61 @@ import {
   FlatList,
   Platform,
   ScrollView,
+  RefreshControl,
+  ActivityIndicator,
 } from "react-native";
-
+import * as React from "react";
 import { COLORS } from "@/constants/Colors";
 import { Iconify } from "react-native-iconify";
 import { Text, View } from "@/components/Themed";
 import { useRouter } from "expo-router";
-const data = [
-  {
-    id: "12313123",
-    cliente: "Minera Yanacocha",
-    plate: "IDH-123",
-    status: "Mal estado",
-  },
-  {
-    id: "1f365223",
-    cliente: "Minera Antamina",
-    plate: "IDH-124",
-    status: "Buen estado",
-  },
-  {
-    id: "145erq41",
-    cliente: "Minera Las Bambas",
-    plate: "IDH-125",
-    status: "Mal estado",
-  },
-  {
-    id: "14134df3",
-    cliente: "Minera Cerro Verde",
-    plate: "IDH-126",
-    status: "Revision",
-  },
-  {
-    id: "234324f3",
-    cliente: "Minera Apumayo",
-    plate: "IDH-127",
-    status: "Buen estado",
-  },
-  {
-    id: "14332das1",
-    cliente: "Minera  Brocal",
-    plate: "IDH-127",
-    status: "Buen estado",
-  },
-  {
-    id: "1134df3",
-    cliente: "Minera Las Bambas",
-    plate: "IDH-128",
-    status: "Revision",
-  },
-  {
-    id: "213432f3",
-    cliente: "Minera Apumayo",
-    plate: "IDH-129",
-    status: "Mal estado",
-  },
-  {
-    id: "24336ff3",
-    cliente: "Minera Yanacocha",
-    plate: "IDH-130",
-    status: "Revision",
-  },
-  {
-    id: "634gf123",
-    cliente: "Minera Cerro Verde",
-    plate: "IDH-131",
-    status: "Revision",
-  },
-];
+import { usePlacaViewModel } from "@/src/Presentation/viewmodels/cars/placaViewModel";
+import { differenceInDays, parseISO, parse } from "date-fns";
+
 export default function VehiculosScreen() {
   const router = useRouter();
+  const [refreshing, setRefreshing] = React.useState(false);
+  const { data, loading, error, refetch } = usePlacaViewModel();
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    refetch().then(() => setRefreshing(false));
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator size="large" color={COLORS.blue2} />
+      </View>
+    );
+  }
+  if (data?.length === 0) {
+    return (
+      <View style={styles.center}>
+        <Text>Sin datos</Text>
+      </View>
+    );
+  }
+  if (error) {
+    return (
+      <View style={styles.center}>
+        <Text>Error: {error.message}</Text>
+      </View>
+    );
+  }
+
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
       showsVerticalScrollIndicator={false}
       style={{ flex: 1, backgroundColor: COLORS.bg2 }}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
     >
       <View style={styles.container}>
         <View style={styles.row}>
           <Text style={styles.dataLengthText}>
-            {data.length} unidades encontradas
+            {data?.length} Vehiculos encontrados
           </Text>
         </View>
         <FlatList
@@ -93,47 +68,50 @@ export default function VehiculosScreen() {
           showsVerticalScrollIndicator={false}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => {
-            const texColor =
-              item.status === "Completado"
-                ? COLORS.green
-                : item.status === "Pendiente"
-                ? COLORS.wellow
-                : item.status === "Programado"
-                ? COLORS.blue2
-                : COLORS.red2;
+            const vigenciaDate = parseISO(item.fechaSoat);
+            const today = new Date();
+            const daysUntilVigencia = differenceInDays(vigenciaDate, today);
+            let statusText;
+            let color;
+            let backgroundColor;
+            if (daysUntilVigencia < 0) {
+              statusText = "Vencido";
+              color = COLORS.red2;
+              backgroundColor = COLORS.red;
+            } else if (daysUntilVigencia < 5) {
+              statusText = "Por Vencer";
+              color = COLORS.wellow;
+              backgroundColor = COLORS.wellowlg;
+            } else {
+              statusText = "Activo";
+              color = COLORS.green;
+              backgroundColor = COLORS.green2;
+            }
+
             return (
               <Pressable
                 style={styles.listItem}
                 onPress={() =>
-                  router.push("/admin/history/vehiculos/" + item.id)
+                  router.push("/admin/history/vehiculos/" + item.placa)
                 }
               >
                 <View style={styles.icon}>
                   <Iconify icon="bxs:car" size={25} color={COLORS.blue2} />
                 </View>
                 <View style={styles.dates}>
-                  <Text style={styles.listItemTitle}>PLACA: {item.plate}</Text>
+                  <Text style={styles.listItemTitle}>PLACA: {item.placa}</Text>
                   <Text style={styles.listItemStatus}>{item.cliente}</Text>
                 </View>
-                {item.status === "Buen estado" ? (
-                  <Iconify
-                    icon="icon-park-solid:check-one"
-                    size={30}
-                    color={COLORS.green}
-                  />
-                ) : item.status === "Revision" ? (
-                  <Iconify
-                    icon="solar:clock-circle-bold"
-                    size={33}
-                    color={COLORS.wellow}
-                  />
-                ) : item.status === "Mal estado" ? (
-                  <Iconify
-                    icon="solar:close-circle-bold"
-                    size={33}
-                    color={COLORS.red2}
-                  />
-                ) : null}
+                <View
+                  style={[
+                    styles.contentstatus,
+                    { backgroundColor: backgroundColor },
+                  ]}
+                >
+                  <Text style={[styles.listItemStatus, { color: color }]}>
+                    {statusText}
+                  </Text>
+                </View>
               </Pressable>
             );
           }}
@@ -217,9 +195,15 @@ const styles = StyleSheet.create({
     marginLeft: 5, // Añade un poco de margen si es necesario
   },
   dataLengthText: {
-    
     fontWeight: "600",
     fontSize: 15,
     fontFamily: "Inter_500Medium",
   },
+  contentstatus: {
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 3,
+    borderRadius: 7,
+  },
+  center: { flex: 1, justifyContent: "center", alignItems: "center" },
 });

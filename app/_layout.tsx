@@ -4,13 +4,19 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
-import { useFonts, Inter_400Regular,Inter_500Medium, Inter_600SemiBold,Inter_700Bold } from '@expo-google-fonts/inter';
+import {
+  useFonts,
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+  Inter_700Bold,
+} from "@expo-google-fonts/inter";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { Slot } from "expo-router";
 import { AuthenticationProvider } from "@/src/Presentation/context/authenticationProvider";
 import { useColorScheme } from "@/components/useColorScheme";
-
+import ApolloClientProvider from "@/src/Data/api/apolloClient";
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
@@ -25,7 +31,7 @@ export default function RootLayout() {
     Inter_500Medium,
     Inter_600SemiBold,
     Inter_700Bold,
-    
+
     ...FontAwesome.font,
   });
 
@@ -51,10 +57,12 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <AuthenticationProvider>
-        <Slot />
-      </AuthenticationProvider>
-    </ThemeProvider>
+    <ApolloClientProvider>
+      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+        <AuthenticationProvider>
+          <Slot />
+        </AuthenticationProvider>
+      </ThemeProvider>
+    </ApolloClientProvider>
   );
 }

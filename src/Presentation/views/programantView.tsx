@@ -5,6 +5,7 @@ import DocumentComponent from "@/src/Presentation/components/document";
 import CalendarComponent from "@/src/Presentation/components/calendar";
 import DropdownComponent from "@/src/Presentation/components/dropdown";
 import TitleIcon from "@/src/Presentation/components/titleIcon";
+import { validationSchemaregis } from "../viewmodels/validation/formularioregis";
 import { FormikProps } from "formik";
 import {
   Text,
@@ -14,28 +15,16 @@ import {
   Platform,
   Keyboard,
   TouchableWithoutFeedback,
+  ActivityIndicator,
   RefreshControl,
-  ScrollView,
+  Pressable,
 } from "react-native";
-
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Formik } from "formik";
-import * as Yup from "yup";
+
 import { COLORS } from "@/constants/Colors";
 
-import { format } from "date-fns";
-
-const mantenimientos = [
-  { label: "Mantenimiento Preventivo", value: "Mantenimiento Preventivo" },
-  { label: "Mantenimiento Predictivo", value: "Mantenimiento Predictivo" },
-  { label: "Mantenimiento Correctivo", value: "Mantenimiento Correctivo" },
-];
-
-const placas = [
-  { label: "FPG-636", value: "FPG-636" },
-  { label: "FRE-633", value: "FRE-633" },
-  { label: "IRE-634", value: "IRE-634" },
-];
-
+import { ProgramarMantenimientoViewModel } from "../viewmodels/mantenimientos/onSubmitprogram";
 /**
  * RegistroMantenimiento es un componente de React que renderiza un formulario para registrar un mantenimiento.
  *
@@ -43,7 +32,18 @@ const placas = [
  */
 
 const ProgramarMantenimiento = () => {
-  // Define el estado para los tipos de mantenimiento.
+  // Define refeching para el formulario.
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  // Define el estado para las imágenes y el modal de vista previa de la imagen.
+  const [images, setImage] = React.useState<{
+    selectedImage: string | null;
+    isImagePreviewVisible: boolean;
+  }>({
+    selectedImage: null,
+    isImagePreviewVisible: false,
+  });
+
   // Define el estado para las imágenes y el modal de vista previa de la imagen.
   const formikRef = React.useRef<
     FormikProps<{
@@ -54,65 +54,59 @@ const ProgramarMantenimiento = () => {
       files: any[];
     }>
   >(null);
+  // Define las mutaciones de Apollo Client para programar un mantenimiento.
+  const viewModelregistrar = new ProgramarMantenimientoViewModel();
+  // Trae los tipos de mantenimiento
+  const mantenimientos = viewModelregistrar.getMantenimientos();
+  // Trae las placas para el select
+  const placasModel = viewModelregistrar.placas;
+  // Define la función de refetch para refrescar los datos.
+  const { refetch, loading, error, placas } = placasModel;
 
-  const [images, setImage] = React.useState<{
-    selectedImage: string | null;
-    isImagePreviewVisible: boolean;
-  }>({
-    selectedImage: null,
-    isImagePreviewVisible: false,
-  });
-  //   const [refreshing, setRefreshing] = React.useState(false)
-  //   const [placasstate, setPlacas] = React.useState([])
+  //onrefetch
+  const onRefetch = React.useCallback(() => {
+    setRefreshing(true);
+    refetch().then(() => setRefreshing(false));
+  }, []);
 
-  //   // Define la actualización de estado para los tipos de mantenimiento.
-  //   const { data, refetch } = Fetchget("tasks", "placas");
-
-  //   // Mueve la llamada al hook Fetchpost al nivel superior
-  //   const { refetch: refetchPost, redirect } = Fetchpost(
-  //     "tasks",
-  //     "programar",
-  //     "formData"
-  //   );
-
-  //   const onRefresh = React.useCallback(() => {
-  //     setRefreshing(true)
-  //     refetch()
-
-  //     setRefreshing(false)
-  //   }, [])
-  //   useEffect(() => {
-  //     console.log("placas", data)
-
-  //     // Define las placas de identificación
-  //     const placas = () =>
-  //       data.map(item => {
-  //         return {
-  //           label: item,
-  //           value: item,
-  //         }
-  //       })
-  //     setPlacas(placas)
-  //   }, [data])
-
-  // Define el valor actual de las placas.
-
-  // Define el esquema de validación para el formulario utilizando Yup.
-  const validationSchema = Yup.object().shape({
-    tipoMantenimiento: Yup.string().required("Este campo es requerido."),
-    placa: Yup.string().required("Este campo es requerido."),
-    fecha: Yup.date().nullable().required("Este campo es requerido."),
-    anotaciones: Yup.string().required("Este campo es requerido."),
-    files: Yup.array().min(1, "Debe subir al menos un documento."),
-  });
+  if (loading) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator size="large" color={COLORS.blue2} />
+      </View>
+    );
+  }
+  if (!placas) {
+    return (
+      <View style={styles.center}>
+        <Text>Sin datos</Text>
+      </View>
+    );
+  }
+  if (error) {
+    return (
+      <View style={styles.center}>
+        <Text>Error: {error.message}</Text>
+      </View>
+    );
+  }
 
   return (
-    <View style={{backgroundColor:COLORS.white, flex:1}}>
-      <ScrollView
-        style={styles.container}
+    <View style={styles.container}>
+      <KeyboardAwareScrollView
+        resetScrollToCoords={{ x: 0, y: 0 }}
+        contentContainerStyle={styles.container3}
         scrollEnabled
         contentInsetAdjustmentBehavior="automatic"
+        enableOnAndroid
+        style={styles.container3}
+        enableAutomaticScroll={Platform.OS === "ios"}
+        extraScrollHeight={50}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefetch} />
+        }
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={styles.container2}>
@@ -125,37 +119,8 @@ const ProgramarMantenimiento = () => {
                 anotaciones: "",
                 files: [],
               }}
-              validationSchema={validationSchema}
-              onSubmit={async (values) => {
-                const fecha = format(
-                  values.fecha,
-                  "yyyy-MM-dd'T'HH:mm:ss.SSS-05:00"
-                );
-
-                const formData = new FormData();
-                formData.append("tipoMantenimiento", values.tipoMantenimiento);
-                formData.append("placa", values.placa);
-                formData.append("fecha", fecha);
-                formData.append("anotaciones", values.anotaciones);
-
-                //Platforms
-                if (Platform.OS === "android") {
-                  formData.append(
-                    "files",
-                    new Blob([values.files[0]], {
-                      type: values.files[0].mimeType,
-                    })
-                  );
-                } else {
-                  formData.append(
-                    "files",
-                    new Blob([values.files[0]], { type: values.files[0].type })
-                  );
-                }
-                console.log("formdata", formData);
-                // refetchPost(formData);
-                // redirect();
-              }}
+              validationSchema={validationSchemaregis}
+              onSubmit={viewModelregistrar.onSubmit.bind(viewModelregistrar)}
             >
               {({
                 handleChange,
@@ -187,7 +152,7 @@ const ProgramarMantenimiento = () => {
                   <DropdownComponent
                     onBlur={() => handleBlur("placa")}
                     placeholder="Seleccione una placa"
-                    data={placas}
+                    data={placas || []}
                     value={values.placa}
                     onChange={(item) => handleChange("placa")(item.value)}
                   />
@@ -240,7 +205,7 @@ const ProgramarMantenimiento = () => {
             </Formik>
           </View>
         </TouchableWithoutFeedback>
-      </ScrollView>
+      </KeyboardAwareScrollView>
 
       <TouchableOpacity
         style={styles.button}
@@ -258,19 +223,19 @@ export default ProgramarMantenimiento;
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
-    marginBottom:Platform.OS === "ios" ? 70 : 60,
+    flex: 1,
     backgroundColor: COLORS.white,
-    
+  },
+
+  container3: {
+    flexGrow: 1,
+    marginBottom: Platform.OS === "ios" ? 70 : 60,
+    backgroundColor: COLORS.white,
   },
   container2: {
-    
     backgroundColor: COLORS.white,
     position: "relative",
   },
-  
-
-  
 
   error: {
     color: "red",
@@ -292,5 +257,10 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 20,
     fontWeight: "600",
+  },
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

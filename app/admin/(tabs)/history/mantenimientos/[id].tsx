@@ -6,374 +6,70 @@ import {
   StyleSheet,
   FlatList,
   Platform,
+  RefreshControl,
+  ActivityIndicator,
 } from "react-native";
 import { COLORS } from "@/constants/Colors";
 import { Iconify } from "react-native-iconify";
 import { useLocalSearchParams } from "expo-router";
-
-const data = [
-  {
-    id: "fdswe34234",
-    cliente: "Minera Yanacocha",
-    repuestos: [
-      {
-        repuesto: "Refrigerante",
-        marca: "marca",
-        codigo: "323214",
-
-        cantidad: 1,
-      },
-      {
-        repuesto: "Luz de Freno",
-        marca: "marca",
-        codigo: "5424324",
-
-        cantidad: 1,
-      },
-      {
-        repuesto: "Pastillas de Frenos",
-        marca: "marca",
-        codigo: "9080935",
-
-        cantidad: 2,
-      },
-      {
-        repuesto: "Refrigerante",
-        marca: "marca",
-        codigo: "4754654",
-        cantidad: 3,
-      },
-    ],
-    status: "Mal estado",
-    contrato: "Contrato 1",
-  },
-  {
-    id: "1f365223",
-    cliente: "Minera Antamina",
-    repuestos: [
-      {
-        repuesto: "Refrigerante",
-        marca: "marca",
-        codigo: "323214",
-
-        cantidad: 2,
-      },
-      {
-        repuesto: "Luz de Freno",
-        marca: "marca",
-        codigo: "5424324",
-
-        cantidad: 7,
-      },
-      {
-        repuesto: "Pastillas de Frenos",
-        marca: "marca",
-        codigo: "9080935",
-
-        cantidad: 9,
-      },
-      {
-        repuesto: "Refrigerante",
-        marca: "marca",
-        codigo: "4754654",
-        cantidad: 12,
-      },
-    ],
-    status: "Buen estado",
-    contrato: "Contrato 2",
-  },
-  {
-    id: "145erq41",
-    cliente: "Minera Las Bambas",
-    repuestos: [
-      {
-        repuesto: "Refrigerante",
-        marca: "marca",
-        codigo: "323214",
-
-        cantidad: 2,
-      },
-      {
-        repuesto: "Luz de Freno",
-        marca: "marca",
-        codigo: "5424324",
-
-        cantidad: 7,
-      },
-      {
-        repuesto: "Pastillas de Frenos",
-        marca: "marca",
-        codigo: "9080935",
-
-        cantidad: 9,
-      },
-      {
-        repuesto: "Refrigerante",
-        marca: "marca",
-        codigo: "4754654",
-        cantidad: 12,
-      },
-    ],
-    status: "Mal estado",
-    contrato: "Contrato 3",
-  },
-  {
-    id: "14134df3",
-    cliente: "Minera Cerro Verde",
-    repuestos: [
-      {
-        repuesto: "Refrigerante",
-        marca: "marca",
-        codigo: "323214",
-
-        cantidad: 2,
-      },
-      {
-        repuesto: "Luz de Freno",
-        marca: "marca",
-        codigo: "5424324",
-
-        cantidad: 7,
-      },
-      {
-        repuesto: "Pastillas de Frenos",
-        marca: "marca",
-        codigo: "9080935",
-
-        cantidad: 9,
-      },
-      {
-        repuesto: "Refrigerante",
-        marca: "marca",
-        codigo: "4754654",
-        cantidad: 12,
-      },
-    ],
-    status: "Revision",
-    contrato: "Contrato 4",
-  },
-  {
-    id: "234324f3",
-    cliente: "Minera Apumayo",
-    repuestos: [
-      {
-        repuesto: "Refrigerante",
-        marca: "marca",
-        codigo: "323214",
-
-        cantidad: 2,
-      },
-      {
-        repuesto: "Luz de Freno",
-        marca: "marca",
-        codigo: "5424324",
-
-        cantidad: 7,
-      },
-      {
-        repuesto: "Pastillas de Frenos",
-        marca: "marca",
-        codigo: "9080935",
-
-        cantidad: 9,
-      },
-      {
-        repuesto: "Refrigerante",
-        marca: "marca",
-        codigo: "4754654",
-        cantidad: 12,
-      },
-    ],
-    status: "Buen estado",
-    contrato: "Contrato 5",
-  },
-  {
-    id: "14332das1",
-    cliente: "Minera  Brocal",
-    repuestos: [
-      {
-        repuesto: "Refrigerante",
-        marca: "marca",
-        codigo: "323214",
-
-        cantidad: 2,
-      },
-      {
-        repuesto: "Luz de Freno",
-        marca: "marca",
-        codigo: "5424324",
-
-        cantidad: 7,
-      },
-      {
-        repuesto: "Pastillas de Frenos",
-        marca: "marca",
-        codigo: "9080935",
-
-        cantidad: 9,
-      },
-      {
-        repuesto: "Refrigerante",
-        marca: "marca",
-        codigo: "4754654",
-        cantidad: 12,
-      },
-    ],
-    status: "Buen estado",
-    contrato: "Contrato 6",
-  },
-  {
-    id: "1134df3",
-    cliente: "Minera Las Bambas",
-    repuestos: [
-      {
-        repuesto: "Refrigerante",
-        marca: "marca",
-        codigo: "323214",
-
-        cantidad: 2,
-      },
-      {
-        repuesto: "Luz de Freno",
-        marca: "marca",
-        codigo: "5424324",
-
-        cantidad: 7,
-      },
-      {
-        repuesto: "Pastillas de Frenos",
-        marca: "marca",
-        codigo: "9080935",
-
-        cantidad: 9,
-      },
-      {
-        repuesto: "Refrigerante",
-        marca: "marca",
-        codigo: "4754654",
-        cantidad: 12,
-      },
-    ],
-    status: "Revision",
-    contrato: "Contrato 7",
-  },
-  {
-    id: "213432f3",
-    cliente: "Minera Apumayo",
-    repuestos: [
-      {
-        repuesto: "Refrigerante",
-        marca: "marca",
-        codigo: "323214",
-
-        cantidad: 2,
-      },
-      {
-        repuesto: "Luz de Freno",
-        marca: "marca",
-        codigo: "5424324",
-
-        cantidad: 7,
-      },
-      {
-        repuesto: "Pastillas de Frenos",
-        marca: "marca",
-        codigo: "9080935",
-
-        cantidad: 9,
-      },
-      {
-        repuesto: "Refrigerante",
-        marca: "marca",
-        codigo: "4754654",
-        cantidad: 12,
-      },
-    ],
-    status: "Mal estado",
-    contrato: "Contrato 8",
-  },
-  {
-    id: "24336ff3",
-    cliente: "Minera Yanacocha",
-    repuestos: [
-      {
-        repuesto: "Refrigerante",
-        marca: "marca",
-        codigo: "323214",
-
-        cantidad: 2,
-      },
-      {
-        repuesto: "Luz de Freno",
-        marca: "marca",
-        codigo: "5424324",
-
-        cantidad: 7,
-      },
-      {
-        repuesto: "Pastillas de Frenos",
-        marca: "marca",
-        codigo: "9080935",
-
-        cantidad: 9,
-      },
-      {
-        repuesto: "Refrigerante",
-        marca: "marca",
-        codigo: "4754654",
-        cantidad: 12,
-      },
-    ],
-    status: "Revision",
-    contrato: "Contrato 9",
-  },
-  {
-    id: "634gf123",
-    cliente: "Minera Cerro Verde",
-    repuestos: [
-      {
-        repuesto: "Refrigerante",
-        marca: "marca",
-        codigo: "323214",
-
-        cantidad: 2,
-      },
-      {
-        repuesto: "Luz de Freno",
-        marca: "marca",
-        codigo: "5424324",
-
-        cantidad: 7,
-      },
-      {
-        repuesto: "Pastillas de Frenos",
-        marca: "marca",
-        codigo: "9080935",
-
-        cantidad: 9,
-      },
-      {
-        repuesto: "Refrigerante",
-        marca: "marca",
-        codigo: "4754654",
-        cantidad: 12,
-      },
-    ],
-    status: "Revision",
-    contrato: "Contrato 10",
-  },
-];
+import { useMantenimientoInfoPorIdViewModel } from "@/src/Presentation/viewmodels/mantenimientos/mantenimientViewModel";
+import { format, parse, parseISO } from "date-fns";
 
 export default function Mantenimientoid() {
   const { id } = useLocalSearchParams();
+  const { data, loading, error, refetch } = useMantenimientoInfoPorIdViewModel(
+    id as string
+  );
 
-  const cliente = data.find((item) => item.id === id);
+  const [refreshing, setRefreshing] = React.useState(false);
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    refetch().then(() => setRefreshing(false));
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator size="large" color={COLORS.blue2} />
+      </View>
+    );
+  }
+  if (!data) {
+    return (
+      <View style={styles.center}>
+        <Text>Sin datos</Text>
+      </View>
+    );
+  }
+  if (error) {
+    return (
+      <View style={styles.center}>
+        <Text>Error: {error.message}</Text>
+      </View>
+    );
+  }
+
+  function capitalizeFirstLetter(string: string) {
+    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+  }
+
+  const texColor =
+    data.estado === "completado" || data.estado === "completado"
+      ? { color: COLORS.green, backgroundColor: COLORS.green2 }
+      : data.estado === "pendiente" || data.estado === "revision"
+      ? { color: COLORS.wellow, backgroundColor: COLORS.wellowlg }
+      : data.estado === "programado"
+      ? { color: COLORS.blue2, backgroundColor: COLORS.bluelg2 }
+      : { color: COLORS.red2, backgroundColor: COLORS.red };
 
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
       showsVerticalScrollIndicator={false}
       style={{ flex: 1, backgroundColor: COLORS.bg2 }}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
     >
       <View style={styles.container}>
         <Text style={styles.subtitle}>Detalles</Text>
@@ -381,37 +77,72 @@ export default function Mantenimientoid() {
           <View style={[styles.row, { marginBottom: 10 }]}>
             <Iconify icon="mingcute:tool-fill" size={40} color={COLORS.blue2} />
             <Text style={styles.title} numberOfLines={2}>
-              Mantenimiento Preventivo{"\n"}PLACA: ID-123
+               {data.tipo}
+              {"\n"}PLACA: {data.placa}
             </Text>
           </View>
           <View style={styles.row}>
             <View style={styles.column2}>
-              <Text style={styles.title2}>Hora de Inicio:</Text>
-              <Text style={styles.title2}>4:00 PM</Text>
+              <Text style={styles.title2}>Fecha de Inicio:</Text>
+              <Text style={styles.title2}>
+                {data.fechaInicio
+                  ? format(parseISO(data.fechaInicio), "dd/MM/yyyy")
+                  : "DD/MM/YYYY"}
+              </Text>
             </View>
             <View style={[styles.column2, { marginLeft: 20 }]}>
-              <Text style={styles.title2}>Hora de Termino:</Text>
-              <Text style={styles.title2}>6:00 PM</Text>
+              <Text style={styles.title2}>Fecha de Termino:</Text>
+              <Text style={styles.title2}>
+                {data.fechaFin
+                  ? format(parseISO(data.fechaFin), "dd/MM/yyyy")
+                  : "DD/MM/YYYY"}
+              </Text>
             </View>
           </View>
-          <View style={styles.column2}>
-            <Text style={styles.title2}>KIlometraje Registrado:</Text>
-            <Text style={styles.title2}>30 000km</Text>
+          <View style={styles.row}>
+            <View style={styles.column2}>
+              <Text style={styles.title2}>Kilometraje Previo:</Text>
+              <Text style={styles.title2}>
+                {data.kmPrevio ? `${data.kmPrevio}km` : "sin datos"}
+              </Text>
+            </View>
+            <View style={styles.column2}>
+              <Text style={styles.title2}>Kilometraje Ultimo:</Text>
+              <Text style={styles.title2}>
+                {data.kmMedido ? `${data.kmMedido}km` : "sin datos"}
+              </Text>
+            </View>
           </View>
           <View style={styles.column2}>
             <Text style={styles.title2}>Mecanico:</Text>
-            <Text style={styles.title2}>Miguel Gonzales Sanchez</Text>
+            <Text style={styles.title2}>{data.tecnico}</Text>
           </View>
-
           <View style={styles.column2}>
-            <Text style={styles.title2}>Fecha de Mantenimiento:</Text>
-            <Text style={styles.title2}>10/01/2023</Text>
+            <Text style={styles.title2}>Estado:</Text>
+            <View
+              style={[
+                styles.contentstatus,
+                { backgroundColor: texColor.backgroundColor },
+              ]}
+            >
+              <Text style={[styles.title2, { color: texColor.color }]}>
+                {capitalizeFirstLetter(data.estado ?? "")}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.column2}>
+            <Text style={styles.title2}>Programacion del Mantenimiento:</Text>
+            <Text style={styles.title2}>
+              {data.fecha
+                ? format(parseISO(data.fecha), "dd/MM/yyyy")
+                : "DD/MM/YYYY"}
+            </Text>
           </View>
         </View>
         <Text style={styles.subtitle}>Repuestos usados</Text>
         <FlatList
           style={{ paddingTop: 2 }}
-          data={cliente ? cliente.repuestos : []}
+          data={data?.repuestos}
           scrollEnabled={false}
           showsVerticalScrollIndicator={false}
           keyExtractor={(item, index) => index.toString()}
@@ -426,10 +157,10 @@ export default function Mantenimientoid() {
                   />
                 </View>
                 <View style={styles.dates}>
-                  <Text
-                    style={styles.listItemTitle}
-                  >{`${item.repuesto} (${item.marca})`}</Text>
-                  <Text style={styles.listItemStatus}>ID:{item.codigo}</Text>
+                  <Text style={styles.listItemTitle}>{`${capitalizeFirstLetter(
+                    item.producto ?? ""
+                  )} (${item.marca ?? ""})`}</Text>
+                  <Text style={styles.listItemStatus}>ID:{item.id}</Text>
                 </View>
                 <View
                   style={[
@@ -445,13 +176,27 @@ export default function Mantenimientoid() {
             );
           }}
         />
-        <Text style={styles.subtitle}>Diagnostico de la Unidad</Text>
+        <Text style={styles.subtitle}>Anotaciones </Text>
         <View style={styles.column}>
           <Text style={styles.parrafo}>
-            lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            {data.anotaciones ? data.anotaciones : "Sin anotaciones"}
           </Text>
         </View>
+        <Text style={styles.subtitle}>Diagnostico </Text>
+        <View style={styles.column}>
+          <Text style={styles.parrafo}>
+            {data.diagnostico ? data.diagnostico : "Sin diagnostico"}
+          </Text>
+        </View>
+        <Text style={styles.subtitle}>Diagnostico Final </Text>
+        <View style={styles.column}>
+          <Text style={styles.parrafo}>
+            {data.diagnosticoFinal
+              ? data.diagnosticoFinal
+              : "Sin recomendaciones"}
+          </Text>
+        </View>
+
         <Text style={styles.subtitle}>Documentos Adicionales</Text>
       </View>
     </ScrollView>
@@ -483,7 +228,7 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: "row",
-    justifyContent: "center",
+    justifyContent: "space-between",
     alignItems: "flex-start",
   },
   title: {
@@ -495,7 +240,7 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_500Medium",
   },
   title2: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "500",
     color: COLORS.bluef,
     fontFamily: "Inter_500Medium",
@@ -505,6 +250,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "flex-start",
     marginVertical: 8,
+    marginRight: 4,
   },
   subtitle: {
     fontSize: 17,
@@ -565,4 +311,9 @@ const styles = StyleSheet.create({
     color: COLORS.bluef,
     fontFamily: "Inter_500Medium",
   },
+  center: { 
+    flex: 1, 
+    justifyContent: "center",
+    alignItems: "center"
+     },
 });

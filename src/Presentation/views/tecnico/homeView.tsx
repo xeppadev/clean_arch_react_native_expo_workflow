@@ -1,22 +1,22 @@
-import { StyleSheet, Pressable, Platform, ScrollView } from "react-native";
+import { StyleSheet, Pressable, Platform,Text, View  } from "react-native";
 
 import { COLORS } from "@/constants/Colors";
 import { Iconify } from "react-native-iconify";
-import { Text, View } from "@/components/Themed";
+
 import CircularProgress from "react-native-circular-progress-indicator";
 
 
 export default function HomeView() {
   return (
-    <View style={styles.container} lightColor="#f7f7f9" darkColor="#f7f7f9" >
+    <View style={styles.container}  >
       {/* Primera columna de la página de inicio */}
-      <View style={styles.column} lightColor="#f7f7f9" darkColor="#f7f7f9">
+      <View style={styles.column} >
         {/* Primera caja en la primera columna: muestra el número de mantenimientos realizados */}
         <View
           style={[
             styles.box,
             {
-              backgroundColor: COLORS.blue,
+              backgroundColor: COLORS.blue3,
               shadowOpacity: 0.4,
               shadowRadius: 5,
               shadowOffset: { height: 2, width: 0 },
@@ -64,20 +64,20 @@ export default function HomeView() {
           ]}
         >
           <Text
-            style={[styles.title2, { color: COLORS.blue, marginBottom: 5 }]}
+            style={[styles.title2, { color: COLORS.blue3, marginBottom: 5 }]}
           >
             Reprogramar
           </Text>
           <Text
-            style={[styles.title2, { color: COLORS.blue, marginBottom: 35 }]}
+            style={[styles.title2, { color: COLORS.blue3, marginBottom: 35 }]}
           >
             Mantenimientos
           </Text>
-          <Iconify icon="solar:calendar-bold" size={90} color="#0e2572" />
+          <Iconify icon="solar:calendar-bold" size={90} color={COLORS.blue3} />
         </Pressable>
       </View>
       {/* Segunda columna de la página de inicio */}
-      <View style={styles.column} lightColor="#f7f7f9" darkColor="#f7f7f9">
+      <View style={styles.column}>
         {/* Primera caja en la segunda columna: muestra el número de revisiones pendientes */}
         <View
           style={[
@@ -106,7 +106,7 @@ export default function HomeView() {
               <Iconify
                 icon="eva:alert-triangle-fill"
                 size={57}
-                color="#071251"
+                color={COLORS.blue3}
               />
             </View>
             <Text style={[styles.title3, { color: COLORS.white }]}>
@@ -119,7 +119,7 @@ export default function HomeView() {
           style={[
             styles.box,
             {
-              backgroundColor: COLORS.blue,
+              backgroundColor: COLORS.blue3,
               shadowOpacity: 0.4,
               shadowRadius: 5,
               shadowOffset: { height: 2, width: 0 },
@@ -128,7 +128,7 @@ export default function HomeView() {
           ]}
         >
           <View
-            style={[styles.centeredContent, { backgroundColor: COLORS.blue }]}
+            style={[styles.centeredContent, { backgroundColor: COLORS.blue3 }]}
           >
             <Text
               style={[styles.title4, { color: COLORS.white, marginTop: 0 }]}
@@ -151,8 +151,9 @@ export default function HomeView() {
             styles.box,
             {
               backgroundColor: COLORS.red,
-              shadowOpacity: 0.15,
-              shadowRadius: 5,
+              shadowColor: COLORS.red,
+              shadowOpacity: 0.2,
+              shadowRadius: 4,
               shadowOffset: { height: 2, width: 0 },
               elevation: 5,
             },
@@ -196,17 +197,11 @@ const styles = StyleSheet.create({
     padding: 5,
   },
 
-  title: {
-    fontSize: 18,
-    fontWeight: "600",
-
-    alignSelf: "center",
-    marginBottom: 35,
-  },
+ 
   title2: {
     fontSize: 18,
     fontWeight: "600",
-   
+   fontFamily: "Inter_600SemiBold",
     alignSelf: "center",
   },
   row: {
@@ -220,6 +215,7 @@ const styles = StyleSheet.create({
     fontSize: 50,
     fontWeight: "bold",
     marginRight: 44,
+    fontFamily: "Inter_600SemiBold",
   },
 
   centeredContent: {
@@ -229,20 +225,20 @@ const styles = StyleSheet.create({
   title3: {
     fontSize: 18,
     fontWeight: "600",
-
+    fontFamily: "Inter_600SemiBold",
     alignSelf: "flex-start",
   },
   title4: {
     fontSize: 18,
     fontWeight: "600",
     marginBottom: 25,
-
+    fontFamily: "Inter_600SemiBold",
     alignSelf: "flex-start",
   },
   title5: {
     fontSize: 14,
     fontWeight: "500",
-
+    fontFamily: "Inter_600SemiBold",
     alignSelf: "flex-start",
   },
 });

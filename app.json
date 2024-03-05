@@ -20,7 +20,9 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "work_flow.app2024",
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "bundler": "metro",

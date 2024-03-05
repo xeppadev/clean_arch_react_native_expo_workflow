@@ -199,7 +199,7 @@ const style = StyleSheet.create({
   eventText: {
     fontSize: 16,
     fontWeight: "500",
-    color: COLORS.bluelg2,
+    color: COLORS.bluelg,
     marginHorizontal: 8,
   },
 })

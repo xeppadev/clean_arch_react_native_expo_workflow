@@ -1,6 +1,6 @@
 // presentation/providers/AuthenticationProvider.tsx
 import React from 'react';
-import { useSessionViewModel } from '../viewmodels/sessionViewModel';
+import { useSessionViewModel } from '../viewmodels/login/sessionViewModel';
 import { AuthContextProps } from '@/src/Domain/entities/authentication';
 
 export const AuthenticationContext = React.createContext<AuthContextProps>({

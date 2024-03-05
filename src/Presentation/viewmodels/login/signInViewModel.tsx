@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { router } from 'expo-router';
 import {FormikProps } from "formik";
-import { useSession } from '../hooks/useSession';
+import { useSession } from '../../hooks/useSession';
 
 export default function useSignInViewModel() {
     const { signIn, userType } = useSession();
