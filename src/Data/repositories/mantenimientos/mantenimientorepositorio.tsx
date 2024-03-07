@@ -1,12 +1,12 @@
-import { gql } from "@/src/generated";
+import { gql } from "@apollo/client";
 
-export const PROGRAMAR_MANTENIMIENTO = gql(/* GraphQL */ `
+export const PROGRAMAR_MANTENIMIENTO = gql`
   mutation ProgramarMantenimiento(
     $programarMantInput: PrograMantenimientoDto!
   ) {
     programar_mantenimiento(programarMantInput: $programarMantInput)
   }
-`);
+`
 
 export const MANTEN_INFO_ID = gql(/* GraphQL */ `
   query mantenimientoInfoPorId($mantenimientoInfoPorIdId: String!) {
@@ -66,5 +66,15 @@ export const REGISTRAR_MANTENIMIENTO = gql(/* GraphQL */ `
     $registrarMantInput: UpdateMantenimientoDto!
   ) {
     regisrar_mantenimiento_programado(registrarMantInput: $registrarMantInput)
+  }
+`);
+
+export const REGISTRAR_NO_MANTENIMIENTO = gql(/* GraphQL */ `
+  mutation Regisrar_mantenimiento_no_programado(
+    $updateOneMantenimientoInput: UpdateOneMantenimientoDto!
+  ) {
+    regisrar_mantenimiento_no_programado(
+      updateOneMantenimientoInput: $updateOneMantenimientoInput
+    )
   }
 `);

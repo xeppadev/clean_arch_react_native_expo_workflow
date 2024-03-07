@@ -1,5 +1,5 @@
 // src/data/repositories/PlacaRepository.ts
-import { gql } from "@/src/generated";
+import { gql } from "@apollo/client";
 
 export const OBTENER_INFO_PLACAS = gql(/* GraphQL */ `
   query obtenerInfoPlacas {
@@ -54,3 +54,17 @@ export const REGISTRAR_AUTO = gql(/* GraphQL */ `
     crear_auto(createCarInput: $createCarInput)
   }
 `);
+
+
+
+export const INFO_SOME_PLACA = gql `
+query Obtener_info_for_placa($placa: String!) {
+  obtener_info_for_placa(placa: $placa) {
+    _id
+    fechaSoat
+    kmActual
+    cliente
+  }
+}
+`
+

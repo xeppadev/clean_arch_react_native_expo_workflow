@@ -4,10 +4,11 @@ import SearchFilter from "@/src/Presentation/components/searchFilter";
 import TextInputs from "@/src/Presentation/components/textInput";
 import ModalComponent from "@/src/Presentation/components/modalFiles";
 import DocumentComponent from "@/src/Presentation/components/document";
-
+import { validationSchemarRegis } from "../../viewmodels/validation/formularioregisman";
 // Importa los estilos
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import DropdownComponent from "@/src/Presentation/components/dropdown";
+import CalendarComponent from "@/src/Presentation/components/calendar";
 import TitleIcon from "@/src/Presentation/components/titleIcon";
 import {
   Text,
@@ -17,57 +18,36 @@ import {
   Platform,
   Keyboard,
   TouchableWithoutFeedback,
-  ScrollView,
-  KeyboardAvoidingView,
+  ActivityIndicator,
+  RefreshControl,
 } from "react-native";
-
+import { RegistrarMantenimientoViewModel } from "../../viewmodels/mantenimientos/onSubmitRegist";
 import { Formik, FormikProps } from "formik";
-import * as Yup from "yup";
 import { COLORS } from "@/constants/Colors";
-
-import { parse, format } from "date-fns";
-
-const placas = [
-  { label: "FPG-636", value: "FPG-636" },
-  { label: "FRE-633", value: "FRE-633" },
-  { label: "IRE-634", value: "IRE-634" },
-];
-
-const mantenimientos = [
-  { label: "Mantenimiento Preventivo", value: "Mantenimiento Preventivo" },
-  { label: "Mantenimiento Predictivo", value: "Mantenimiento Predictivo" },
-  { label: "Mantenimiento Correctivo", value: "Mantenimiento Correctivo" },
-];
-
-const data = [
-  { producto: "Aceite", cantidad: "1", marca: "Castrol", id: "1" },
-  { producto: "Filtro de Aceite", cantidad: "1", marca: "Fram", id: "2" },
-  { producto: "Filtro de Aire", cantidad: "1", marca: "Fram", id: "3" },
-  { producto: "Filtro de Gasolina", cantidad: "1", marca: "Fram", id: "4" },
-  { producto: "Filtro de Aire", cantidad: "1", marca: "Fram", id: "5" },
-];
-
+import { format, parseISO } from "date-fns";
 // Define el componente RegistroMantenimiento
 const RegistroMantenimiento = () => {
+  // Define refeching para el formulario.
+  const [refreshing, setRefreshing] = React.useState(false);
+
   // Define el estado y las referencias necesarias
   const formikRef = React.useRef<
     FormikProps<{
       _id: string;
       placa: string;
-      Mantenimientos: string;
+      programacion: string;
       tipoMantenimiento: string;
       kmPrevio: string;
       kmMedido: string;
       fecha: string;
+      fechaInicio: string;
       fechaSoat: string;
       diagnostico: string;
-      diagnosticoInitial: string;
       repuestos: any[];
       files: any[];
+      Cliente: string;
     }>
   >(null);
-
-  const [newmantenimientos, setMantenimientos] = React.useState(false);
 
   const [images, setImage] = React.useState<{
     selectedImage: string | null;
@@ -76,23 +56,75 @@ const RegistroMantenimiento = () => {
     selectedImage: null,
     isImagePreviewVisible: false,
   });
+  // Define las mutaciones de Apollo Client para programar un mantenimiento.
+  const viewModelregistrar = new RegistrarMantenimientoViewModel();
 
-  // Define el esquema de validación para el formulario utilizando Yup
-  const validationSchema = Yup.object().shape({
-    _id: Yup.string().required("Este campo es requerido."),
-    tipoMantenimiento: Yup.string().required("Este campo es requerido."),
-    Mantenimientos: Yup.string().required("Este campo es requerido."),
-    fecha: Yup.string().required("Este campo es requerido."),
-    placa: Yup.string().required("Este campo es requerido."),
-    kmPrevio: Yup.string().required("Este campo es requerido."),
-    kmMedido: Yup.string().required("Este campo es requerido."),
-    diagnostico: Yup.string().required("Este campo es requerido."),
-    documentos: Yup.array().min(1, "Debe subir al menos un documento."),
-    fechaSoat: Yup.string().required("Este campo es requerido."),
-    repuestos: Yup.array().min(1, "Debe seleccionar al menos un repuesto."),
-  });
+  // Trae las placas para el select
+  const {
+    refetch: refetchplacas,
+    loading: loandingplacas,
+    error: errorplacas,
+    placas,
+  } = viewModelregistrar.placas;
 
-  // Renderiza el componente
+  // Trae la funcion de de refetch para repuestos
+  const {
+    refetch: refetchrepuestos,
+    loading: loadingRepuestos,
+    error: errorRepuestos,
+    repuestos,
+  } = viewModelregistrar.repuestos;
+
+  //Trae los tipos de mantenimiento
+  const mantenimientos = viewModelregistrar.getMantenimientos();
+  // trae el nuevo mantenimiento
+  const nuevoMantenimiento = viewModelregistrar.getNuevoMantenimiento();
+
+  // Actualiza la consulta de mantenimientosProgramados para usar la placa seleccionada
+  const {
+    get1InfoForPlaca: refetchMantenimientos,
+    loading: loadingMantenimientos,
+    error: errorMantenimientos,
+    programacion: programacionData,
+  } = viewModelregistrar.mantenimientosProgramados;
+
+  //Trae la infosome de la placa
+
+  const {
+    data: infoSomePlaca,
+    loading: loadingInfoPlaca,
+    error: errorInfoPlaca,
+    get2InfoForPlaca: refetchInfoPlaca,
+  } = viewModelregistrar.someMantenimiento;
+
+  //define la funcion de refetch para refrescar los datos
+  const onRefetch = React.useCallback(() => {
+    setRefreshing(true);
+    refetchplacas().then(() => setRefreshing(false));
+    refetchrepuestos().then(() => setRefreshing(false));
+  }, []);
+
+  if (loandingplacas || loadingRepuestos) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator size="large" color={COLORS.blue2} />
+      </View>
+    );
+  }
+  if (!placas || !repuestos) {
+    return (
+      <View style={styles.center}>
+        <Text>Sin datos</Text>
+      </View>
+    );
+  }
+  if (errorplacas || errorRepuestos) {
+    return (
+      <View style={styles.center}>
+        <Text>Error: {errorplacas?.message || errorRepuestos?.message}</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -107,6 +139,9 @@ const RegistroMantenimiento = () => {
         extraScrollHeight={50}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefetch} />
+        }
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={styles.container2}>
@@ -115,10 +150,11 @@ const RegistroMantenimiento = () => {
               initialValues={{
                 _id: "",
                 placa: "",
-                Mantenimientos: "",
+                programacion: "",
                 tipoMantenimiento: "",
-                diagnosticoInitial: "",
                 kmPrevio: "",
+                Cliente: "",
+                fechaInicio: "",
                 kmMedido: "",
                 fecha: "",
                 fechaSoat: "",
@@ -126,10 +162,8 @@ const RegistroMantenimiento = () => {
                 repuestos: [],
                 files: [],
               }}
-              validationSchema={validationSchema}
-              onSubmit={async (values) => {
-                console.log(values);
-              }}
+              onSubmit={viewModelregistrar.onSubmit.bind(viewModelregistrar)}
+              validationSchema={validationSchemarRegis}
             >
               {({
                 handleChange,
@@ -146,11 +180,33 @@ const RegistroMantenimiento = () => {
                   <DropdownComponent
                     onBlur={() => handleBlur("placa")}
                     placeholder="Seleccione una placa"
-                    data={placas}
+                    data={placas || []}
                     value={values.placa}
-                    onChange={(item) => {
+                    onChange={async (item) => {
                       handleChange("placa")(item.value);
-                      //   refetchPost({ placa: item.value })
+                      refetchMantenimientos({
+                        variables: { placa: item.value },
+                      });
+                      const response2 = await refetchInfoPlaca({
+                        variables: { placa: item.value },
+                      });
+                      setFieldValue(
+                        "kmPrevio",
+                        response2?.data?.obtener_info_for_placa?.kmActual.toString()
+                      );
+                      setFieldValue(
+                        "fechaSoat",
+                        format(
+                          parseISO(
+                            response2?.data?.obtener_info_for_placa?.fechaSoat
+                          ),
+                          "dd/MM/yyyy"
+                        )
+                      );
+                      setFieldValue(
+                        "Cliente",
+                        response2?.data?.obtener_info_for_placa?.cliente
+                      );
                     }}
                   />
                   {errors.placa && touched.placa && (
@@ -159,25 +215,25 @@ const RegistroMantenimiento = () => {
 
                   <TitleIcon title="Mantenimientos Programados" icon="wrench" />
                   <DropdownComponent
-                    onBlur={() => handleBlur("Mantenimientos")}
+                    onBlur={() => handleBlur("programacion")}
                     placeholder="Seleccione una programacion"
-                    data={mantenimientos}
-                    value={values.Mantenimientos}
+                    data={
+                      programacionData.length > 0
+                        ? programacionData
+                        : nuevoMantenimiento
+                    }
+                    value={values.programacion}
                     onChange={(item) => {
-                      handleChange("Mantenimientos")(item.value);
+                      handleChange("programacion")(item.value);
                       setFieldValue("_id", item.id);
-                      setFieldValue(
-                        "tipoMantenimiento",
-                        item.value.split(" - ")[0]
-                      );
-                      setFieldValue("fecha", item.value.split(" - ")[1]);
+                      setFieldValue("fecha", item.value.split(" ")[2]);
+                      console.log(item.value.split(" ")[2]);
                     }}
                   />
-                  {errors.Mantenimientos && touched.Mantenimientos && (
-                    <Text style={styles.error}>{errors.Mantenimientos}</Text>
+                  {errors.programacion && touched.programacion && (
+                    <Text style={styles.error}>{errors.programacion}</Text>
                   )}
-
-                  {newmantenimientos && (
+                  {values.programacion === "Nuevo Mantenimiento" && (
                     <>
                       <TitleIcon title="Tipo de mantenimiento" icon="wrench" />
                       <DropdownComponent
@@ -198,11 +254,8 @@ const RegistroMantenimiento = () => {
                         )}
                     </>
                   )}
-                  {errors.placa && touched.placa && (
-                    <Text style={styles.error}>{errors.placa}</Text>
-                  )}
 
-                  <TitleIcon title="Kilometraje" icon="tachometer" />
+                  <TitleIcon title="Kilometraje (Km)" icon="tachometer" />
 
                   <TextInputs
                     placeholder="Km Previo"
@@ -215,6 +268,7 @@ const RegistroMantenimiento = () => {
                   {errors.kmPrevio && touched.kmPrevio && (
                     <Text style={styles.error}>{errors.kmPrevio}</Text>
                   )}
+
                   <TextInputs
                     placeholder="Km Medido"
                     onChangeText={handleChange("kmMedido")}
@@ -242,20 +296,21 @@ const RegistroMantenimiento = () => {
                   {errors.fechaSoat && touched.fechaSoat && (
                     <Text style={styles.error}>{errors.fechaSoat}</Text>
                   )}
-                  <TitleIcon title=" Diagnostico Previo" icon="pencil" />
 
-                  <TextInputs
-                    placeholder="Ingrese el diagnostico"
-                    onChangeText={handleChange("diagnosticoInitial")}
-                    onBlur={handleBlur("diagnosticoInitial")}
-                    value={values.diagnosticoInitial}
-                    editable={false}
+                  <TitleIcon
+                    title="Fecha de Inicio de Mantenimiento"
+                    icon="calendar"
                   />
 
-                  {errors.diagnosticoInitial && touched.diagnosticoInitial && (
-                    <Text style={styles.error}>
-                      {errors.diagnosticoInitial}
-                    </Text>
+                  <CalendarComponent
+                    values={values.fechaInicio}
+                    setFieldValue={setFieldValue}
+                    onBlur={() => handleBlur("fechaInicio")}
+                    state="fechaInicio"
+                  />
+
+                  {errors.fechaInicio && touched.fechaInicio && (
+                    <Text style={styles.error}>{errors.fechaInicio}</Text>
                   )}
 
                   <TitleIcon
@@ -277,7 +332,7 @@ const RegistroMantenimiento = () => {
                   <TitleIcon title="Solicitar Repuestos" icon="cog" />
 
                   <SearchFilter
-                    data={data}
+                    data={repuestos || []}
                     value={values.repuestos}
                     onBlur={() => handleBlur("repuestos")}
                     onChange={(newCantidad) =>
@@ -376,5 +431,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     padding: 10,
+  },
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

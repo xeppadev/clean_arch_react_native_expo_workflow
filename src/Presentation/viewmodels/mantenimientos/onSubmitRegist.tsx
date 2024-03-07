@@ -1,75 +1,138 @@
 // ViewModel.ts
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 import { useRegistrarMantenimientoViewModel } from "./registrarManteViewModel";
-import { useSession } from "@/src/Presentation/hooks/useSession";
 import { sendToExternalApi } from "@/src/Data/api/sendfiles";
 import { Platform } from "react-native";
 import { useSoloPlacasViewModel } from "../cars/soloplacasViewModel";
 import { useSoloRepuestoViewModel } from "../repuestos/filterRepuestosViewModel";
 import { useMantenimientosPorPlacaViewModel } from "./mantenimiplacaViewModel";
-
-
+import { useSomeMantenimientoViewModel } from "../cars/infoSomeplaca";
+import { useRegistrarSinMantenimientoViewModel } from "./regisinprogramarViewModel";
+import { useSession } from "@/src/Presentation/hooks/useSession";
 // Define una interfaz para los valores del formulario
 interface FormValues {
-      _id: string;
-      fechaInicio: string;
-      kmMedido: string;
-      fecha: string;
-      diagnostico: string;
-      repuestos: any[];
-      files: any[];
-      
-  }
+  _id: string;
+  fechaInicio: string;
+  kmMedido: string;
+  kmPrevio: string;
+  fecha: string 
+  Cliente: string;
+  diagnostico: string;
+  repuestos: any[];
+  files: any[];
+  fechaSoat: string;
+  programacion: string;
+  tipoMantenimiento: string;
+  placa: string;
+}
 
 export class RegistrarMantenimientoViewModel {
-    // Define las mutaciones de Apollo Client para programar un mantenimiento.
-    registrarMantenimiento = useRegistrarMantenimientoViewModel();
-    
-    // Trae las placas para el select
-    placas = useSoloPlacasViewModel();
-    // Trae los repuestos para el select
-    repuestos = useSoloRepuestoViewModel();
-    // Trae la programación de mantenimientos 
-    mantenimientos = useMantenimientosPorPlacaViewModel(this.placas.placas[0].value);
-    
+  // Define las mutaciones de Apollo Client para programar un mantenimiento.
+  registrarMantenimiento = useRegistrarMantenimientoViewModel();
+  registrarSinMantenimiento = useRegistrarSinMantenimientoViewModel();
 
-    
-    
-    
-    async onSubmit(values: FormValues) {
-        const fecha = format(values.fecha, "yyyy-MM-dd'T'HH:mm:ss.SSS-05:00");
-        const fechaSoat = format(values.fechaInicio, "yyyy-MM-dd'T'HH:mm:ss.SSS-05:00");
-    
-        const result = await this.registrarMantenimiento.registrarMantenimiento({
+  // Trae las placas para el select
+  placas = useSoloPlacasViewModel();
+  // Trae los repuestos para el select
+  repuestos = useSoloRepuestoViewModel();
+  // Define una función que toma la placa seleccionada como argumento
+  mantenimientosProgramados = useMantenimientosPorPlacaViewModel();
+  //Trae la info de la placa
+  someMantenimiento = useSomeMantenimientoViewModel();
+
+  // Trae el nombre de la sesión
+  session = useSession();
+
+  //Trae una nuevo Mantenimiento
+  getNuevoMantenimiento() {
+    return [{ label: "Nuevo Mantenimiento", value: "Nuevo Mantenimiento" }];
+  }
+
+  //Trae los tipos de mantenimiento
+  getMantenimientos() {
+    return [
+      { label: "Mantenimiento Preventivo", value: "Mantenimiento Preventivo" },
+      { label: "Mantenimiento Correctivo", value: "Mantenimiento Correctivo" },
+    ];
+  }
+
+  async onSubmit(values: FormValues) {
+   
+    let result;
+    let dataFromMutation;
+    if (values.programacion === "Nuevo Mantenimiento") {
+      const fechaInicio = format(
+        values.fechaInicio,
+        "yyyy-MM-dd'T'HH:mm:ss.SSS-05:00"
+      );
+      const fechaSoat = format(
+        parse(values.fechaSoat, "dd/MM/yyyy", new Date()),
+        "yyyy-MM-dd'T'HH:mm:ss.SSS-05:00"
+      );
+
+      result = await this.registrarSinMantenimiento.registrarMantenimiento({
         variables: {
-            registrarMantInput: {
-            _id: values._id,
+          updateOneMantenimientoInput: {
             kmMedido: parseFloat(values.kmMedido),
-            fecha : fecha,
+            fecha: fechaInicio,
             diagnostico: values.diagnostico,
             repuestos: values.repuestos,
-            fechaInicio: fechaSoat,
-            
-            },
+            fechaInicio: fechaInicio,
+            kmPrevio: parseFloat(values.kmPrevio),
+            Cliente: values.Cliente,
+            fechaSoat: fechaSoat,
+            placa: values.placa,
+            tecnico: this.session?.session?.toString() || "1",
+            tipo: values.tipoMantenimiento,
+          },
         },
-        });
-    
-        const formData = new FormData();
-        // Platforms
-        values.files.forEach((file) => {
-        formData.append("files", {
-            uri: file.uri,
-            name:
-            Platform.OS === "android"
-                ? file.fileName
-                : file.name,
-            type: file.type,
-        } as any);
-        });
-        const dataFromMutation = result.data?.regisrar_mantenimiento_programado;
-        await sendToExternalApi(formData, {
-        query1: "mantenimientos",
-        query2: dataFromMutation,
-        });
+      });
+      dataFromMutation = result.data?.regisrar_mantenimiento_no_programado;
+    } else {
+      const fechaInicio = format(
+        values.fechaInicio,
+        "yyyy-MM-dd'T'HH:mm:ss.SSS-05:00"
+      );
+      const fecha = 
+        parse(values.fecha, "dd/MM/yyyy", new Date()).toISOString();
+        
+      
+      const fechaSoat = format(
+        parse(values.fechaSoat, "dd/MM/yyyy", new Date()),
+        "yyyy-MM-dd'T'HH:mm:ss.SSS-05:00"
+      );
+
+      result = await this.registrarMantenimiento.registrarMantenimiento({
+        variables: {
+          registrarMantInput: {
+            _id: values._id,
+            kmMedido: parseFloat(values.kmMedido),
+            fecha: fecha,
+            diagnostico: values.diagnostico,
+            repuestos: values.repuestos,
+            fechaInicio: fechaInicio,
+            kmPrevio: parseFloat(values.kmMedido),
+            Cliente: values.Cliente,
+            fechaSoat: fechaSoat,
+          },
+        },
+      });
+      dataFromMutation = result.data?.regisrar_mantenimiento_programado;
     }
-    } 
+
+    const formData = new FormData();
+    // Platforms
+    values.files.forEach((file) => {
+      formData.append("files", {
+        uri: file.uri,
+        name: Platform.OS === "android" ? file.fileName : file.name,
+        type: file.type,
+      } as any);
+    });
+
+    await sendToExternalApi(formData, {
+      query1: "mantenimientos",
+      query2: dataFromMutation,
+    });
+  }
+}

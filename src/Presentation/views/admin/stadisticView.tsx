@@ -198,13 +198,13 @@ export default function StadisticsScreen() {
             <View
               style={[styles.legendColor, { backgroundColor: "#E5E7EB" }]}
             />
-            <Text style={styles.legendText}>Repuestos</Text>
+            <Text style={styles.legendText}>Facturacion </Text>
           </View>
           <View style={styles.legendItem}>
             <View
               style={[styles.legendColor, { backgroundColor: "#F69009" }]}
             />
-            <Text style={styles.legendText}>Insumos</Text>
+            <Text style={styles.legendText}>Personal</Text>
           </View>
           <View style={styles.legendItem}>
             <View

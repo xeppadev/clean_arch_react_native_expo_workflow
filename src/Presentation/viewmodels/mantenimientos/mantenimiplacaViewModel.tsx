@@ -1,17 +1,15 @@
 // MantenimientosdataViewModel.ts
-import { useQuery } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
 import { MANTENIMIENTOS_POR_PLACA } from "@/src/Data/repositories/mantenimientos/mantenimientorepositorio";
 import { format, parseISO } from "date-fns";
 
-export function useMantenimientosPorPlacaViewModel(placa: string) {
-  const { data, loading, error, refetch } = useQuery(MANTENIMIENTOS_POR_PLACA, {
-    variables: { placa },
-  });
 
-  let programacion: { label: string; value: string }[] = [];
-  let anotaciones: string | null | undefined;
-  let fechaSoat: string | null | undefined;
-  let kmPrevio: number | null | undefined;
+export function useMantenimientosPorPlacaViewModel() {
+  const [get1InfoForPlaca, { data, loading, error }] = useLazyQuery(
+    MANTENIMIENTOS_POR_PLACA
+  );
+
+  let programacion: { label: string; value: string; id: string }[] = [];
 
   if (data?.Mantenimiento_Info_por_Placa) {
     data.Mantenimiento_Info_por_Placa.forEach((item) => {
@@ -21,22 +19,25 @@ export function useMantenimientosPorPlacaViewModel(placa: string) {
         programacion.push({
           label: `${item.tipo} ${fechaFormateada} ${item.tecnico}`,
           value: `${item.tipo} ${fechaFormateada} ${item.tecnico}`,
+          id: item._id,
         });
 
-        anotaciones = item.anotaciones;
-        fechaSoat = format(parseISO(item.fechaSoat), "dd/MM/yyyy");
-        kmPrevio = item.kmPrevio;
+        // Agrega una opción adicional a la matriz programacion
+        programacion.push({
+          label: "Nuevo Mantenimiento",
+          value: "Nuevo Mantenimiento",
+          id: "extra",
+          
+        });
+
       }
     });
   }
 
   return {
     programacion,
-    anotaciones,
-    fechaSoat,
-    kmPrevio,
     loading,
     error,
-    refetch,
+    get1InfoForPlaca,
   };
 }

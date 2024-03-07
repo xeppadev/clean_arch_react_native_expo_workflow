@@ -25,12 +25,12 @@ import { Iconify } from "react-native-iconify";
  * @returns {JSX.Element} El componente SearchFilter renderizado.
  */
 interface SearchFilterProps {
-  value: { producto: string; cantidad: string; marca: string; id: string }[];
+  value: { producto: string | null | undefined; cantidad: number; marca: string | null | undefined; id: string }[];
   onBlur: () => void;
   onChange: (
-    value: { producto: string; cantidad: string; marca: string; id: string }[]
+    value: { producto: string | null | undefined; cantidad: number; marca: string | null | undefined; id: string }[]
   ) => void;
-  data: { producto: string; cantidad: string; marca: string; id: string }[];
+  data: { producto: string | null | undefined; cantidad: number; marca: string | null | undefined; id: string }[];
   style?: StyleProp<ViewStyle>;
 }
 
@@ -43,13 +43,13 @@ const SearchFilter = ({
 }: SearchFilterProps) => {
   const [searchText, setSearchText] = useState(""); // Estado para el texto de búsqueda
   const [selectedItems, setSelectedItems] = useState<
-    { producto: string; cantidad: string; marca: string; id: string }[]
+  { producto: string | null | undefined; cantidad: number; marca: string | null | undefined; id: string }[]
   >([]);
 
   // Filtra los datos basándose en el texto de búsqueda
   const filteredData = searchText
     ? data.filter((item) =>
-        item.producto.toLowerCase().includes(searchText.toLowerCase())
+        item.producto?.toLowerCase().includes(searchText.toLowerCase())
       )
     : [];
 
@@ -142,7 +142,7 @@ const SearchFilter = ({
                 data={cantidadArray}
                 labelField="label"
                 valueField="value"
-                value={value[index] ? value[index].cantidad : null}
+                value={value[index] ? value[index].cantidad.toString() : null}
                 placeholder=""
                 activeColor="transparent"
                 placeholderStyle={{ fontSize: 14 }}
@@ -154,7 +154,7 @@ const SearchFilter = ({
                       (prod) => prod.producto === selectedItems[index].producto
                     );
                     if (productIndex !== -1) {
-                      newCantidad[productIndex].cantidad = item.value;
+                      newCantidad[productIndex].cantidad = Number(item.value);
                     }
                     onChange(newCantidad);
                   }

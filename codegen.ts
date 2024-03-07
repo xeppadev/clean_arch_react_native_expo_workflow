@@ -8,6 +8,7 @@ const config: CodegenConfig = {
     "./src/generated/": {
       preset: "client",
       plugins: ["typescript", "typescript-operations"],
+     
       presetConfig: {
         gqlTagName: "gql",
       },
