@@ -1,5 +1,5 @@
 // src/data/repositories/PlacaRepository.ts
-import { gql } from "@apollo/client";
+import { gql } from "@/src/generated";
 
 export const OBTENER_INFO_PLACAS = gql(/* GraphQL */ `
   query obtenerInfoPlacas {
@@ -57,7 +57,7 @@ export const REGISTRAR_AUTO = gql(/* GraphQL */ `
 
 
 
-export const INFO_SOME_PLACA = gql `
+export const INFO_SOME_PLACA = gql (/* GraphQL */ `
 query Obtener_info_for_placa($placa: String!) {
   obtener_info_for_placa(placa: $placa) {
     _id
@@ -67,4 +67,5 @@ query Obtener_info_for_placa($placa: String!) {
   }
 }
 `
+);
 

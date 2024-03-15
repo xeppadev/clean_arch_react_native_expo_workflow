@@ -10,6 +10,7 @@ export function useSoloRepuestoViewModel() {
       id: item.id,
       marca: item.marca,
       producto: item.producto,
+      precio : item.precio
     };
   });
   return { repuestos, loading, error, refetch };

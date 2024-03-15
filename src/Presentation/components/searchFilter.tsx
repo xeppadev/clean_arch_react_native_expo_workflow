@@ -24,13 +24,19 @@ import { Iconify } from "react-native-iconify";
  * @param {function} onChange - Función que se ejecuta cuando cambia el valor del filtro de búsqueda.
  * @returns {JSX.Element} El componente SearchFilter renderizado.
  */
+interface Item {
+  producto: string | null | undefined;
+  cantidad: number;
+  marca: string | null | undefined;
+  id: string | null | undefined;
+  precio: number | null | undefined;
+}
+
 interface SearchFilterProps {
-  value: { producto: string | null | undefined; cantidad: number; marca: string | null | undefined; id: string }[];
+  value: Item[];
   onBlur: () => void;
-  onChange: (
-    value: { producto: string | null | undefined; cantidad: number; marca: string | null | undefined; id: string }[]
-  ) => void;
-  data: { producto: string | null | undefined; cantidad: number; marca: string | null | undefined; id: string }[];
+  onChange: (value: Item[]) => void;
+  data: Item[];
   style?: StyleProp<ViewStyle>;
 }
 
@@ -43,7 +49,7 @@ const SearchFilter = ({
 }: SearchFilterProps) => {
   const [searchText, setSearchText] = useState(""); // Estado para el texto de búsqueda
   const [selectedItems, setSelectedItems] = useState<
-  { producto: string | null | undefined; cantidad: number; marca: string | null | undefined; id: string }[]
+      Item[]
   >([]);
 
   // Filtra los datos basándose en el texto de búsqueda
@@ -89,6 +95,7 @@ const SearchFilter = ({
                   onChange([
                     ...value,
                     {
+                      precio: item.precio,
                       producto: item.producto,
                       cantidad: item.cantidad,
                       marca: item.marca,
@@ -186,7 +193,7 @@ const styles = StyleSheet.create({
   },
   searchIcon: {
     padding: 10,
-    paddingRight: 30 ,
+    paddingRight: 30,
   },
   input: {
     flex: 1,
@@ -255,6 +262,5 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     shadowOpacity: 0.05,
     shadowRadius: 5,
-    
   },
 });

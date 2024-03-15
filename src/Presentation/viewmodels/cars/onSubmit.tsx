@@ -64,16 +64,13 @@ export class RegistrarAutoViewModel {
     });
 
     const formData = new FormData();
-    // Platforms
-    formData.append("files", {
-      uri: values.files[0].uri,
-      name:
-        Platform.OS === "android"
-          ? values.files[0].fileName
-          : values.files[0].name,
-      type: values.files[0].type,
-    } as any);
-
+    values.files.map((file) => {
+      formData.append("files", {
+        uri: file.uri,
+        name: file.name,
+        type: Platform.OS === "android" ? file.mimeType : file.type,
+      } as any);
+    });
     const dataFromMutation = result.data?.crear_auto;
     await sendToExternalApi(formData, {
       query1: "autos",

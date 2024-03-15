@@ -5,11 +5,13 @@ import {
    TextInput,
   RefreshControl,
   ActivityIndicator,
+  Text,
+  View,
 } from "react-native";
 import React from "react";
 import { COLORS } from "@/constants/Colors";
 import { Iconify } from "react-native-iconify";
-import { Text, View } from "@/components/Themed";
+
 import { useRepuestoViewModel } from "@/src/Presentation/viewmodels/repuestos/repuestoViewModel";
 
 export default function InventoryPage() {
@@ -112,7 +114,7 @@ export default function InventoryPage() {
               <View
                 style={[
                   styles.icon,
-                  { backgroundColor: backgroundColor, height: 30  },
+                  { backgroundColor: backgroundColor, paddingVertical: 3},
                 ]}
               >
                 <Text
@@ -173,7 +175,8 @@ const styles = StyleSheet.create({
     marginRight: 5,
     justifyContent: "center",
     alignItems: "center",
-    padding: 5,
+    paddingVertical: 5,
+    paddingHorizontal: 5,
     backgroundColor: "rgba(11, 29, 91, 0.1)",
     borderRadius: 50,
   },

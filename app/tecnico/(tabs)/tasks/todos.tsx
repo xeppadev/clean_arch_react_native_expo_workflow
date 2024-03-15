@@ -1,32 +1,8 @@
-import { StyleSheet } from 'react-native';
+import ProgramadosPage from "@/src/Presentation/views/tecnico/Tasks/programadosPage";
+import { useCalendarViewModel } from "@/src/Presentation/viewmodels/suscrripciones/calendarViewModel";
 
-import EditScreenInfo from '@/components/EditScreenInfo';
-import { Text, View } from '@/components/Themed';
+export default function ScreenTodos() {
+  const { TodosMantenimientos } = useCalendarViewModel();
 
-export default function TabThreeScreen() {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Todos</Text>
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="app/(tabs)/two.tsx" />
-    </View>
-  );
+  return <ProgramadosPage data={TodosMantenimientos} />;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#f7f7f9',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
-  },
-});

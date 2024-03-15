@@ -5,6 +5,7 @@ import { useSession } from "@/src/Presentation/hooks/useSession";
 import { sendToExternalApi } from "@/src/Data/api/sendfiles";
 import { Platform } from "react-native";
 import { useSoloPlacasViewModel } from "../cars/soloplacasViewModel";
+import axios from "axios";
 // Define una interfaz para los valores del formulario
 interface FormValues {
   tipoMantenimiento: string;
@@ -47,20 +48,28 @@ export class ProgramarMantenimientoViewModel {
     });
 
     const formData = new FormData();
-    // Platforms
-    formData.append("files", {
-      uri: values.files[0].uri,
-      name:
-        Platform.OS === "android"
-          ? values.files[0].fileName
-          : values.files[0].name,
-      type: values.files[0].type,
-    } as any);
-
-    const dataFromMutation = result.data?.programar_mantenimiento;
-    await sendToExternalApi(formData, {
-      query1: "mantenimientos",
-      query2: dataFromMutation,
+    values.files.map((file) => {
+      formData.append("files", {
+        uri: file.uri,
+        name: file.name,
+        type: Platform.OS === "android" ? file.mimeType : file.type,
+      } as any);
     });
+
+    
+    const dataFromMutation = result.data?.programar_mantenimiento;
+    try {
+      await sendToExternalApi(formData, {
+        query1: "mantenimientos",
+        query2: dataFromMutation,
+      });
+    } catch (error) {
+      console.error("Error sending data to external API:", error);
+      // Si el error es una instancia de AxiosError, puedes obtener más detalles
+      if (axios.isAxiosError(error)) {
+        console.error("Axios request config:", error.config);
+        console.error("Axios response:", error.response);
+      }
+    }
   }
 }

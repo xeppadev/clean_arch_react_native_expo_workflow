@@ -4,7 +4,7 @@ import TimeHeader from "@/src/Presentation/components/timeHeader";
 import { Link, Tabs } from "expo-router";
 import { Pressable, Platform, View, Modal } from "react-native";
 import ScreenHeader from "@/src/Presentation/components/screenHeader";
-import Colors from "@/constants/Colors";
+import Colors, { COLORS } from "@/constants/Colors";
 import { useColorScheme } from "@/components/useColorScheme";
 import { useClientOnlyValue } from "@/components/useClientOnlyValue";
 import DateHeader from "@/src/Presentation/components/screenDay";
@@ -133,7 +133,7 @@ export default function TabLayout() {
                   style={{
                     alignItems: "center",
                     justifyContent: "center",
-                    backgroundColor: "#0e2572",
+                    backgroundColor: COLORS.blue3,
                     width: Platform.OS === "ios" ? 50 : 50,
                     height: Platform.OS === "ios" ? 50 : 50,
                     top: Platform.OS === "ios" ? -22 : -30,

@@ -6,95 +6,113 @@ import {
   ScrollView,
   View,
   Text,
+  RefreshControl,
 } from "react-native";
-
+import React from "react";
+import { Skeleton } from "moti/skeleton";
 import { COLORS } from "@/constants/Colors";
 import { Iconify } from "react-native-iconify";
-
+import { useHomeMantenimientosViewModel } from "../../viewmodels/mantenimientos/homeManteViewModel";
 import CircularProgress from "react-native-circular-progress-indicator";
-
-const data = [
-  { title: "Mantenimiento Correctivo", plate: "IDH-123", status: "Programado" },
-  { title: "Mantenimiento Preventivo", plate: "IDH-124", status: "Pendiente" },
-  { title: "Mantenimiento Correctivo", plate: "IDH-125", status: "Completado" },
-  { title: "Mantenimiento Preventivo", plate: "IDH-126", status: "Programado" },
-  { title: "Mantenimiento Correctivo", plate: "IDH-127", status: "Expirado" },
-  { title: "Mantenimiento Correctivo", plate: "IDH-127", status: "Pendiente" },
-  { title: "Mantenimiento Preventivo", plate: "IDH-128", status: "Completado" },
-  { title: "Mantenimiento Correctivo", plate: "IDH-129", status: "Programado" },
-  { title: "Mantenimiento Preventivo", plate: "IDH-130", status: "Pendiente" },
-  { title: "Mantenimiento Correctivo", plate: "IDH-131", status: "Expirado" },
-];
+import { useRouter } from "expo-router";
+const nowFormatted = new Date().toISOString();
 
 export default function HomeView() {
-  return (
-    <View style={styles.container} >
-      {/* Primera caja en la primera columna: muestra el número de mantenimientos realizados */}
+   // Define el enrutador para navegar a otras vistas.
+  const router = useRouter();
+  // Define refeching para el formulario.
+  const [refreshing, setRefreshing] = React.useState(false);
+  const { data, loading, error, refetch } =
+    useHomeMantenimientosViewModel(nowFormatted);
+  //onrefetch
+  const onRefetch = React.useCallback(() => {
+    setRefreshing(true);
+    refetch().then(() => setRefreshing(false));
+  }, []);
 
-      <View
-        style={[
-          styles.box,
-          {
-            backgroundColor: COLORS.blue,
-            shadowOpacity: 0.3,
-            shadowRadius: 3,
-            shadowOffset: { height: 2, width: 0 },
-            elevation: 2,
-          },
-        ]}
-      >
-        <View style={styles.column}>
-          <Text
-            style={[
-              styles.title2,
-              {
-                color: COLORS.white,
-                marginBottom: 5,
-              },
-            ]}
-          >
-            Actividades Completadas Actualmente
-          </Text>
-          <Pressable
-            style={({ pressed }) => [
-              {
-                opacity: pressed ? 0.5 : 1,
-                alignSelf: "flex-start",
-              },
-              { backgroundColor: COLORS.white, borderRadius: 8, padding: 6 },
-            ]}
-          >
-            <Text
-              style={{
-                color: COLORS.blue,
-                fontSize: 14,
-                fontWeight: "500",
-                fontFamily: "Inter_500Medium",
-              }}
+  return (
+    <View style={styles.container}>
+      {/* Primera caja en la primera columna: muestra el número de mantenimientos realizados */}
+      <Skeleton.Group show={loading}>
+        <View
+          style={[
+            styles.box,
+            {
+              backgroundColor: COLORS.blue3,
+              shadowOpacity: 0.3,
+              shadowRadius: 3,
+              shadowOffset: { height: 2, width: 0 },
+              elevation: 2,
+            },
+          ]}
+        >
+          <View style={styles.column}>
+            <Skeleton colorMode="light" colors={[COLORS.blue, COLORS.bg]}>
+              <Text
+                style={[
+                  styles.title2,
+                  {
+                    color: COLORS.white,
+                    marginBottom: 5,
+                  },
+                ]}
+              >
+                Mantenimientos Completados Actualmente
+              </Text>
+            </Skeleton>
+            <Skeleton colorMode="light" colors={[COLORS.blue, COLORS.bg]}>
+              <Pressable
+                style={({ pressed }) => [
+                  {
+                    opacity: pressed ? 0.5 : 1,
+                    alignSelf: "flex-start",
+                  },
+                  {
+                    backgroundColor: COLORS.white,
+                    borderRadius: 8,
+                    padding: 6,
+                  },
+                ]}
+                onPress={() => router.push("/admin/calendar")}
+              >
+                <Text
+                  style={{
+                    color: COLORS.blue3,
+                    fontSize: 14,
+                    fontWeight: "500",
+                    fontFamily: "Inter_500Medium",
+                  }}
+                >
+                  Ver Actividades
+                </Text>
+              </Pressable>
+            </Skeleton>
+          </View>
+          <View style={styles.progress}>
+            <Skeleton
+              colorMode="light"
+              colors={[COLORS.blue, COLORS.bg]}
+              radius="round"
             >
-              Ver Actividades
-            </Text>
-          </Pressable>
+              <CircularProgress
+                key={data?.cantidadTotal}
+                value={data?.cantidadCompletada ?? 0}
+                maxValue={data?.cantidadTotal ?? 0}
+                duration={2000}
+                progressValueColor="#ffffff"
+                radius={55}
+                inActiveStrokeOpacity={0.3}
+                inActiveStrokeColor="#ffffff"
+                activeStrokeColor="#ffffff"
+                valueSuffix={"/" + data?.cantidadTotal ?? 0}
+                subtitle="Completos"
+                subtitleStyle={{ color: "#ffffff" }}
+                valueSuffixStyle={{ fontSize: 14 }}
+              />
+            </Skeleton>
+          </View>
         </View>
-        <View style={styles.progress}>
-          <CircularProgress
-            key={1}
-            value={85}
-            maxValue={100}
-            duration={2000}
-            progressValueColor="#ffffff"
-            radius={55}
-            inActiveStrokeOpacity={0.3}
-            inActiveStrokeColor="#ffffff"
-            activeStrokeColor="#ffffff"
-            valueSuffix={"%"}
-            subtitle=""
-            subtitleStyle={{ color: "#ffffff" }}
-            valueSuffixStyle={{ fontSize: 14 }}
-            
-          />
-        </View>
-      </View>
+      </Skeleton.Group>
 
       {/* Segunda caja en la primera columna: muestra el número de mantenimientos pendientes */}
       <View style={styles.actividades}>
@@ -105,48 +123,90 @@ export default function HomeView() {
           </View> */}
         </View>
         <ScrollView
-         contentInsetAdjustmentBehavior="automatic"
-         showsVerticalScrollIndicator={false}
-         contentContainerStyle={{ paddingBottom: 160}}
+          contentInsetAdjustmentBehavior="automatic"
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 160, flexGrow: 1 }}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefetch} />
+          }
         >
-          {data.map((item, index) => {
-            const texColor =
-              item.status === "Completado"
-                ? { color: COLORS.green, backgroundColor: COLORS.green2 }
-                : item.status === "Pendiente"
-                ? { color: COLORS.wellow, backgroundColor: COLORS.wellowlg }
-                : item.status === "Programado"
-                ? { color: COLORS.blue2, backgroundColor: COLORS.bluelg2 }
-                : { color: COLORS.red2, backgroundColor: COLORS.red };
+          {data?.mantenimientos.length == 0 ? (
+            <View style={styles.center}>
+              <Text style={styles.title2}>No hay mantenimientos</Text>
+            </View>
+          ) : loading ? (
+            Array.from({ length: 8 }).map((_, index) => (
+              <Skeleton.Group key={index} show={loading}>
+                <View style={styles.listItem}>
+                  <Skeleton colorMode="light" radius={50} boxHeight={35}>
+                    <View style={styles.icon}>
+                      <Iconify
+                        icon="bxs:car-mechanic"
+                        size={25}
+                        color={COLORS.blue2}
+                      />
+                    </View>
+                  </Skeleton>
+                  <Skeleton colorMode="light">
+                    <View style={styles.dates}>
+                      <Text style={styles.listItemTitle}>PLACA:BSD-123</Text>
+                      <Text style={styles.listItemStatus}>
+                        Mantenimiento Preventivo
+                      </Text>
+                    </View>
+                  </Skeleton>
+                  <Skeleton colorMode="light" boxHeight={23}>
+                    <View style={[styles.contentstatus]}>
+                      <Text style={[styles.listItemStatus]}>Confirmado</Text>
+                    </View>
+                  </Skeleton>
+                </View>
+              </Skeleton.Group>
+            ))
+          ) : (
+            data?.mantenimientos.map((item, index) => {
+              const texColor =
+                item.estado === "completado"|| item.estado === "aprobado"
+                  ? { color: COLORS.green, backgroundColor: COLORS.green2 }
+                  : item.estado === "pendiente" || item.estado === "revision"
+                  ? { color: COLORS.wellow, backgroundColor: COLORS.wellowlg }
+                  : item.estado === "programado"
+                  ? { color: COLORS.blue2, backgroundColor: COLORS.bluelg2 }
+                  : { color: COLORS.red2, backgroundColor: COLORS.red };
 
-            return (
-              <View key={index} style={styles.listItem}>
-                <View style={styles.icon}>
-                  <Iconify
-                    icon="bxs:car-mechanic"
-                    size={25}
-                    color={COLORS.blue2}
-                  />
-                </View>
-                <View style={styles.dates}>
-                  <Text style={styles.listItemTitle}>PLACA: {item.plate}</Text>
-                  <Text style={styles.listItemStatus}>{item.title}</Text>
-                </View>
-                <View
-                  style={[
-                    styles.contentstatus,
-                    { backgroundColor: texColor.backgroundColor },
-                  ]}
-                >
-                  <Text
-                    style={[styles.listItemStatus, { color: texColor.color }]}
+              return (
+                <View style={styles.listItem} key={index}>
+                  <View style={styles.icon}>
+                    <Iconify
+                      icon="bxs:car-mechanic"
+                      size={25}
+                      color={COLORS.blue2}
+                    />
+                  </View>
+
+                  <View style={styles.dates}>
+                    <Text style={styles.listItemTitle}>
+                      PLACA: {item.placa}
+                    </Text>
+                    <Text style={styles.listItemStatus}>{item.tipo}</Text>
+                  </View>
+
+                  <View
+                    style={[
+                      styles.contentstatus,
+                      { backgroundColor: texColor.backgroundColor },
+                    ]}
                   >
-                    {item.status}
-                  </Text>
+                    <Text
+                      style={[styles.listItemStatus, { color: texColor.color }]}
+                    >
+                      {item.estado}
+                    </Text>
+                  </View>
                 </View>
-              </View>
-            );
-          })}
+              );
+            })
+          )}
         </ScrollView>
       </View>
     </View>
@@ -157,7 +217,7 @@ export default function HomeView() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    
+
     backgroundColor: COLORS.bg,
 
     padding: 10,
@@ -171,7 +231,7 @@ const styles = StyleSheet.create({
   box: {
     borderRadius: 15,
     marginHorizontal: 10,
-    
+
     flexDirection: "row",
 
     padding: 18,
@@ -190,20 +250,19 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_500Medium",
   },
   progress: {
-    
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "transparent",
   },
   actividades: {
     padding: 10,
-    backgroundColor: COLORS.bg,
   },
   listItem: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 12,
+    paddingHorizontal: 15,
+    paddingVertical: Platform.OS === "ios" ? 15 : 8,
     marginVertical: 5,
     backgroundColor: COLORS.white,
     borderRadius: 15,
@@ -226,21 +285,19 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: COLORS.bluef,
     fontFamily: "Inter_500Medium",
-    
   },
   dates: {
     flexDirection: "column",
     alignItems: "flex-start",
     marginRight: "auto",
-    marginLeft: 5,
   },
   icon: {
-    marginRight: 5,
     justifyContent: "center",
     alignItems: "center",
     padding: 5,
     backgroundColor: "rgba(11, 29, 91, 0.1)",
     borderRadius: 40,
+    marginRight: 10,
   },
   dataLengthContainer: {
     backgroundColor: "rgba(11, 29, 91, 0.1)", // Cambia esto al color que quieras
@@ -267,5 +324,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 3,
     borderRadius: 7,
+  },
+  center: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 200,
   },
 });

@@ -43,10 +43,11 @@ const DocumentComponent = ({
     if (status === "granted") {
       const result = await DocumentPicker.getDocumentAsync({});
       if (result && result.assets && result.assets[0]) {
-        console.log(result);
+        
         const newDocuments = [...documents, result.assets[0]];
         setDocuments(newDocuments);
         formikRef.current.setFieldValue("files", newDocuments);
+        
       }
     } else {
       alert("Permission to access media library is required.");
@@ -58,14 +59,14 @@ const DocumentComponent = ({
     setDocuments(newDocuments);
     formikRef.current.setFieldValue("files", newDocuments);
   };
-
+  
   return (
     <>
       <TouchableOpacity
         onPress={pickDocument}
         style={[
           styles.input,
-          { paddingVertical: Platform.OS === "ios" ? 16 : 12.4 },
+          { paddingVertical: Platform.OS === "ios" ? 16 : 13 },
           style,
         ]}
       >
@@ -76,6 +77,7 @@ const DocumentComponent = ({
           style={styles.title2}
         >{`${documents.length} archivos subidos`}</Text>
       </View>
+      <View style={styles.content}>
       {documents.map((document, index) => (
         <View key={index} style={styles.document}>
           <TouchableOpacity
@@ -113,6 +115,7 @@ const DocumentComponent = ({
           </TouchableOpacity>
         </View>
       ))}
+        </View>
     </>
   );
 };
@@ -153,7 +156,7 @@ export const styles = StyleSheet.create({
     justifyContent: "space-between",
     
     marginRight: 22,
-    backgroundColor: COLORS.white,
+    
     borderRadius: 14,
   },
   eliiminardocumento: {
@@ -163,5 +166,8 @@ export const styles = StyleSheet.create({
   },
   icon: {
     marginRight: 5,
+  },
+  content: {
+    marginBottom: Platform.OS === "ios" ? 45 : 65,
   },
 });

@@ -19,21 +19,26 @@ const Layout = () => {
     <MaterialTopTabs
       initialRouteName="index"
       screenOptions={{
-        tabBarLabelStyle: { fontWeight: "500", textTransform: "capitalize", fontSize: 14, },
+        tabBarLabelStyle: {
+          fontWeight: "500",
+          textTransform: "capitalize",
+          fontSize: 14,
+        },
         tabBarStyle: { backgroundColor: "#f7f7f9" }, // Mueve esta línea a 'screenOptions'
-        tabBarIndicatorStyle: { backgroundColor:  "#0e2572", height:3, borderRadius:5, }, // Mueve esta línea a 'screenOptions'
-        
-         
+        tabBarIndicatorStyle: {
+          backgroundColor: "#0e2572",
+          height: 3,
+          borderRadius: 5,
+        }, // Mueve esta línea a 'screenOptions'
+
         lazy: true,
-       
       }}
-      
     >
-      <MaterialTopTabs.Screen name="index" options={{ title: "Confirmados" }} />
+      <MaterialTopTabs.Screen name="revision" options={{ title: "Revision" }} />
       <MaterialTopTabs.Screen name="todos" options={{ title: "Todos" }} />
       <MaterialTopTabs.Screen
-        name="pendientes"
-        options={{ title: "Pendientes" }}
+        name="aprobados"
+        options={{ title: "Aprobados" }}
       />
     </MaterialTopTabs>
   );

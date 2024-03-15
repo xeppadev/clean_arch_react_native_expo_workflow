@@ -10,80 +10,49 @@ import {
 } from "react-native";
 import { Iconify } from "react-native-iconify"; // Asegúrate de instalar esta librería
 import { COLORS } from "@/constants/Colors";
-import { format, addHours, parseISO } from "date-fns";
+import { format, parseISO } from "date-fns";
+import { HomeMantDto } from "@/src/generated/graphql";
+import { useRouter } from "expo-router";
 
-const data = [
-  {
-    fecha: "2022-03-01T10:00:00Z",
-    estadoActual: "Pendiente",
-    tipoMantenimiento: "Mantenimiento Correctivo",
-    tecnico: "Juan Perez",
-    placa: "ABC-234",
-    repuestos: ["filtro de aire", "aceite de motor", "batería de motor"],
-    observaciones: "Problemas con el motor",
-  },
-  {
-    fecha: "2022-03-01T10:00:00Z",
-    estadoActual: "Pendiente",
-    tecnico: "Pedro Sanchez",
-    tipoMantenimiento: "Mantenimiento Correctivo",
-    placa: "ADS-123",
-    repuestos: ["filtro de aire", "aceite de motor"],
-    observaciones: "Problemas con los frenos",
-  },
-  {
-    fecha: "2022-03-02T14:00:00Z",
-    estadoActual: "completado",
-    tecnico: "Juan Alvarez",
-    tipoMantenimiento: "Mantenimiento Preventivo",
-    placa: "REF-416",
-    repuestos: ["aceite de motor"],
-    observaciones: "Problemas con los neumáticos",
-  },
-  {
-    fecha: "2022-03-02T14:00:00Z",
-    estadoActual: "completado",
-    tecnico: "Pedro Rodriguez",
-    tipoMantenimiento: "Mantenimiento Preventivo",
-    placa: "ITE-456",
-    repuestos: ["aceite de motor"],
-    observaciones: "Problemas con la transmisión",
-  },
-  // Agrega más objetos aquí según sea necesario
-];
+// Define el tipo para los props de ConfirmadosPage
+interface ConfirmadosPageProps {
+  data: (HomeMantDto | null | undefined)[];
+}
 
-const PendientPage = () => {
+const PendientPage: React.FC<ConfirmadosPageProps> = ({ data }) => {
   const [showRepuestos, setShowRepuestos] = React.useState<number | null>(null);
-  const [showButton, setShowButton] = React.useState<number | null>(null);
+  
+
+  const router = useRouter();
+
+  function capitalizeFirstLetter(string: string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
 
   // Ordena los datos por fecha
   const sortedData = [...data].sort(
-    (a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime()
+    (a, b) => new Date(a?.fecha).getTime() - new Date(b?.fecha).getTime()
   );
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.line} />
 
-      {(sortedData || []).map((time, index) => {
+      {(sortedData).map((time, index) => {
         // Parse the date from ISO format
-        const date = parseISO(time.fecha);
+        const date = parseISO(time?.fecha);
         // Format the date
         const formattedDate = format(date, "dd MMM yyyy");
 
         // Format 12:00PM
         const formattedTime2 = format(date, "hh:mm a");
 
-        // Add 2 hours to the date
-        const newDate = addHours(date, 2);
-
-        // Format the new time
-        const newFormattedTime = format(newDate, "hh:mm a");
-
         // Text Color
         const textColor =
-          time.estadoActual !== "Pendiente" ? COLORS.white : COLORS.blue2;
+          time?.estado === "completado" || time?.estado === "expirado"
+            ? COLORS.white
+            : COLORS.blue2;
         // Numero de Repuestos
-        const repuestos = time.repuestos.length;
+        const repuestos = time?.repuestos?.length;
         return (
           <View key={index} style={styles.itemContainer}>
             <View style={styles.timeview}>
@@ -93,111 +62,93 @@ const PendientPage = () => {
             <View
               style={[
                 styles.textContainer,
-                time.estadoActual !== "Pendiente"
+                time?.estado === "completado" || time?.estado === "expirado"
                   ? { backgroundColor: COLORS.blue2 }
                   : { backgroundColor: "rgba(120, 157, 233, 0.1)" },
               ]}
             >
               <View style={styles.row2}>
                 <Text style={[styles.text2, { color: textColor }]}>
-                  {time.tipoMantenimiento}
+                  {time?.tipo}
                 </Text>
                 <Iconify icon="bxs:car-mechanic" size={28} color={textColor} />
               </View>
               <Text style={[styles.plateText, { color: textColor }]}>
-                {time.placa}
+                {time?.placa}
               </Text>
               <View style={styles.row}>
-                <Iconify icon="mdi:user-box" size={20} color={textColor} />
+                <Iconify
+                  icon="lets-icons:date-fill"
+                  size={20}
+                  color={textColor}
+                />
                 <Text style={[styles.text, { color: textColor }]}>
-                  {time.tecnico}
+                  {formattedDate}
                 </Text>
               </View>
               <View style={styles.row}>
-                {time.estadoActual === "Pendiente" ? (
+                <Iconify icon="mdi:user-box" size={20} color={textColor} />
+                <Text style={[styles.text, { color: textColor }]}>
+                  {time?.tecnico}
+                </Text>
+              </View>
+              {time?.estado === "pendiente" ? (
+                <View style={styles.row}>
                   <Iconify
                     icon="fluent:toolbox-20-filled"
                     size={20}
                     color={textColor}
                   />
-                ) : (
-                  <Iconify
-                    icon="solar:box-minimalistic-bold"
-                    size={20}
-                    color={textColor}
-                  />
-                )}
 
-                <TouchableOpacity
-                  onPress={() =>
-                    setShowRepuestos(showRepuestos === index ? null : index)
-                  }
-                >
-                  <View style={[styles.repuestoRow]}>
-                    {time.estadoActual === "Pendiente" ? (
-                      showRepuestos === index ? (
-                        time.repuestos.map((repuesto, index) => (
+                  <TouchableOpacity
+                    onPress={() =>
+                      setShowRepuestos(showRepuestos === index ? null : index)
+                    }
+                  >
+                    <View style={[styles.repuestoRow]}>
+                      {time?.estado === "pendiente" ? (
+                        showRepuestos === index ? (
+                          time.repuestos?.map((repuesto, index) => (
+                            <Text
+                              key={index}
+                              style={[styles.text, { color: textColor }]}
+                            >
+                              {repuesto?.producto}
+                            </Text>
+                          ))
+                        ) : (
                           <Text
-                            key={index}
                             style={[styles.text, { color: textColor }]}
-                          >
-                            {repuesto}
-                          </Text>
-                        ))
-                      ) : (
-                        <Text
-                          style={[styles.text, { color: textColor }]}
-                        >{`${repuestos} repuestos seleccionados`}</Text>
-                      )
-                    ) : (
-                      <Text
-                        style={[styles.text, { color: textColor }]}
-                      >{`${repuestos} repuestos seleccionados`}</Text>
-                    )}
-                  </View>
-                </TouchableOpacity>
-              </View>
-              {time.estadoActual === "Pendiente" ? (
-                <View style={styles.row}>
-                  <Iconify
-                    icon="mingcute:clipboard-fill"
-                    size={21}
-                    color={textColor}
-                  />
-                  <Text style={[styles.text, { color: textColor }]}>
-                    {time.observaciones}
-                  </Text>
+                          >{`${repuestos} repuesto${
+                            repuestos !== 1 ? "s" : ""
+                          } seleccionado${repuestos !== 1 ? "s" : ""}`}</Text>
+                        )
+                      ) : null}
+                    </View>
+                  </TouchableOpacity>
                 </View>
               ) : null}
-
-              {time.estadoActual !== "programado" ? (
-                <TouchableOpacity
+              <View style={styles.row}>
+                <Iconify
+                  icon="ic:baseline-note-alt"
+                  size={21}
+                  color={textColor}
+                />
+                <Text style={[styles.text, { color: textColor }]}>
+                  {time?.estado ? capitalizeFirstLetter(time?.estado) : ""}
+                </Text>
+              </View>
+              {time?.estado === "pendiente" || time?.estado === "revision" ? (
+              <View style={styles.viewbuttons}>
+                <Pressable
+                  style={styles.buttons}
                   onPress={() =>
-                    time.estadoActual === "Pendiente" &&
-                    setShowButton(showButton === index ? null : index)
+                    router.push("/admin/" + time?._id)
                   }
                 >
-                  <View style={styles.row}>
-                    <Iconify
-                      icon="ic:baseline-note-alt"
-                      size={21}
-                      color={textColor}
-                    />
-                    <Text style={[styles.text, { color: textColor }]}>
-                      {time.estadoActual}
-                    </Text>
-                  </View>
-                  {showButton === index ? (
-                    <View style={styles.viewbuttons}>
-                      <Pressable style={styles.buttons}>
-                        <Text style={styles.textbutton}>Cancelar</Text>
-                      </Pressable>
-                      <Pressable style={[styles.buttons, { marginLeft: 3 }]}>
-                        <Text style={styles.textbutton}>Confirmar</Text>
-                      </Pressable>
-                    </View>
-                  ) : null}
-                </TouchableOpacity>
+                  <Text style={styles.textbutton}>Ver Detalles</Text>
+                </Pressable>
+              </View>
               ) : null}
             </View>
           </View>

@@ -103,7 +103,21 @@ export default function AppLayout() {
           headerBackTitle: "Inicio",
         }}
       />
+        <Stack.Screen
+        name="[detalles]"
+        options={{
+         
+          headerTitle: "Detalles Mantenimiento",
+          headerTransparent: Platform.OS === "ios" ? true : false,
+          headerBlurEffect: "regular",
+          presentation: "modal",
+          
+          headerShadowVisible: false,
 
+          headerBackTitle: "Inicio",
+
+        }}
+      />
       
     </Stack>
   );

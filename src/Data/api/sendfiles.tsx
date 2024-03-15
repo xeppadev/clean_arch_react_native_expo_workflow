@@ -16,6 +16,9 @@ export async function sendToExternalApi(formData: FormData, queries: queries) {
           query1: queries.query1,
           query2: queries.query2,
         },
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       }
     );
 

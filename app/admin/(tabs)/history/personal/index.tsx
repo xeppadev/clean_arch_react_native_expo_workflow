@@ -102,11 +102,11 @@ export default function PesonalScreen() {
                 <View
                   style={[
                     styles.contentstatus,
-                    { backgroundColor: COLORS.blue },
+                    { backgroundColor: COLORS.bluelg2 },
                   ]}
                 >
                   <Text
-                    style={[styles.listItemStatus, { color: COLORS.white }]}
+                    style={[styles.listItemStatus, { color: COLORS.blue }]}
                   >
                     {item.numero}
                   </Text>

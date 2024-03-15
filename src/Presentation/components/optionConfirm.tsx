@@ -1,138 +1,115 @@
-import React from "react"
-import { View, Text, StyleSheet, ScrollView, Platform } from "react-native"
-import { Iconify } from "react-native-iconify" // Asegúrate de instalar esta librería
-import { COLORS } from "@/constants/Colors"
-import { format, addHours, parseISO } from "date-fns"
+import React from "react";
+import { View, Text, StyleSheet, ScrollView, Platform } from "react-native";
+import { Iconify } from "react-native-iconify"; // Asegúrate de instalar esta librería
+import { COLORS } from "@/constants/Colors";
+import { format, addHours, parseISO } from "date-fns";
+import { HomeMantDto } from "@/src/generated/graphql";
 
-const ConfirmadosPage = () => {
+// Define el tipo para los props de ConfirmadosPage
+interface ConfirmadosPageProps {
+  data: (HomeMantDto | null | undefined)[];
+}
 
-    const data = [
-        {
-          fecha: '2022-03-01T10:00:00Z',
-          estadoActual: 'programado',
-          tipoMantenimiento: 'Mantenimiento Correctivo',
-          placa: 'ABC-123',
-          repuestos: ['filtro de aire', 'aceite de motor'],
-        },
-        {
-          fecha: '2022-03-02T14:00:00Z',
-          estadoActual: 'completado',
-          tipoMantenimiento: 'Mantenimiento Preventivo',
-          placa: 'DEF-456',
-          repuestos: ['aceite de motor'],
-        },
-        {
-            fecha: '2022-03-02T14:00:00Z',
-            estadoActual: 'completado',
-            tipoMantenimiento: 'Mantenimiento Preventivo',
-            placa: 'DEF-456',
-            repuestos: ['aceite de motor'],
-          },
-        // Agrega más objetos aquí según sea necesario
-      ];
-
+const ConfirmadosPage: React.FC<ConfirmadosPageProps> = ({ data }) => {
+  function capitalizeFirstLetter(string: string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
   // Ordena los datos por fecha
   const sortedData = [...data].sort(
-    (a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime(),
-  )
+    (a, b) => new Date(b?.fecha).getTime() - new Date(a?.fecha).getTime()
+  );
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.line} />
 
-      {(sortedData || []).map((time, index) => {
+      {sortedData.map((time, index) => {
         // Parse the date from ISO format
-        const date = parseISO(time.fecha)
+        const date = parseISO(time?.fecha);
         // Format the date
-        const formattedDate = format(date, "dd MMM yyyy")
+        const formattedDate = format(date, "dd MMM yyyy");
 
         // Format 12:00PM
-        const formattedTime2 = format(date, "hh:mm a")
-
-        // Add 2 hours to the date
-        const newDate = addHours(date, 2)
-
-        // Format the new time
-        const newFormattedTime = format(newDate, "hh:mm a")
+        const formattedTime2 = format(date, "hh:mm a");
 
         // Text Color
         const textColor =
-          time.estadoActual !== "programado" ? COLORS.white : COLORS.blue2
+          time?.estado !== "programado" ? COLORS.white : COLORS.blue2;
         // Numero de Repuestos
-        const repuestos = time.repuestos.length
+        const repuestos = time?.repuestos?.length;
         return (
           <View key={index} style={styles.itemContainer}>
             <View style={styles.timeview}>
               <Text style={styles.timeText}>{formattedTime2}</Text>
-              <Text style={styles.timeText2}>{newFormattedTime}</Text>
             </View>
 
             <View
               style={[
                 styles.textContainer,
-                time.estadoActual !== "programado"
-                  ? { backgroundColor: COLORS.blue2 }
+                time?.estado !== "programado"
+                  ? { backgroundColor: COLORS.blue3 }
                   : { backgroundColor: "rgba(120, 157, 233, 0.1)" },
               ]}
             >
               <View style={styles.row2}>
                 <Text style={[styles.text2, { color: textColor }]}>
-                  {time.tipoMantenimiento}
+                  {time?.tipo}
                 </Text>
                 <Iconify icon="bxs:car-mechanic" size={28} color={textColor} />
               </View>
               <Text style={[styles.plateText, { color: textColor }]}>
-                {time.placa}
+                {time?.placa}
               </Text>
+
               <View style={styles.row}>
                 <Iconify
-                  icon="solar:clock-square-bold"
+                  icon="lets-icons:date-fill"
                   size={20}
                   color={textColor}
                 />
                 <Text style={[styles.text, { color: textColor }]}>
-                  {formattedTime2}
+                  {formattedDate}
                 </Text>
               </View>
-              <View style={styles.row}>
-                {time.estadoActual === "programado" ? (
-                  <Iconify
-                    icon="lets-icons:date-fill"
-                    size={20}
-                    color={textColor}
-                  />
-                ) : (
+
+              {time?.estado !== "programado" ? (
+                <View style={styles.row}>
                   <Iconify
                     icon="solar:box-minimalistic-bold"
                     size={20}
                     color={textColor}
                   />
-                )}
-
-                <Text style={[styles.text, { color: textColor }]}>
-                  {time.estadoActual === "programado"
-                    ? formattedDate
-                    : `${repuestos} repuestos seleccionados`}
-                </Text>
-              </View>
-              {time.estadoActual !== "programado" ? (
-                <View style={styles.row}>
-                  <Iconify
-                    icon="ic:baseline-note-alt"
-                    size={21}
-                    color={textColor}
-                  />
                   <Text style={[styles.text, { color: textColor }]}>
-                    {time.estadoActual}
+                    {`${repuestos} repuesto${
+                      repuestos !== 1 ? "s" : ""
+                    } seleccionado${repuestos !== 1 ? "s" : ""}`}
                   </Text>
                 </View>
               ) : null}
+
+              <View style={styles.row}>
+                <Iconify
+                  icon="ic:baseline-note-alt"
+                  size={21}
+                  color={textColor}
+                />
+                <Text style={[styles.text, { color: textColor }]}>
+                  {time?.estado ? capitalizeFirstLetter(time?.estado) : ""}
+                </Text>
+              </View>
+
+              <View style={styles.row}>
+                <Iconify icon="mdi:user-box" size={20} color={textColor} />
+                <Text style={[styles.text, { color: textColor }]}>
+                  {time?.tecnico}
+                </Text>
+              </View>
             </View>
           </View>
-        )
+        );
       })}
     </ScrollView>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -205,6 +182,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontWeight: "500",
   },
-})
+});
 
-export default ConfirmadosPage
+export default ConfirmadosPage;

@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
     width: 44, // Cambia estos valores según tus necesidades
     height: 44, // Cambia estos valores según tus necesidades
     borderRadius: 25, // La mitad del width y height para hacerlo circular
-    backgroundColor: COLORS.blue, // El color de fondo del círculo
+    backgroundColor: COLORS.blue3, // El color de fondo del círculo
     justifyContent: "center", // Centra el texto verticalmente
     alignItems: "center", // Centra el texto horizontalmente
   },

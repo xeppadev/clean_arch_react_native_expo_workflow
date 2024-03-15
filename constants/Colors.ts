@@ -44,4 +44,5 @@ export const COLORS = {
   bluelg3: "#C8D6F4",
   bluelg4: "#4F7DDD",
   bg2: "#fbfbfc",
+  skyblue: "#789de91a",
 }

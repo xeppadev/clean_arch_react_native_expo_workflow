@@ -229,7 +229,7 @@ const styles = StyleSheet.create({
 
   container3: {
     flexGrow: 1,
-    marginBottom: Platform.OS === "ios" ? 70 : 60,
+   
     backgroundColor: COLORS.white,
   },
   container2: {

@@ -43,5 +43,6 @@ export const styles = StyleSheet.create({
     borderRadius: 12, // Borde redondeado con radio de 14
     fontSize: 14, // Tamaño de fuente de 14
     paddingVertical: Platform.OS === "ios" ? 16 : 10,
+    color: "black", // El color del texto es el color de texto definido en COLORS
   },
 })

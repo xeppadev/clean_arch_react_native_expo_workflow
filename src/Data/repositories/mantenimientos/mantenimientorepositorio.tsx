@@ -1,17 +1,18 @@
-import { gql } from "@apollo/client";
+import { gql } from "@/src/generated";
 
-export const PROGRAMAR_MANTENIMIENTO = gql`
+export const PROGRAMAR_MANTENIMIENTO = gql(/* GraphQL */ `
   mutation ProgramarMantenimiento(
     $programarMantInput: PrograMantenimientoDto!
   ) {
     programar_mantenimiento(programarMantInput: $programarMantInput)
   }
-`
+`);
 
 export const MANTEN_INFO_ID = gql(/* GraphQL */ `
   query mantenimientoInfoPorId($mantenimientoInfoPorIdId: String!) {
     Mantenimiento_Info_por_ID(id: $mantenimientoInfoPorIdId) {
       anotaciones
+      cambiosSolicitados
       cliente
       diagnostico
       documentos
@@ -44,7 +45,7 @@ export const MANTEN_INFO_ID = gql(/* GraphQL */ `
       tipo
     }
   }
-`);
+` );
 
 export const MANTENIMIENTOS_POR_PLACA = gql(/* GraphQL */ `
   query Mantenimiento_Info_por_Placa($placa: String!) {
@@ -75,6 +76,52 @@ export const REGISTRAR_NO_MANTENIMIENTO = gql(/* GraphQL */ `
   ) {
     regisrar_mantenimiento_no_programado(
       updateOneMantenimientoInput: $updateOneMantenimientoInput
+    )
+  }
+`);
+
+export const HOME_MANTENIMIENTOS = gql(/* GraphQL */ `
+  query Home_admin($fecha: DateTime!) {
+    home_admin(fecha: $fecha) {
+      mantenimientos {
+        _id
+        placa
+        tipo
+        estado
+      }
+      cantidadTotal
+      cantidadCompletada
+      cantidadRevision
+    }
+  }
+`);
+
+export const CAMBIAR_ESTADO_MANTENIMIENTO = gql(/* GraphQL */ `
+  mutation Cambiar_estado_revision_o_denegado(
+    $denegado: Boolean!
+    $revision: Boolean!
+    $cambiarEstadoRevisionODenegadoId: String!
+    $repuestosAjuste: [CreateRepuestoAjusteDto!]!
+    $cambiosSolicitados: String
+  ) {
+    cambiar_estado_revision_o_denegado(
+      denegado: $denegado
+      revision: $revision
+      id: $cambiarEstadoRevisionODenegadoId
+      repuestosAjuste: $repuestosAjuste
+      cambiosSolicitados: $cambiosSolicitados
+    )
+  }
+`);
+
+export const COMPLETAR_MANTENIMIENTO = gql(/* GraphQL */ `
+  mutation Completar_mantenimiento(
+    $completarMantenimientoId: String!
+    $diagnosticoFinal: String!
+  ) {
+    completar_mantenimiento(
+      id: $completarMantenimientoId
+      diagnosticoFinal: $diagnosticoFinal
     )
   }
 `);

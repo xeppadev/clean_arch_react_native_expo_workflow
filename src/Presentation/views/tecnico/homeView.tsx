@@ -1,16 +1,29 @@
-import { StyleSheet, Pressable, Platform,Text, View  } from "react-native";
-
+import { StyleSheet, Pressable, Platform, Text, View, ActivityIndicator } from "react-native";
+import { useRouter } from "expo-router";
 import { COLORS } from "@/constants/Colors";
 import { Iconify } from "react-native-iconify";
-
+import { useHomeMantenimientosViewModel } from "../../viewmodels/mantenimientos/homeManteViewModel";
 import CircularProgress from "react-native-circular-progress-indicator";
 
 
+const nowFormatted = new Date().toISOString();
 export default function HomeView() {
+  const { data, loading, error } = useHomeMantenimientosViewModel(nowFormatted);
+
+  const router = useRouter();
+
+  if (loading) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator size="large" color={COLORS.blue3} />
+      </View>
+    );
+  }
+
   return (
-    <View style={styles.container}  >
+    <View style={styles.container}>
       {/* Primera columna de la página de inicio */}
-      <View style={styles.column} >
+      <View style={styles.column}>
         {/* Primera caja en la primera columna: muestra el número de mantenimientos realizados */}
         <View
           style={[
@@ -36,14 +49,14 @@ export default function HomeView() {
           </Text>
           <CircularProgress
             key={1}
-            value={1}
-            maxValue={6}
+            value={data?.cantidadCompletada ?? 0}
+            maxValue={data?.cantidadTotal ?? 0}
             duration={2000}
             progressValueColor="#ffffff"
             radius={62}
             inActiveStrokeOpacity={0.3}
             inActiveStrokeColor="#4dd180"
-            valueSuffix={"%"}
+            valueSuffix={loading ? "/0" : `/${data?.cantidadTotal}` ?? "/0"}
             subtitle="Completos"
             subtitleStyle={{ color: "#ffffff" }}
             valueSuffixStyle={{ fontSize: 14 }}
@@ -62,6 +75,9 @@ export default function HomeView() {
               elevation: 5,
             },
           ]}
+          onPress={() => {
+            router.push("/tecnico/progrmantenimiento");
+          }}
         >
           <Text
             style={[styles.title2, { color: COLORS.blue3, marginBottom: 5 }]}
@@ -101,7 +117,7 @@ export default function HomeView() {
             </Text>
             <View style={[styles.row, { backgroundColor: COLORS.wellow }]}>
               <Text style={[styles.bigNumber, { color: COLORS.white }]}>
-                {0}
+                {data?.cantidadRevision ?? 0}
               </Text>
               <Iconify
                 icon="eva:alert-triangle-fill"
@@ -183,6 +199,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     padding: 10,
+    backgroundColor: COLORS.bg,
   },
   column: {
     flex: 1,
@@ -197,11 +214,10 @@ const styles = StyleSheet.create({
     padding: 5,
   },
 
- 
   title2: {
     fontSize: 18,
     fontWeight: "600",
-   fontFamily: "Inter_600SemiBold",
+    fontFamily: "Inter_600SemiBold",
     alignSelf: "center",
   },
   row: {
@@ -240,5 +256,11 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     fontFamily: "Inter_600SemiBold",
     alignSelf: "flex-start",
+  },
+  center: {
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
+    backgroundColor: COLORS.bg,
   },
 });

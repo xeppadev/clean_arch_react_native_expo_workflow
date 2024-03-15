@@ -24,7 +24,7 @@ import {
 import { RegistrarMantenimientoViewModel } from "../../viewmodels/mantenimientos/onSubmitRegist";
 import { Formik, FormikProps } from "formik";
 import { COLORS } from "@/constants/Colors";
-import { format, parseISO } from "date-fns";
+import { format, parseISO, set } from "date-fns";
 // Define el componente RegistroMantenimiento
 const RegistroMantenimiento = () => {
   // Define refeching para el formulario.
@@ -92,6 +92,7 @@ const RegistroMantenimiento = () => {
 
   const {
     data: infoSomePlaca,
+    
     loading: loadingInfoPlaca,
     error: errorInfoPlaca,
     get2InfoForPlaca: refetchInfoPlaca,
@@ -102,6 +103,7 @@ const RegistroMantenimiento = () => {
     setRefreshing(true);
     refetchplacas().then(() => setRefreshing(false));
     refetchrepuestos().then(() => setRefreshing(false));
+    refetchMantenimientos().then(() => setRefreshing(false));
   }, []);
 
   if (loandingplacas || loadingRepuestos) {
@@ -335,9 +337,9 @@ const RegistroMantenimiento = () => {
                     data={repuestos || []}
                     value={values.repuestos}
                     onBlur={() => handleBlur("repuestos")}
-                    onChange={(newCantidad) =>
-                      setFieldValue("repuestos", newCantidad)
-                    }
+                    onChange={(newCantidad) => {
+                      setFieldValue("repuestos", newCantidad);
+                    }}
                   />
                   {errors.repuestos && touched.repuestos && (
                     <Text style={styles.error}>
@@ -413,7 +415,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     width: "90%",
     position: "absolute",
-    bottom: 15,
+    bottom: Platform.OS === "ios" ? 15 : 0,
     left: 20,
   },
   buttonText: {

@@ -6,6 +6,7 @@ import { Platform } from "react-native";
 import { useRegistrarFacturaViewModel } from "./registrarFacturaViewModel";
 import { usePropietariosViewModel } from "../cars/propietariosViewModel";
 import { FacturaViewModel } from "./tipoFactura";
+import axios from "axios";
 // Define una interfaz para los valores del formulario
 interface FormValues {
     tipoFactura: string;
@@ -55,21 +56,29 @@ export class RegistrarFacturaViewModel {
         });
     
         const formData = new FormData();
-        // Platforms
-        formData.append("files", {
-        uri: values.files[0].uri,
-        name:
-            Platform.OS === "android"
-            ? values.files[0].fileName
-            : values.files[0].name,
-        type: values.files[0].type,
-        } as any);
+        values.files.map((file) => {
+          formData.append("files", {
+            uri: file.uri,
+            name: file.name,
+            type: Platform.OS === "android" ? file.mimeType : file.type,
+          } as any);
+        });
+      
     
         const dataFromMutation = result.data?.crear_factura
-        await sendToExternalApi(formData, {
-        query1: "facturas",
-        query2: dataFromMutation,
-        });
+        try {
+            await sendToExternalApi(formData, {
+              query1: "facturas",
+              query2: dataFromMutation,
+            });
+          } catch (error) {
+            console.error("Error sending data to external API:", error);
+            // Si el error es una instancia de AxiosError, puedes obtener más detalles
+            if (axios.isAxiosError(error)) {
+              console.error("Axios request config:", error.config);
+              console.error("Axios response:", error.response);
+            }
+          }
     }
 }
 

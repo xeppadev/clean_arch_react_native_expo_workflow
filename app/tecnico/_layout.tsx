@@ -99,7 +99,26 @@ export default function AppLayout() {
           headerTitle: "",
           headerBackTitleVisible: false, // Esto ocultará el título de la ruta a la que se regresa
         }}
+
       />
+        <Stack.Screen
+        name="[detalles]"
+        options={{
+         
+          headerTitle: "Detalles Mantenimiento",
+          headerTransparent: Platform.OS === "ios" ? true : false,
+          headerBlurEffect: "regular",
+          presentation: "modal",
+          
+          headerShadowVisible: false,
+
+          headerBackTitle: "Inicio",
+
+        }}
+      />
+
+
+       
     </Stack>
   );
 }

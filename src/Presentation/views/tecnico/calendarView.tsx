@@ -1,51 +1,68 @@
 import {
-    addDays,
-    eachDayOfInterval,
-    eachWeekOfInterval,
-    format,
-    isToday,
-    subDays,
-  } from "date-fns"
-  import { es } from "date-fns/locale"
-  import React from "react"
-  import {
-    Platform,
-    StyleSheet,
-    Text,
-    View,
-    TouchableOpacity,
-  } from "react-native"
-  import { COLORS } from "@/constants/Colors"
-  import TabPage from "../../components/tabView"
-  import ConfirmadosPage from "../../components/optionConfirm"
-  // Genera un arreglo de fechas que representan cada semana en un intervalo de 14 días a partir de hoy.
-  const dates = eachWeekOfInterval(
-    {
-      start: subDays(new Date(), 0),
-      end: addDays(new Date(), 14),
-    },
-    {
-      weekStartsOn: 0, // 0 es Domingo, 1 es Lunes, 2 es Martes, etc.
-    },
-  ).reduce((acc: Date[][][], cur: Date, index: number) => {
-    const allDays = eachDayOfInterval({
-      start: cur,
-      end: addDays(cur, 6), // 6 días después de la fecha actual
-    })
-  
-    if (index % 3 === 0) {
-      acc.push([allDays])
-    } else {
-      acc[acc.length - 1].push(allDays)
-    }
-  
-    return acc
-  }, [])
+  addDays,
+  eachDayOfInterval,
+  eachWeekOfInterval,
+  format,
+  isToday,
+  subDays,
+} from "date-fns";
+import { es } from "date-fns/locale";
+import React from "react";
+import {
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
+import { COLORS } from "@/constants/Colors";
+import TabPage from "../../components/tabView";
+import ConfirmadosPage from "../../components/optionConfirm";
+import { useCalendarViewModel } from "../../viewmodels/suscrripciones/calendarViewModel";
+// Genera un arreglo de fechas que representan cada semana en un intervalo de 14 días a partir de hoy.
+const dates = eachWeekOfInterval(
+  {
+    start: subDays(new Date(), 0),
+    end: addDays(new Date(), 14),
+  },
+  {
+    weekStartsOn: 0, // 0 es Domingo, 1 es Lunes, 2 es Martes, etc.
+  }
+).reduce((acc: Date[][][], cur: Date, index: number) => {
+  const allDays = eachDayOfInterval({
+    start: cur,
+    end: addDays(cur, 6), // 6 días después de la fecha actual
+  });
 
+  if (index % 3 === 0) {
+    acc.push([allDays]);
+  } else {
+    acc[acc.length - 1].push(allDays);
+  }
 
-  const highlightedDates = [10, 11, 24]
+  return acc;
+}, []);
 
 export default function CalendarView() {
+  // Obtiene los datos de la vista del calendario.
+  const {
+    TodosMantenimientos,
+    highlightedDates,
+    loading,
+    error,
+    mantenimientosPendientes,
+    mantenimientosProgramados,
+  } = useCalendarViewModel();
+
+  if (loading) {
+    return (
+      <View style={style.center}>
+        <ActivityIndicator size="large" color={COLORS.blue3} />
+      </View>
+    );
+  }
+
   return (
     <View style={style.container}>
       <View style={style.container2}>
@@ -58,10 +75,8 @@ export default function CalendarView() {
                 {/* Mapea cada día en la semana a un componente de vista. */}
                 {week.map((day, dayIndex) => {
                   //define un el formateo de highlight para los días que se mostrarán en el calendario de otro color
-                  const dayform = format(day, "d")
-                  const isHighlighted = highlightedDates.includes(
-                    Number(dayform),
-                  )
+                  const dayform = format(day, "dd/MM/yyyy");
+                  const isHighlighted = highlightedDates.includes(dayform);
                   return (
                     // Renderiza un componente de vista para cada día.
                     // Si el día actual es el día actual, se le aplica un estilo especial.
@@ -70,7 +85,7 @@ export default function CalendarView() {
                       onPress={() => {
                         if (isToday(day)) {
                           // Aquí puedes agregar las acciones que quieras ejecutar cuando se presione el día actual
-                          console.log("El día actual fue presionado")
+                          console.log("El día actual fue presionado");
                         }
                       }}
                     >
@@ -95,8 +110,8 @@ export default function CalendarView() {
                               isToday(day)
                                 ? style.todayText
                                 : isHighlighted
-                                  ? style.eventText
-                                  : style.dayText
+                                ? style.eventText
+                                : style.dayText
                             }
                           >
                             {format(day, "dd")}
@@ -104,7 +119,7 @@ export default function CalendarView() {
                         </View>
                       </View>
                     </TouchableOpacity>
-                  )
+                  );
                 })}
               </View>
             ))}
@@ -118,21 +133,19 @@ export default function CalendarView() {
               key: "programados",
               title: "Programados",
               component: () => (
-                <ConfirmadosPage/>
+                <ConfirmadosPage data={mantenimientosProgramados} />
               ),
             },
             {
               key: "todos",
               title: "Todos",
-              component: () => (
-                <ConfirmadosPage/>
-              ),
+              component: () => <ConfirmadosPage data={TodosMantenimientos} />,
             },
             {
               key: "pendientes",
               title: "Pendientes",
               component: () => (
-                <ConfirmadosPage/>
+                <ConfirmadosPage data={mantenimientosPendientes} />
               ),
             },
           ]}
@@ -158,7 +171,6 @@ const style = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     paddingTop: 10,
-    
   },
   row: {
     flexDirection: "row",
@@ -202,4 +214,10 @@ const style = StyleSheet.create({
     color: COLORS.bluelg,
     marginHorizontal: 8,
   },
-})
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: COLORS.bg,
+  },
+});

@@ -84,6 +84,7 @@ export class RegistrarMantenimientoViewModel {
             placa: values.placa,
             tecnico: this.session?.session?.toString() || "1",
             tipo: values.tipoMantenimiento,
+           
           },
         },
       });
@@ -121,12 +122,11 @@ export class RegistrarMantenimientoViewModel {
     }
 
     const formData = new FormData();
-    // Platforms
-    values.files.forEach((file) => {
+    values.files.map((file) => {
       formData.append("files", {
         uri: file.uri,
-        name: Platform.OS === "android" ? file.fileName : file.name,
-        type: file.type,
+        name: file.name,
+        type: Platform.OS === "android" ? file.mimeType : file.type,
       } as any);
     });
 
