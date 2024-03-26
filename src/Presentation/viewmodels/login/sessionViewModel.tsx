@@ -16,8 +16,8 @@ export function useSessionViewModel() {
       const user = decodedToken.username;
       const nivel = decodedToken.nivelUser;
       const exp = decodedToken.exp;
-      const expDate = new Date(exp * 1000);
-      console.log(expDate);
+   
+    
       // Comprueba si el token ha expirado
       const currentTimestamp = Math.floor(Date.now() / 1000);
       const currentDate = new Date();

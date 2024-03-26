@@ -94,8 +94,10 @@ export class RegistrarMantenimientoViewModel {
         values.fechaInicio,
         "yyyy-MM-dd'T'HH:mm:ss.SSS-05:00"
       );
-      const fecha = 
-        parse(values.fecha, "dd/MM/yyyy", new Date()).toISOString();
+      const fecha = format(
+        parse(values.fecha, "dd/MM/yyyy", new Date()),
+        "yyyy-MM-dd'T'HH:mm:ss.SSS-05:00"
+      );
         
       
       const fechaSoat = format(
@@ -108,11 +110,11 @@ export class RegistrarMantenimientoViewModel {
           registrarMantInput: {
             _id: values._id,
             kmMedido: parseFloat(values.kmMedido),
-            fecha: fecha,
+            fecha: fechaInicio,
             diagnostico: values.diagnostico,
             repuestos: values.repuestos,
             fechaInicio: fechaInicio,
-            kmPrevio: parseFloat(values.kmMedido),
+            kmPrevio: parseFloat(values.kmPrevio),
             Cliente: values.Cliente,
             fechaSoat: fechaSoat,
           },

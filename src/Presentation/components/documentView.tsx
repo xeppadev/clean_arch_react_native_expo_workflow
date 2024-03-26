@@ -7,9 +7,9 @@ import {
   StyleSheet,
   Platform,
 } from "react-native";
-
+import { Iconify } from "react-native-iconify";
 import { TabBarIcon } from "@/app/tecnico/(tabs)/_layout";
-
+import { DowloandFile } from "@/src/Data/api/upfiles";
 /**
  * DocumentComponent es un componente de React que permite seleccionar y mostrar documentos.
  *
@@ -24,29 +24,49 @@ type DocumentComponentProps = {
 };
 
 const DocumentViewComponent = ({ documents }: DocumentComponentProps) => {
+ 
   return (
-    <>
-      {documents?.map((document, index) => (
-        
-          <View
-            key={index}
-            style={[
-              styles.input,
-              {
-                flexDirection: "row",
-                maxWidth: Platform.OS === "ios" ? 275 : 260,
-                paddingVertical: Platform.OS === "ios" ? 14 : 12.4,
-              },
-            ]}
-          >
-            <TabBarIcon name="file-text-o" size={18} color="gray" />
-            <Text style={styles.title2} numberOfLines={1} ellipsizeMode="tail">
-              {document}
-            </Text>
+    <View style={styles.content}>
+      {documents?.map((document, index) => {
+        const ruta = document.replace(/[\\/]/g, '/').replace(/ /g, '%20');
+        const filename = ruta.split("/").pop() || "";
+      
+        return (
+          <View key={index} style={styles.document}>
+            <View
+              key={index}
+              style={[
+                styles.input,
+                {
+                  flexDirection: "row",
+                  width: "75%",
+                  paddingVertical: Platform.OS === "ios" ? 14 : 12.4,
+                },
+              ]}
+            >
+              <TabBarIcon name="file-text-o" size={18} color="gray" />
+              <Text
+                style={styles.title2}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {filename}
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={() => DowloandFile(ruta, filename  )}
+              style={styles.eliiminardocumento}
+            >
+              <Iconify
+                icon="humbleicons:download-alt"
+                size={25}
+                color={COLORS.white}
+              />
+            </TouchableOpacity>
           </View>
-        
-      ))}
-    </>
+        );
+      })}
+    </View>
   );
 };
 
@@ -68,7 +88,7 @@ export const styles = StyleSheet.create({
   },
   input: {
     marginHorizontal: 24,
-    marginBottom: 20,
+    marginVertical: 5,
     backgroundColor: COLORS.bg,
     paddingHorizontal: 15,
     borderRadius: 12,
@@ -92,9 +112,12 @@ export const styles = StyleSheet.create({
   eliiminardocumento: {
     padding: 10,
     borderRadius: 14,
-    backgroundColor: COLORS.red,
+    backgroundColor: COLORS.blue2,
   },
   icon: {
     marginRight: 5,
+  },
+  content: {
+    marginBottom: Platform.OS === "ios" ? 45 : 65,
   },
 });

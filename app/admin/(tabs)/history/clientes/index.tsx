@@ -67,17 +67,28 @@ export default function ClientScreen() {
           showsVerticalScrollIndicator={false}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => {
-            const vigenciaDate = item.contratos && item.contratos[0] ? parseISO(item.contratos[0].fechaFin) : new Date();
-            const today = new Date();
-            const daysUntilVigencia = differenceInDays(vigenciaDate, today);
+            let closestContract = null;
+            let closestDaysUntilVigencia = Infinity;
+            if (item.contratos) {
+              item.contratos.forEach((contrato) => {
+                const vigenciaDate = parseISO(contrato?.fechaFin);
+                const today = new Date();
+                const daysUntilVigencia = differenceInDays(vigenciaDate, today);
+                if (daysUntilVigencia < closestDaysUntilVigencia) {
+                  closestContract = contrato;
+                  closestDaysUntilVigencia = daysUntilVigencia;
+                }
+              });
+            }
+          
             let statusText;
             let color;
             let backgroundColor;
-            if (daysUntilVigencia < 0) {
+            if (closestDaysUntilVigencia < 0) {
               statusText = "Vencido";
               color = COLORS.red2;
               backgroundColor = COLORS.red;
-            } else if (daysUntilVigencia < 5) {
+            } else if (closestDaysUntilVigencia < 5) {
               statusText = "Por Vencer";
               color = COLORS.wellow;
               backgroundColor = COLORS.wellowlg;

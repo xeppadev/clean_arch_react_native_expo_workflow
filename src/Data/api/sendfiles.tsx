@@ -1,15 +1,17 @@
 // api.ts
 import axios from "axios";
-
+import * as SecureStore from "expo-secure-store";
 type queries = {
   query1: string;
   query2: string | undefined;
 };
 
 export async function sendToExternalApi(formData: FormData, queries: queries) {
+  const token = await SecureStore.getItemAsync("token");
+  const apiUrl = process.env.EXPO_PUBLIC_API_URL;
   try {
     const response = await axios.post(
-      "http://192.168.18.204:4500/documentos/upload",
+      `${apiUrl}/documentos/upload`,
       formData,
       {
         params: {
@@ -18,6 +20,8 @@ export async function sendToExternalApi(formData: FormData, queries: queries) {
         },
         headers: {
           "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}` 
+          
         },
       }
     );

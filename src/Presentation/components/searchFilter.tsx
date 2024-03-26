@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    padding: Platform.OS === "ios" ? 14 : 10,
+    padding: Platform.OS === "ios" ? 16 : 10,
     color: "#424242",
   },
   item: {

@@ -92,7 +92,7 @@ const DocumentComponent = ({
               styles.input,
               {
                 flexDirection: "row",
-                maxWidth: Platform.OS === "ios" ? 275 : 260,
+                width: "70%",
                 paddingVertical: Platform.OS === "ios" ? 14 : 12.4,
               },
             ]}
@@ -143,6 +143,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 15,
     borderRadius: 12,
     fontSize: 14,
+    
   },
   placeholderStyle: {
     color: COLORS.gray,

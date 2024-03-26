@@ -293,7 +293,7 @@ const DetallesComponent = () => {
           <Text style={styles.buttonText}>Confirmar</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.button, { backgroundColor: COLORS.redst }]}
+          style={[styles.button, { backgroundColor: COLORS.red3}]}
           onPress={() => {
             // Cambia el estado de denegado a true
             formikRef.current?.setFieldValue("denegado", true);
@@ -427,7 +427,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: Platform.OS === "ios" ? 13 : 11,
+    padding: Platform.OS === "ios" ? 15 : 11,
     paddingHorizontal: 13,
     marginVertical: 7,
     backgroundColor: COLORS.bg,

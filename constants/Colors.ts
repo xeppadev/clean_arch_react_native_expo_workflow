@@ -36,6 +36,7 @@ export const COLORS = {
   wellowlg: "#FFF8E0",
   red: "#FCDDDD",
   red2: "#910C0C",
+  red3: "#ED2121",
   bg: "#f7f7f9",
   green: "#1DB65A",
   green2: "#E1FAEB",

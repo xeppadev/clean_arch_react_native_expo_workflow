@@ -30,7 +30,7 @@ export class RegistrarCalendarSolicitud {
 
   async onSubmit(values: FormValues) {
 
-    console.log(values);
+    
     const { data } = await this.cambiarEstadoMantenimiento.cambiarEstadoMantenimiento({
       variables: {
         denegado: values.denegado,

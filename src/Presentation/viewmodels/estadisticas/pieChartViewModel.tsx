@@ -49,6 +49,6 @@ export function usePieChartViewModel(startDate: string, months: number) {
     
   });
 
-  console.log(pieData);
+  
   return { pieData, loading, error, refetch };
 }

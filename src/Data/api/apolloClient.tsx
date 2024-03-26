@@ -7,13 +7,16 @@ import * as SecureStore from "expo-secure-store";
 import { createClient } from "graphql-ws";
 import { PropsWithChildren } from "react";
 
+const graphqlUri = process.env.EXPO_PUBLIC_API_GRAPHQL_URL
+const graphqlWsUri = process.env.EXPO_PUBLIC_WS_GRAPHQL_URL || "";
+
 const httpLink = new HttpLink({
-  uri: "http://192.168.18.204:4500/graphql",
+  uri: graphqlUri,
 });
 
 const wsLink = new GraphQLWsLink(
   createClient({
-    url: "ws://192.168.18.204:4500/graphql",
+    url: graphqlWsUri,
     retryAttempts: 100000, 
     lazy: true,
     connectionParams: async () => {
