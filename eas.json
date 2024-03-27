@@ -1,0 +1,37 @@
+{
+  "cli": {
+    "version": ">= 7.6.1"
+  },
+  "build": {
+    "preview": {
+      "android": {
+        "buildType": "apk"
+      },
+      "ios": {
+        "simulator": true
+      }
+    },
+    "preview2": {
+      "android": {
+        "gradleCommand": ":app:assembleRelease"
+      }
+    },
+    "preview3": {
+      "developmentClient": true
+    },
+    "preview4": {
+      "distribution": "internal"
+    },
+    "production": {
+      
+      "env": {
+        "EXPO_PUBLIC_API_GRAPHQL_URL": "https://espejo.workflowdt.cloud/graphql",
+        "EXPO_PUBLIC_WS_GRAPHQL_URL": "https://espejo.workflowdt.cloud/graphql",
+        "EXPO_PUBLIC_API_URL": "https://espejo.workflowdt.cloud"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

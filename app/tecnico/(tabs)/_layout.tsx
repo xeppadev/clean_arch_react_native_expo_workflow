@@ -2,7 +2,7 @@ import React from "react";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import TimeHeader from "@/src/Presentation/components/timeHeader";
 import { Link, Tabs } from "expo-router";
-import { Pressable, Platform, View, Modal } from "react-native";
+import { Pressable, Platform, View, Modal, KeyboardAvoidingView } from "react-native";
 import ScreenHeader from "@/src/Presentation/components/screenHeader";
 import Colors, { COLORS } from "@/constants/Colors";
 import { useColorScheme } from "@/components/useColorScheme";
@@ -27,17 +27,23 @@ export default function TabLayout() {
   const [modalVisible, setModalVisible] = React.useState(false);
 
   return (
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
+    >
     <View style={{ flex: 1 }}>
       <Tabs
         screenOptions={{
           tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
-
+      
           // to prevent a hydration error in React Navigation v6.
           headerShown: useClientOnlyValue(false, true),
           headerStyle: { backgroundColor: "#f7f7f9" },
           headerShadowVisible: false,
+        
           tabBarStyle: {
             height: Platform.OS === 'android' ? 55 : 80, // Aumenta la altura para Android
+            position: "absolute",
           },
           tabBarLabelStyle: {
             marginBottom: Platform.OS === 'android' ? 6 : 0, // Reduce el margen inferior para Android
@@ -196,5 +202,6 @@ export default function TabLayout() {
         <ModalScreen setModalVisible={setModalVisible} />
       </Modal>
     </View>
+    </KeyboardAvoidingView>
   );
 }

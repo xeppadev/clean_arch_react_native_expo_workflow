@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Platform, StyleSheet, Pressable,TouchableOpacity } from "react-native";
+import { Platform, StyleSheet, Pressable } from "react-native";
 import { Text, View } from "@/components/Themed";
 import { BlurView } from "expo-blur";
 import { useRouter } from "expo-router";

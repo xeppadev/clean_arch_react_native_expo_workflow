@@ -1,70 +1,70 @@
-import {  Pressable, Platform } from "react-native"
-import TextInputs from "./textInput"
-import DateTimePickerModal from "react-native-modal-datetime-picker"
-import { format } from "date-fns"
-import React from "react"
+import React, { useState } from "react";
+import { Pressable, Platform } from "react-native";
+import TextInputs from "./textInput";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { format } from "date-fns";
 
-/**
- * CalendarComponent es un componente de React que renderiza un selector de fecha y hora.
- *
- * @param {Object} props Las propiedades del componente.
- * @param {Object} props.values Los valores del formulario.
- * @param {Function} props.setFieldValue La función para establecer el valor de un campo del formulario.
- * @param {Function} props.onBlur La función a ejecutar cuando el campo pierde el foco.
- * @returns {JSX.Element} El componente CalendarComponent renderizado.
- */
 interface CalendarComponentProps {
-    values:  Date | string ;
-    setFieldValue: (field: string, value: any, shouldValidate?: boolean) => void;
-    onBlur: (e: any) => void;
-    state: string;
-  }
+  values: Date | string;
+  setFieldValue: (field: string, value: any, shouldValidate?: boolean) => void;
+  onBlur: (e: any) => void;
+  state: string;
+}
 
+const CalendarComponent = ({
+  values,
+  setFieldValue,
+  onBlur,
+  state,
+}: CalendarComponentProps) => {
+  const [open, setOpen] = useState(false);
+  const [dateSelected, setDateSelected] = useState(false);
 
+  const handleDateChange = (event: any, selectedDate: Date | undefined) => {
+    const currentDate = selectedDate || values;
+    setOpen(Platform.OS === 'ios');
+    setFieldValue(state, currentDate);
+    setDateSelected(true);
+  };
 
-const CalendarComponent = ({ values, setFieldValue, onBlur, state } :CalendarComponentProps) => {
-  const [open, setOpen] = React.useState(false)
+  const handleTimeChange = (event: any, selectedTime: Date | undefined) => {
+    const currentTime = selectedTime || values;
+    setOpen(Platform.OS === 'ios');
+    setFieldValue(state, currentTime);
+    setDateSelected(false);
+  };
+
   return (
     <>
-      {Platform.OS === "ios" ? (
+      <Pressable onPress={() => setOpen(true)}>
         <TextInputs
           placeholder="Seleccione la fecha y hora"
           style={{ color: "black" }}
-          onPressOut={() => setOpen(true)}
           value={values ? format(values, "dd MMM yyyy HH:mm") : ""}
           onBlur={onBlur}
           editable={false}
         />
-      ) : (
-        <Pressable onPress={() => setOpen(true)}>
-          <TextInputs
-            placeholder="Seleccione la fecha y hora"
-            style={{ color: "black" }}
-            value={
-              values ? format(values, "dd MMM yyyy HH:mm") : ""
-            }
-            onBlur={onBlur}
-            editable={false}
-          />
-        </Pressable>
-      )}
-
-    <DateTimePickerModal
-        display="inline"
-        mode="datetime"
-        isVisible={open}
-
-        date={values ? new Date(values) : undefined}
-        onConfirm={date => {
-            setOpen(false)
-            setFieldValue(state, date)
-        }}
-        onCancel={() => {
-            setOpen(false)
-        }}
-    />
+      </Pressable>
+      {open && !dateSelected ? (
+        <DateTimePicker
+          display="inline"
+          mode="date"
+          testID="dateTimePicker"
+          value={values ? new Date(values) : new Date()}
+          onChange={handleDateChange}
+        />
+      ) : null}
+      {open && dateSelected ? (
+        <DateTimePicker
+          display="inline"
+          mode="time"
+          testID="dateTimePicker"
+          value={values ? new Date(values) : new Date()}
+          onChange={handleTimeChange}
+        />
+      ) : null}
     </>
-  )
-}
+  );
+};
 
-export default CalendarComponent
+export default CalendarComponent;

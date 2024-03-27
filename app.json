@@ -12,9 +12,12 @@
       "resizeMode": "contain",
       "backgroundColor": "#050E20"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.cristhianjprz.workflowapp"
     },
     "android": {
       "adaptiveIcon": {
@@ -33,15 +36,21 @@
       "expo-router",
       "expo-secure-store",
       "expo-font"
-      
     ],
     "androidNavigationBar": {
       "barStyle": "light-content",
       "backgroundColor": "#ffffff"
-      
     },
     "experiments": {
       "typedRoutes": false
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "456c532a-c947-4757-b470-d2b74aebf626"
+      }
     }
   }
 }

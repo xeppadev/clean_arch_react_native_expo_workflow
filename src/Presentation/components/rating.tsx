@@ -72,8 +72,7 @@ const Rating = ({values,setFieldValue,handleBlur }: RatingProps) => {
                             //convertir a string
                             const averageString = average?.toString();
 
-                            console.log("estados", newEstados);
-                            console.log("average", average);
+                           
                             // Establecer el promedio en otro campo del estado
                             setFieldValue("average", averageString);
                           }}
