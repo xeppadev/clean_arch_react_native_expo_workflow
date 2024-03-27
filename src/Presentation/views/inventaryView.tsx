@@ -2,7 +2,7 @@ import {
   StyleSheet,
   FlatList,
   Platform,
-   TextInput,
+  TextInput,
   RefreshControl,
   ActivityIndicator,
   Text,
@@ -26,7 +26,7 @@ export default function InventoryPage() {
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-         <ActivityIndicator size="large" color={COLORS.blue2} />
+        <ActivityIndicator size="large" color={COLORS.blue2} />
       </View>
     );
   }
@@ -104,9 +104,7 @@ export default function InventoryPage() {
                 />
               </View>
               <View style={styles.dates}>
-                <Text
-                  style={styles.listItemTitle}
-                >{`${capitalizeFirstLetter(
+                <Text style={styles.listItemTitle}>{`${capitalizeFirstLetter(
                   item.producto || ""
                 )} (${item.marca})`}</Text>
                 <Text style={styles.listItemStatus}>ID:{item.id}</Text>
@@ -114,7 +112,7 @@ export default function InventoryPage() {
               <View
                 style={[
                   styles.icon,
-                  { backgroundColor: backgroundColor, paddingVertical: 3},
+                  { backgroundColor: backgroundColor, paddingVertical: 3 },
                 ]}
               >
                 <Text
@@ -135,7 +133,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: COLORS.bg,
     paddingHorizontal: 18,
-    
+
     flex: 1,
   },
   listItem: {

@@ -27,10 +27,7 @@ export default function TabLayout() {
   const [modalVisible, setModalVisible] = React.useState(false);
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={{ flex: 1 }}
-    >
+   
     <View style={{ flex: 1 }}>
       <Tabs
         screenOptions={{
@@ -43,7 +40,7 @@ export default function TabLayout() {
         
           tabBarStyle: {
             height: Platform.OS === 'android' ? 55 : 80, // Aumenta la altura para Android
-            position: "absolute",
+           
           },
           tabBarLabelStyle: {
             marginBottom: Platform.OS === 'android' ? 6 : 0, // Reduce el margen inferior para Android
@@ -202,6 +199,6 @@ export default function TabLayout() {
         <ModalScreen setModalVisible={setModalVisible} />
       </Modal>
     </View>
-    </KeyboardAvoidingView>
+   
   );
 }
