@@ -73,7 +73,7 @@ export class RegistrarAutoViewModel {
     });
     const dataFromMutation = result.data?.crear_auto;
     await sendToExternalApi(formData, {
-      query1: "autos",
+      query1: "cars",
       query2: dataFromMutation,
     });
   }

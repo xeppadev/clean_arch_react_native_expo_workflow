@@ -22,29 +22,40 @@ const CalendarComponent = ({
 
   const handleDateChange = (event: any, selectedDate: Date | undefined) => {
     const currentDate = selectedDate || values;
-    setOpen(Platform.OS === 'ios');
+    setOpen(false);
     setFieldValue(state, currentDate);
     setDateSelected(true);
   };
 
   const handleTimeChange = (event: any, selectedTime: Date | undefined) => {
     const currentTime = selectedTime || values;
-    setOpen(Platform.OS === 'ios');
+    setOpen(false);
     setFieldValue(state, currentTime);
     setDateSelected(false);
   };
 
   return (
     <>
-      <Pressable onPress={() => setOpen(true)}>
+      {Platform.OS === "ios" ? (
         <TextInputs
           placeholder="Seleccione la fecha y hora"
-          style={{ color: "black" }}
+          onPressOut={() => setOpen(true)}
           value={values ? format(values, "dd MMM yyyy HH:mm") : ""}
           onBlur={onBlur}
           editable={false}
         />
-      </Pressable>
+      ) : (
+        <Pressable onPressOut={() => setOpen(true)}>
+          <TextInputs
+            placeholder="Seleccione la fecha y hora"
+            value={
+              values ? format(values, "dd MMM yyyy HH:mm") : ""
+            }
+            onBlur={onBlur}
+            editable={false}
+          />
+        </Pressable>
+      )}
       {open && !dateSelected ? (
         <DateTimePicker
           display="inline"
