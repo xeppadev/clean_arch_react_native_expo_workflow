@@ -20,4 +20,9 @@ export const validationSchemaCompletado = yup.object().shape({
     then: (schema) => schema.min(1, "Se requiere al menos un repuesto"),
     
   }),
+  fechaFin : yup.string().when("estado", {
+    is: (estado: string) => estado === "aprobado",
+    then: (schema) => schema.required("Fecha de finalización es requerida"),
+    
+  }),
 });

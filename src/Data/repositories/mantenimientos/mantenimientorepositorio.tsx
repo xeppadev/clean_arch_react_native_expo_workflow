@@ -45,7 +45,7 @@ export const MANTEN_INFO_ID = gql(/* GraphQL */ `
       tipo
     }
   }
-` );
+`);
 
 export const MANTENIMIENTOS_POR_PLACA = gql(/* GraphQL */ `
   query Mantenimiento_Info_por_Placa($placa: String!) {
@@ -118,10 +118,12 @@ export const COMPLETAR_MANTENIMIENTO = gql(/* GraphQL */ `
   mutation Completar_mantenimiento(
     $completarMantenimientoId: String!
     $diagnosticoFinal: String!
+    $fechaFin: DateTime!
   ) {
     completar_mantenimiento(
       id: $completarMantenimientoId
       diagnosticoFinal: $diagnosticoFinal
+      fechaFin: $fechaFin
     )
   }
 `);

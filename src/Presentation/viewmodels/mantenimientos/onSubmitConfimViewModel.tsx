@@ -12,6 +12,7 @@ interface FormValues {
   kmPrevio: number | null | undefined;
   kmMedido: number | null | undefined;
   fechaInicio: string;
+  fechaFin: string;
   fechaSoat: string;
   fecha: string;
   cliente: string | null | undefined;
@@ -39,6 +40,7 @@ export class RegistrarConfirmarMantenimiento {
         variables: {
           completarMantenimientoId: values._id,
           diagnosticoFinal: values.diagnosticoFinal,
+          fechaFin: values.fechaFin,
         },
       });
       dataFromMutation = result.data?.completar_mantenimiento;

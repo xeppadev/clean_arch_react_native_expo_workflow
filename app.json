@@ -22,7 +22,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#050E20"
       },
       "package": "work_flow.app2024",
       "googleServicesFile": "./google-services.json"

@@ -5,9 +5,9 @@ import ModalComponent from "@/src/Presentation/components/modalFiles";
 import DocumentComponent from "../../components/document";
 import SearchFilter from "../../components/searchFilter";
 import { validationSchemaCompletado } from "../../viewmodels/validation/formulaCompletado";
+import CalendarComponent from "../../components/calendar";
 // Importa los estilos
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import DropdownComponent from "@/src/Presentation/components/dropdown";
 import TitleIcon from "@/src/Presentation/components/titleIcon";
 import {
   Text,
@@ -65,6 +65,7 @@ const DetallesTask = () => {
       kmMedido: number | null | undefined;
       fechaInicio: string;
       fechaSoat: string;
+      fechaFin: string;
       fecha: string;
       cliente: string | null | undefined;
       files: any[];
@@ -135,6 +136,7 @@ const DetallesTask = () => {
                 kmPrevio: data?.kmPrevio,
                 kmMedido: data?.kmMedido,
                 fechaInicio: data?.fechaInicio,
+                fechaFin: "",
                 fechaSoat: data?.fechaSoat,
                 fecha: data?.fecha,
                 cliente: data?.cliente,
@@ -198,6 +200,20 @@ const DetallesTask = () => {
                     )}
                     editable={false}
                   />
+                  {data?.estado === "aprobado" && (
+                    <>
+                      <TitleIcon title="Fecha Terminado" icon="calendar" />
+                      <CalendarComponent
+                        values={values.fechaFin}
+                        setFieldValue={setFieldValue}
+                        onBlur={() => handleBlur("fechaFin")}
+                        state="fechaFin"
+                      />
+                      {errors.fechaFin && touched.fechaFin && (
+                        <Text style={styles.error}>{errors.fechaFin}</Text>
+                      )}
+                    </>
+                  )}
                   <TitleIcon title="Anotaciones" icon="pencil" />
                   <TextInputs
                     value={data?.anotaciones || ""}
