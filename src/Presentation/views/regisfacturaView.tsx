@@ -184,7 +184,7 @@ const RegistrarFactura = ({ tipouser }: { tipouser: string }) => {
                       <TitleIcon title="Cliente" icon="user" />
                       <DropdownComponent
                         onBlur={() => handleBlur("dateInput")}
-                        placeholder="Seleccione una placa"
+                        placeholder="Seleccione una Cliente"
                         data={clientes || []}
                         value={values.dateInput}
                         onChange={(item) =>
@@ -335,5 +335,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: COLORS.white,
   },
 });

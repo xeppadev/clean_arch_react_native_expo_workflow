@@ -17,6 +17,7 @@ import {
   TouchableWithoutFeedback,
   RefreshControl,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import { validationSchemaPlacas } from "../../viewmodels/validation/formularplacas";
 import { Formik } from "formik";
@@ -32,8 +33,11 @@ import { RegistrarAutoViewModel } from "../../viewmodels/cars/onSubmit";
  */
 
 const RegistrarUnidad = () => {
+  // Define refeching para el formulario.
+  const [refreshing, setRefreshing] = React.useState(false);
+
   // Define el estado para los tipos de mantenimiento.
-   const formikRef = React.useRef<
+  const formikRef = React.useRef<
     FormikProps<{
       tipocontrato: string;
       placa: string;
@@ -61,6 +65,30 @@ const RegistrarUnidad = () => {
   // Trae los tipos de Contrato
   const mantenimientos = viewModelregistrar.getContratos();
 
+  //Define los clientes para el select
+  const {
+    refetch: refetchClientes,
+    loading: loadingClientes,
+    error: errorClientes,
+    clientes,
+  } = viewModelregistrar.clientes;
+
+  //Define la función de refetch para refrescar los datos.
+  const onRefetch = React.useCallback(() => {
+    setRefreshing(true);
+    refetchClientes().then(() => setRefreshing(false));
+  }, []);
+
+  // Define ela carga de datos iniciales.
+
+  if (loadingClientes) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator size="large" color={COLORS.blue2} />
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <KeyboardAwareScrollView
@@ -74,6 +102,9 @@ const RegistrarUnidad = () => {
         extraScrollHeight={50}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefetch} />
+        }
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={styles.container2}>
@@ -171,12 +202,12 @@ const RegistrarUnidad = () => {
                   )}
 
                   <TitleIcon title="Cliente" icon="user" />
-
-                  <TextInputs
-                    placeholder="Ingrese el Cliente"
-                    onChangeText={handleChange("cliente")}
-                    onBlur={handleBlur("cliente")}
+                  <DropdownComponent
+                    onBlur={() => handleBlur("cliente")}
+                    placeholder="Seleccione una Cliente"
+                    data={clientes || []}
                     value={values.cliente}
+                    onChange={(item) => handleChange("cliente")(item.value)}
                   />
 
                   {errors.cliente && touched.cliente && (
@@ -300,5 +331,11 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 20,
     fontWeight: "600",
+  },
+  center: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: COLORS.white,
   },
 });

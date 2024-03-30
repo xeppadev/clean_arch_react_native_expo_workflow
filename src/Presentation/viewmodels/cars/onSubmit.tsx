@@ -2,7 +2,7 @@ import { format } from "date-fns";
 import { sendToExternalApi } from "@/src/Data/api/sendfiles";
 import { Platform } from "react-native";
 import { useRegistrarAutoViewModel } from "./registrarplacasViewModel";
-
+import { useSoloClientesViewModel } from "../clientes/soloclientesViewModel";
 // Define una interfaz para los valores del formulario
 interface FormValues {
   tipocontrato: string;
@@ -33,6 +33,9 @@ export class RegistrarAutoViewModel {
       { label: "Pago Mantenimiento 3", value: "Pago Mantenimiento 3" },
     ];
   }
+
+   // Trae los clientes para el select
+   clientes = useSoloClientesViewModel();
 
   async onSubmit(values: FormValues) {
     const fechaSoat = format(
