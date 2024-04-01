@@ -12,9 +12,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#050E20"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.cristhianjprz.workflowapp"
@@ -35,7 +33,13 @@
     "plugins": [
       "expo-router",
       "expo-secure-store",
-      "expo-font"
+      "expo-font",
+      [
+        "onesignal-expo-plugin",
+        {
+          "mode": "development"
+        }
+      ]
     ],
     "androidNavigationBar": {
       "barStyle": "light-content",
@@ -50,7 +54,8 @@
       },
       "eas": {
         "projectId": "456c532a-c947-4757-b470-d2b74aebf626"
-      }
+      },
+      "oneSignalAppId": "53544c67-6fbf-4324-bd8a-4f66224c9f22"
     }
   }
 }

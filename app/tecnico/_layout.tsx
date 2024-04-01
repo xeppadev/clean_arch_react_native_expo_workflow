@@ -2,6 +2,9 @@ import { Redirect, Stack } from "expo-router";
 import { useSession } from "@/src/Presentation/hooks/useSession";
 import { ActivityIndicator, View, StyleSheet, Platform } from "react-native";
 import { COLORS } from "@/constants/Colors";
+import { LogLevel, OneSignal } from "react-native-onesignal";
+import Constants from "expo-constants";
+import { useEffect } from "react";
 
 export default function AppLayout() {
   const { session, isLoading, userType } = useSession();
@@ -13,15 +16,20 @@ export default function AppLayout() {
       </View>
     );
   }
+  useEffect(() => {
+    // Config OneSignal
+    OneSignal.Debug.setLogLevel(LogLevel.Verbose);
+    OneSignal.initialize("53544c67-6fbf-4324-bd8a-4f66224c9f22");
+    // Also need enable notifications to complete OneSignal setup
+    OneSignal.Notifications.requestPermission(true);
+    // If the user is logged in, set their ID and user type in OneSignal
+    if (session) {
+      OneSignal.User.addTags({ userType: userType });
+    }
+  }, []);
+  
 
-  // console.log(dataEnd);
-  // // Comprueba si el token ha expirado
-  // const currentTimestamp = Math.floor(Date.now() / 1000);
-  // if (dataEnd && dataEnd < currentTimestamp) {
-  //   return <Redirect href="/" />;
-  // }
 
-  // Only require authentication within the (app) group's layout as users
   // need to be able to access the (auth) group and sign in again.
   if (!session) {
     // On web, static rendering will stop here as the user is not authenticated
@@ -99,26 +107,20 @@ export default function AppLayout() {
           headerTitle: "",
           headerBackTitleVisible: false, // Esto ocultará el título de la ruta a la que se regresa
         }}
-
       />
-        <Stack.Screen
+      <Stack.Screen
         name="[detalles]"
         options={{
-         
           headerTitle: "Detalles Mantenimiento",
           headerTransparent: Platform.OS === "ios" ? true : false,
           headerBlurEffect: "regular",
           presentation: "modal",
-          
+
           headerShadowVisible: false,
 
           headerBackTitle: "Inicio",
-
         }}
       />
-
-
-       
     </Stack>
   );
 }

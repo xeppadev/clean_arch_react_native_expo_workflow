@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     width: "100%", // Ancho del modal
     paddingHorizontal: 20, // Espacio interior a los lados del contenido
 
-    paddingBottom: 25, // Espacio inferior del contenido
+    paddingBottom: 5, // Espacio inferior del contenido
     paddingTop: 25, // Espacio superior del contenido
   },
   openButton: {
