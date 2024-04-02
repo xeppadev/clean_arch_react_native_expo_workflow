@@ -1,4 +1,4 @@
-rootProject.name = 'workflow-app'
+rootProject.name = 'Workflow'
 
 dependencyResolutionManagement {
   versionCatalogs {
