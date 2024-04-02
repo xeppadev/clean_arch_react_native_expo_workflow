@@ -1,11 +1,18 @@
 import { Redirect, Stack } from "expo-router";
-
-import { ActivityIndicator, View, StyleSheet, Platform, Text } from "react-native";
+import {
+  ActivityIndicator,
+  View,
+  StyleSheet,
+  Platform,
+  Text,
+} from "react-native";
 import { COLORS } from "@/constants/Colors";
 import { useSession } from "@/src/Presentation/hooks/useSession";
+import { LogLevel, OneSignal } from "react-native-onesignal";
+import Constants from "expo-constants";
 
 export default function AppLayout() {
-  const { session, isLoading, userType, dataEnd } = useSession();
+  const { session, isLoading, userType } = useSession();
 
   // You can keep the splash screen open, or render a loading screen like we do here.
   if (isLoading) {
@@ -16,11 +23,15 @@ export default function AppLayout() {
     );
   }
 
-  // // Comprueba si el token ha expirado
-  // const currentTimestamp = Math.floor(Date.now() / 1000);
-  // if (dataEnd && dataEnd < currentTimestamp) {
-  //   return <Redirect href="/" />;
-  // }
+  // Config OneSignal
+  OneSignal.Debug.setLogLevel(LogLevel.Verbose);
+  OneSignal.initialize(Constants.expoConfig?.extra?.oneSignalAppId);
+  // Also need enable notifications to complete OneSignal setup
+  OneSignal.Notifications.requestPermission(true);
+  // If the user is logged in, set their ID and user type in OneSignal
+  if (session) {
+    OneSignal.User.addTags({ userType: userType });
+  }
 
   // Only require authentication within the (app) group's layout as users
   // need to be able to access the (auth) group and sign in again.
@@ -41,7 +52,6 @@ export default function AppLayout() {
         name="(tabs)"
         options={{
           headerShown: false,
-         
         }}
       />
 
@@ -50,7 +60,6 @@ export default function AppLayout() {
         options={{
           headerTitle: "",
           headerBackTitleVisible: false, // Esto ocultará el título de la ruta a la que se regresa
-          
         }}
       />
       <Stack.Screen
@@ -60,13 +69,12 @@ export default function AppLayout() {
           headerTitle: "Programar Mantenimiento",
           headerTransparent: Platform.OS === "ios" ? true : false,
           headerBlurEffect: "regular",
-          
+
           headerLargeTitleStyle: {
-            
             fontSize: 25,
           },
           headerShadowVisible: false,
-         
+
           headerBackTitle: "Inicio",
         }}
       />
@@ -77,17 +85,16 @@ export default function AppLayout() {
           headerTitle: "Registrar Unidad",
           headerTransparent: Platform.OS === "ios" ? true : false,
           headerBlurEffect: "regular",
-          
+
           headerLargeTitleStyle: {
-            
             fontSize: 25,
           },
           headerShadowVisible: false,
-         
+
           headerBackTitle: "Inicio",
         }}
       />
-        <Stack.Screen
+      <Stack.Screen
         name="registrarfactura"
         options={{
           headerLargeTitle: true,
@@ -103,22 +110,19 @@ export default function AppLayout() {
           headerBackTitle: "Inicio",
         }}
       />
-        <Stack.Screen
+      <Stack.Screen
         name="[detalles]"
         options={{
-         
           headerTitle: "Detalles Mantenimiento",
           headerTransparent: Platform.OS === "ios" ? true : false,
           headerBlurEffect: "regular",
           presentation: "modal",
-          
+
           headerShadowVisible: false,
 
           headerBackTitle: "Inicio",
-
         }}
       />
-      
     </Stack>
   );
 }
