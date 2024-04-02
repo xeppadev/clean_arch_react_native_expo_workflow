@@ -17,11 +17,11 @@ export default function AppLayout() {
             backgroundColor: COLORS.bg,
           },
           headerRight: () => (
-            <Link href="/admin/perfil" asChild>
+            <Link href="/cliente/perfil" asChild>
               <Pressable>
                 {({ pressed }) => (
                   <ScreenHeader
-                    role={userType === "admin" ? "Admin" : ""}
+                    role={userType === "cliente" ? "Cliente" : ""}
                     profileName={session?.toString() ?? "Usuario"}
                     style={{
                       display: "flex",
@@ -38,40 +38,6 @@ export default function AppLayout() {
         }}
       />
       <Stack.Screen
-        name="personal"
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="repuestos"
-        options={{
-          headerStyle: {
-            backgroundColor:
-              Platform.OS === "android" ? COLORS.bg2 : "transparent",
-          },
-          headerTitle: "Repuestos",
-          headerLargeTitle: true,
-          headerTransparent: Platform.OS === "ios" ? true : false,
-          headerBlurEffect: "regular",
-          
-          headerBackTitle: "Historial",
-          headerShadowVisible: false,
-        }}
-      />
-      <Stack.Screen
-        name="vehiculos"
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="clientes"
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
         name="mantenimientos"
         options={{
           headerStyle: {
@@ -79,7 +45,23 @@ export default function AppLayout() {
               Platform.OS === "android" ? COLORS.bg2 : "transparent",
           },
           headerTitle: "Detalles",
-          headerTitleAlign: "center",
+         headerTitleAlign: "center",
+          headerTransparent: Platform.OS === "ios" ? true : false,
+          headerBlurEffect: "regular",
+          headerBackTitle: "Vehiculo",
+          headerShadowVisible: false,
+        }}
+      />
+      <Stack.Screen
+        name="unidades"
+        options={{
+          headerStyle: {
+            backgroundColor:
+              Platform.OS === "android" ? COLORS.bg2 : "transparent",
+          },
+          headerTitle: "",
+          headerShown: false,
+
           headerTransparent: Platform.OS === "ios" ? true : false,
           headerBlurEffect: "regular",
           headerBackTitle: "Vehiculo",

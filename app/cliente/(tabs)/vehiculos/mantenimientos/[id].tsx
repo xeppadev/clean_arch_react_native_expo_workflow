@@ -78,7 +78,7 @@ export default function Mantenimientoid() {
           <View style={[styles.row, { marginBottom: 10 }]}>
             <Iconify icon="mingcute:tool-fill" size={40} color={COLORS.blue2} />
             <Text style={styles.title} numberOfLines={2}>
-              {data.tipo}
+               {data.tipo}
               {"\n"}PLACA: {data.placa}
             </Text>
           </View>
@@ -114,10 +114,7 @@ export default function Mantenimientoid() {
               </Text>
             </View>
           </View>
-          <View style={styles.column2}>
-            <Text style={styles.title2}>Mecanico:</Text>
-            <Text style={styles.title2}>{data.tecnico}</Text>
-          </View>
+          
           <View style={styles.column2}>
             <Text style={styles.title2}>Estado:</Text>
             <View
@@ -205,6 +202,7 @@ export default function Mantenimientoid() {
           marginRight={0}
           backgroundColor={COLORS.white}
         />
+
       </View>
     </ScrollView>
   );
@@ -318,10 +316,9 @@ const styles = StyleSheet.create({
     color: COLORS.bluef,
     fontFamily: "Inter_500Medium",
   },
-  center: {
-    flex: 1,
+  center: { 
+    flex: 1, 
     justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: COLORS.bg2,
-  },
+    alignItems: "center"
+     },
 });

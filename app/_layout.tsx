@@ -1,10 +1,5 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
-import {
   useFonts,
   Inter_400Regular,
   Inter_500Medium,
@@ -15,7 +10,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { Slot } from "expo-router";
 import { AuthenticationProvider } from "@/src/Presentation/context/authenticationProvider";
-import { useColorScheme } from "@/components/useColorScheme";
+
 import ApolloClientProvider from "@/src/Data/api/apolloClient";
 export {
   // Catch any errors thrown by the Layout component.
@@ -54,15 +49,11 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
-  const colorScheme = useColorScheme();
-
   return (
     <ApolloClientProvider>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <AuthenticationProvider>
-          <Slot />
-        </AuthenticationProvider>
-      </ThemeProvider>
+      <AuthenticationProvider>
+        <Slot />
+      </AuthenticationProvider>
     </ApolloClientProvider>
   );
 }

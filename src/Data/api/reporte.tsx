@@ -1,4 +1,3 @@
-// api.ts
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
 import { Platform } from "react-native";
@@ -32,14 +31,32 @@ async function saveFile(uri: string, filename: string, mimetype: string) {
   }
 }
 
-export async function DowloandFile(ruta: string, filename: string) {
-  const token = await SecureStore.getItemAsync("token");
-  const apiUrl = process.env.EXPO_PUBLIC_API_URL;
-  const result = await FileSystem.downloadAsync(
-    `${apiUrl}/documentos/download/${ruta}`,
-    FileSystem.documentDirectory + filename,
-    { headers: { Authorization: `Bearer ${token}` } }
-  );
-  const mimetype = result.headers["Content-Type"] || "application/octet-stream";
-  saveFile(result.uri, filename, mimetype);
-}
+export async function DowloandReporte(
+    cliente: string,
+    fechaDesde: string,
+    fechaHasta: string,
+    filename: string
+  ) {
+    const token = await SecureStore.getItemAsync("token");
+    const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+  
+    // Crear un objeto con las consultas
+    const queryParams = new URLSearchParams({
+      cliente,
+      fechaDesde,
+      fechaHasta,
+    });
+  
+    // Agregar las consultas a la URL
+    const url = `${apiUrl}/report?${queryParams.toString()}`;
+    
+  
+    const result = await FileSystem.downloadAsync(
+      url,
+      FileSystem.documentDirectory + filename,
+      { headers: { Authorization: `Bearer ${token}` }, }
+    );
+  
+    const mimetype = result.headers["Content-Type"] || "application/octet-stream";
+    saveFile(result.uri, filename, mimetype);
+  }

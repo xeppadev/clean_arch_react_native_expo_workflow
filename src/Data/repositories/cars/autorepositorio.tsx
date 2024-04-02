@@ -55,17 +55,24 @@ export const REGISTRAR_AUTO = gql(/* GraphQL */ `
   }
 `);
 
-
-
-export const INFO_SOME_PLACA = gql (/* GraphQL */ `
-query Obtener_info_for_placa($placa: String!) {
-  obtener_info_for_placa(placa: $placa) {
-    _id
-    fechaSoat
-    kmActual
-    cliente
+export const INFO_SOME_PLACA = gql(/* GraphQL */ `
+  query Obtener_info_for_placa($placa: String!) {
+    obtener_info_for_placa(placa: $placa) {
+      _id
+      fechaSoat
+      kmActual
+      cliente
+    }
   }
-}
-`
-);
+`);
 
+export const PLACAS_CLIENTES = gql(/* GraphQL */ `
+  query Obtener_info_placas_clientes {
+    obtener_info_placas_clientes {
+      _id
+      cliente
+      placa
+      fechaSoat
+    }
+  }
+`);

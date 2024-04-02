@@ -20,8 +20,7 @@ export function useSessionViewModel() {
     
       // Comprueba si el token ha expirado
       const currentTimestamp = Math.floor(Date.now() / 1000);
-      const currentDate = new Date();
-      console.log(currentDate);
+   
       if (exp < currentTimestamp) {
         Alert.alert("El token ha expirado");
 
@@ -48,7 +47,7 @@ export function useSessionViewModel() {
     signOut,
     dataEnd: dateEnd as number | null,
     session,
-    userType: userType as "admin" | "tecnico" | null,
+    userType: userType as "admin" | "tecnico" | "cliente" | null,
     isLoading: isLoading || isLoadingUserType || isLoadingDateEnd,
   };
 }

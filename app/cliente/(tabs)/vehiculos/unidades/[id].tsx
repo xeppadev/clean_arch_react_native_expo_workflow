@@ -6,29 +6,28 @@ import {
   StyleSheet,
   FlatList,
   Platform,
+  Pressable,
   RefreshControl,
   ActivityIndicator,
 } from "react-native";
 import { COLORS } from "@/constants/Colors";
 import { Iconify } from "react-native-iconify";
-import { useLocalSearchParams } from "expo-router";
-import { differenceInDays, parseISO, format } from "date-fns";
-import { useClientePorIdViewModel } from "@/src/Presentation/viewmodels/clientes/clienteporIdViewModel";
-import DocumentViewComponent from "@/src/Presentation/components/documentView";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useMantenimientoViewModel } from "@/src/Presentation/viewmodels/cars/vehiculosViewModel";
+import { format, parse, parseISO } from "date-fns";
 
-export default function clientid() {
+export default function Vehiculoid() {
   const { id } = useLocalSearchParams();
-  const {
-    data: cliente,
-    loading,
-    error,
-    refetch,
-  } = useClientePorIdViewModel(id as string);
+  const router = useRouter();
+  const { data, loading, error, refetch } = useMantenimientoViewModel(
+    id as string
+  );
   const [refreshing, setRefreshing] = React.useState(false);
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     refetch().then(() => setRefreshing(false));
   }, []);
+
   if (loading) {
     return (
       <View style={styles.center}>
@@ -36,7 +35,7 @@ export default function clientid() {
       </View>
     );
   }
-  if (!cliente) {
+  if (!data) {
     return (
       <View style={styles.center}>
         <Text>Sin datos</Text>
@@ -63,119 +62,110 @@ export default function clientid() {
       <View style={styles.container}>
         <View style={styles.column}>
           <View style={[styles.row, { marginBottom: 10 }]}>
-            <Iconify icon="solar:shop-2-bold" size={40} color={COLORS.blue2} />
-            <Text style={styles.title} numberOfLines={2}>
-              {cliente?.nombreCliente}
-            </Text>
+            <View style={{ flexDirection: "row" }}>
+              <Iconify icon="bxs:car" size={35} color={COLORS.blue2} />
+              <Text style={styles.title}>PLACA: {data.placa}</Text>
+            </View>
+            <View style={styles.row2}>
+              <Iconify
+                icon="iconoir:star-solid"
+                size={25}
+                color={COLORS.wellow2}
+              />
+              <Text style={styles.title}>
+                {" "}
+                {Number.isInteger(data.Puntaje)
+                  ? data.Puntaje + ".0"
+                  : data.Puntaje}{" "}
+              </Text>
+            </View>
           </View>
           <View style={styles.row}>
             <View style={styles.column2}>
-              <Text style={styles.title2}>Numero de RUC:</Text>
-              <Text style={styles.title2}>{cliente.ruc}</Text>
+              <Text style={styles.title2}>Vigencia de SOAT:</Text>
+              <Text style={styles.title2}>
+                {format(parseISO(data.fechaSoat), "dd/MM/yyyy")}
+              </Text>
             </View>
             <View style={[styles.column2, { marginLeft: 20 }]}>
-              <Text style={styles.title2}>Nombre de Contacto:</Text>
-              <Text style={styles.title2}>{cliente.nombre}</Text>
+              <Text style={styles.title2}>Vigencia de Contrato:</Text>
+              <Text style={styles.title2}>
+                {format(parseISO(data.vigenciaContrato), "dd/MM/yyyy")}
+              </Text>
             </View>
           </View>
-          <View style={styles.column2}>
-            <Text style={styles.title2}>Direccion del Cliente:</Text>
-            <Text style={styles.title2}>
-              {cliente.direccion ? cliente.direccion : "Sin direccion"}
-            </Text>
+          <View style={styles.row}>
+            <View style={styles.column2}>
+              <Text style={styles.title2}>Revisión Técnica:</Text>
+              <Text style={styles.title2}>
+                {
+                  data.Mantenimientos?.slice()
+                    .sort(
+                      (a: { fecha: string }, b: { fecha: string }) =>
+                        parseISO(b.fecha).getTime() -
+                        parseISO(a.fecha).getTime()
+                    )
+                    .map((item: { fecha: string }) =>
+                      format(parseISO(item.fecha), "dd/MM/yyyy")
+                    )[0]
+                }
+              </Text>
+            </View>
+            <View style={[styles.column2, { marginLeft: 20 }]}>
+              <Text style={styles.title2}>Kilometraje Actual:</Text>
+              <Text style={styles.title2}>{data.kmActual}.00 km</Text>
+            </View>
           </View>
-          <View style={styles.column2}>
-            <Text style={styles.title2}>Telefono de Contacto:</Text>
-            <Text style={styles.title2}>{cliente.numeroContacto}</Text>
-          </View>
-          <View style={styles.column2}>
-            <Text style={styles.title2}>Correo de Contacto:</Text>
-            <Text style={styles.title2}>{cliente.email}</Text>
-          </View>
-          <View style={styles.column2}>
-            <Text style={styles.title2}>Fecha de Registro:</Text>
-            <Text style={styles.title2}>
-              {
-                cliente.contratos
-                  ?.filter((contrato) => contrato !== null)
-                  .sort(
-                    (a, b) =>
-                      parseISO(a!.fechaInicio).getTime() -
-                      parseISO(b!.fechaInicio).getTime()
-                  )
-                  .map((item) =>
-                    format(parseISO(item!.fechaInicio), "dd/MM/yyyy")
-                  )[0]
-              }
-            </Text>
+          <View style={styles.row}>
+            <View style={[styles.column2]}>
+              <Text style={styles.title2}>Cliente:</Text>
+              <Text style={styles.title2}>{data.cliente}</Text>
+            </View>
           </View>
         </View>
-        <Text style={styles.subtitle}>Contratos Actuales</Text>
+        <Text style={styles.subtitle}>Historial de Mantenimientos</Text>
         <FlatList
           style={{ paddingTop: 8 }}
-          data={cliente ? cliente.contratos : []}
+          data={data?.Mantenimientos}
           scrollEnabled={false}
           showsVerticalScrollIndicator={false}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => {
-            const fechaFinFormatted = format(
-              parseISO(item?.fechaFin),
-              "dd/MM/yyyy"
-            );
-            const vigenciaDate = parseISO(item?.fechaFin);
-            const today = new Date();
-            const daysUntilVigencia = differenceInDays(vigenciaDate, today);
-
-            let textColor;
-            if (daysUntilVigencia >= 5) {
-              textColor = {
-                color: COLORS.green,
-                backgroundColor: COLORS.green2,
-              };
-            } else if (daysUntilVigencia <= 5 && daysUntilVigencia > 0) {
-              textColor = {
-                color: COLORS.wellow,
-                backgroundColor: COLORS.wellowlg,
-              };
-            } else {
-              textColor = {
-                color: COLORS.red2,
-                backgroundColor: COLORS.red,
-              };
-            }
             return (
-              <View style={styles.listItem}>
+              <Pressable
+                style={styles.listItem}
+                onPress={() =>
+                  router.push("/cliente/vehiculos/mantenimientos/" + item.id)
+                }
+              >
                 <View style={styles.icon}>
-                  <Iconify icon="bxs:car" size={23} color={COLORS.blue2} />
+                  <Iconify
+                    icon="bxs:car-mechanic"
+                    size={23}
+                    color={COLORS.blue2}
+                  />
                 </View>
                 <View style={styles.dates}>
-                  <Text style={styles.listItemTitle}>{item?.__typename}</Text>
+                  <Text style={styles.listItemTitle}>{item.tipo}</Text>
                   <Text style={styles.listItemTitle}>
-                    {item?.numeroContrato}
+                    {item.repuestosUsados} repuestos cambiados
                   </Text>
                 </View>
                 <View
                   style={[
                     styles.contentstatus,
-                    { backgroundColor: textColor.backgroundColor },
+                    { backgroundColor: COLORS.green2 },
                   ]}
                 >
                   <Text
-                    style={[styles.listItemStatus, { color: textColor.color }]}
+                    style={[styles.listItemStatus, { color: COLORS.green }]}
                   >
-                    {fechaFinFormatted}
+                    {format(parseISO(item.fecha), "dd/MM/yyyy")}
                   </Text>
                 </View>
-              </View>
+              </Pressable>
             );
           }}
-        />
-        <Text style={styles.subtitle}>Documentos Adicionales</Text>
-        <DocumentViewComponent
-          documents={cliente.documentos?.filter((doc): doc is string => doc !== null)}
-          marginHorizontal={0}
-          marginRight={0}
-          backgroundColor={COLORS.white}
         />
       </View>
     </ScrollView>
@@ -207,18 +197,18 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "flex-start",
+    justifyContent: "space-between",
+    width: "100%",
   },
   title: {
     fontSize: 18,
     fontWeight: "500",
     alignSelf: "center",
-    marginLeft: 10,
+    marginLeft: 5,
     color: COLORS.bluef,
   },
   title2: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "500",
     color: COLORS.bluef,
   },
@@ -261,6 +251,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     fontFamily: "Inter_500Medium",
     marginVertical: 2,
+    color: COLORS.bluef,
   },
   listItem: {
     flexDirection: "row",
@@ -278,10 +269,13 @@ const styles = StyleSheet.create({
     padding: 3,
     borderRadius: 7,
   },
-  center: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: COLORS.bg2,
+  row2: {
+    flexDirection: "row",
+    marginLeft: "auto",
+    backgroundColor: COLORS.wellowlg,
+    paddingHorizontal: 5,
+    paddingVertical: 3,
+    borderRadius: 9,
   },
+  center: { flex: 1, justifyContent: "center", alignItems: "center",backgroundColor: COLORS.bg},
 });

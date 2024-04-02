@@ -6,11 +6,13 @@ import {
   ScrollView,
   RefreshControl,
   ActivityIndicator,
+  Text,
+  View,
 } from "react-native";
 import * as React from "react";
 import { COLORS } from "@/constants/Colors";
 import { Iconify } from "react-native-iconify";
-import { Text, View } from "@/components/Themed";
+
 import { useRouter } from "expo-router";
 import { usePersonalViewModel } from "@/src/Presentation/viewmodels/personal/datapersonalViewModal";
 import { parseISO } from "date-fns";
@@ -207,5 +209,5 @@ const styles = StyleSheet.create({
     padding: 3,
     borderRadius: 7,
   },
-  center: { flex: 1, justifyContent: "center", alignItems: "center" },
+  center: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: COLORS.bg2, },
 });

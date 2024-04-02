@@ -11,7 +11,8 @@ const ScreenHeader = ({ role, profileName, style }: ScreenHeaderProps) => {
   const initials = profileName
     .split(" ")
     .map((name) => name[0])
-    .join("");
+    .join("")
+    .toUpperCase();
 
   return (
     <View style={style}>
@@ -56,6 +57,7 @@ const styles = StyleSheet.create({
     fontSize: 18, // Cambia este valor según tus necesidades
     fontWeight: "bold", // Puedes cambiar la forma del texto
     fontFamily: "Inter_500Medium",
+    
   },
   profileInfo: {
     flexDirection: "column",

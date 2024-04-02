@@ -14,18 +14,18 @@ import { COLORS } from "@/constants/Colors";
 import { Iconify } from "react-native-iconify";
 
 import { useRouter } from "expo-router";
-import { useClientesViewModel } from "@/src/Presentation/viewmodels/clientes/clientesViewModel";
+import { usePlacasClientes } from "@/src/Presentation/viewmodels/cars/obtenerplacasClientes";
 import { differenceInDays, parseISO, parse } from "date-fns";
 
-
-export default function ClientScreen() {
+export default function VehiculosScreen() {
   const router = useRouter();
   const [refreshing, setRefreshing] = React.useState(false);
-  const { data, loading, error, refetch } = useClientesViewModel();
+  const { data, loading, error, refetch } = usePlacasClientes();
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     refetch().then(() => setRefreshing(false));
   }, []);
+
   if (loading) {
     return (
       <View style={styles.center}>
@@ -47,11 +47,12 @@ export default function ClientScreen() {
       </View>
     );
   }
+
   return (
     <ScrollView
       contentInsetAdjustmentBehavior="automatic"
       showsVerticalScrollIndicator={false}
-      style={{ flex: 1, backgroundColor: COLORS.bg2 }}
+      style={{ flex: 1, backgroundColor: COLORS.bg}}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
@@ -59,7 +60,7 @@ export default function ClientScreen() {
       <View style={styles.container}>
         <View style={styles.row}>
           <Text style={styles.dataLengthText}>
-            {data?.length} Clientes encontrados
+            {data?.length} Vehiculos encontrados
           </Text>
         </View>
         <FlatList
@@ -69,28 +70,17 @@ export default function ClientScreen() {
           showsVerticalScrollIndicator={false}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => {
-            let closestContract = null;
-            let closestDaysUntilVigencia = Infinity;
-            if (item.contratos) {
-              item.contratos.forEach((contrato) => {
-                const vigenciaDate = parseISO(contrato?.fechaFin);
-                const today = new Date();
-                const daysUntilVigencia = differenceInDays(vigenciaDate, today);
-                if (daysUntilVigencia < closestDaysUntilVigencia) {
-                  closestContract = contrato;
-                  closestDaysUntilVigencia = daysUntilVigencia;
-                }
-              });
-            }
-          
+            const vigenciaDate = parseISO(item.fechaSoat);
+            const today = new Date();
+            const daysUntilVigencia = differenceInDays(vigenciaDate, today);
             let statusText;
             let color;
             let backgroundColor;
-            if (closestDaysUntilVigencia < 0) {
+            if (daysUntilVigencia < 0) {
               statusText = "Vencido";
               color = COLORS.red2;
               backgroundColor = COLORS.red;
-            } else if (closestDaysUntilVigencia < 5) {
+            } else if (daysUntilVigencia < 5) {
               statusText = "Por Vencer";
               color = COLORS.wellow;
               backgroundColor = COLORS.wellowlg;
@@ -99,23 +89,20 @@ export default function ClientScreen() {
               color = COLORS.green;
               backgroundColor = COLORS.green2;
             }
+
             return (
               <Pressable
                 style={styles.listItem}
                 onPress={() =>
-                  router.push("/admin/history/clientes/" + item._id)
+                  router.push("/cliente/vehiculos/unidades/" + item.placa)
                 }
               >
                 <View style={styles.icon}>
-                  <Iconify
-                    icon="solar:shop-2-bold"
-                    size={23}
-                    color={COLORS.blue2}
-                  />
+                  <Iconify icon="bxs:car" size={25} color={COLORS.blue2} />
                 </View>
                 <View style={styles.dates}>
-                  <Text style={styles.listItemTitle}>{item.nombreCliente}</Text>
-                  <Text style={styles.listItemStatus}>{item.nombre}</Text>
+                  <Text style={styles.listItemTitle}>PLACA: {item.placa}</Text>
+                  <Text style={styles.listItemStatus}>{item.cliente}</Text>
                 </View>
                 <View
                   style={[
@@ -123,9 +110,7 @@ export default function ClientScreen() {
                     { backgroundColor: backgroundColor },
                   ]}
                 >
-                  <Text
-                    style={[styles.listItemStatus, { color: color }]}
-                  >
+                  <Text style={[styles.listItemStatus, { color: color }]}>
                     {statusText}
                   </Text>
                 </View>
@@ -140,7 +125,7 @@ export default function ClientScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: COLORS.bg2,
+    backgroundColor: COLORS.bg,
     paddingHorizontal: 18,
     paddingTop: 9,
     flex: 1,
@@ -154,22 +139,13 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     backgroundColor: COLORS.white,
     borderRadius: 15,
-    width: "99%",
-    shadowColor: "#e5e5e5",
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.41,
-    elevation: 2,
+    width: "100%",
   },
   listItemTitle: {
     fontSize: 15,
     fontWeight: "500",
     fontFamily: "Inter_500Medium",
     marginVertical: 2,
-    color: COLORS.bluef,
   },
   listItemPlate: {
     fontSize: 14,
@@ -179,8 +155,7 @@ const styles = StyleSheet.create({
   },
   listItemStatus: {
     fontSize: 14,
-    color: COLORS.bluef,
-    fontFamily: "Inter_500Medium",
+    color: COLORS.blue,
   },
   dates: {
     flexDirection: "column",
@@ -222,7 +197,6 @@ const styles = StyleSheet.create({
     marginLeft: 5, // Añade un poco de margen si es necesario
   },
   dataLengthText: {
-    // Cambia esto al color que quieras para el texto
     fontWeight: "600",
     fontSize: 15,
     fontFamily: "Inter_500Medium",
@@ -233,5 +207,5 @@ const styles = StyleSheet.create({
     padding: 3,
     borderRadius: 7,
   },
-  center: { flex: 1, justifyContent: "center", alignItems: "center" ,backgroundColor: COLORS.bg2, },
+  center: { flex: 1, justifyContent: "center", alignItems: "center" },
 });

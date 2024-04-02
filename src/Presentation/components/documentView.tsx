@@ -21,26 +21,39 @@ import { DowloandFile } from "@/src/Data/api/upfiles";
 
 type DocumentComponentProps = {
   documents: string[] | undefined | null;
+  marginHorizontal?: number;
+  marginRight?: number;
+  backgroundColor?: string;
 };
 
-const DocumentViewComponent = ({ documents }: DocumentComponentProps) => {
- 
+const DocumentViewComponent = ({
+  documents,
+  marginHorizontal = 24,
+  marginRight = 22,
+  backgroundColor = COLORS.bg,
+}: DocumentComponentProps) => {
   return (
     <View style={styles.content}>
       {documents?.map((document, index) => {
-        const ruta = document.replace(/[\\/]/g, '/').replace(/ /g, '%20');
+        const ruta = document.replace(/[\\/]/g, "/").replace(/ /g, "%20");
         const filename = ruta.split("/").pop() || "";
       
+
         return (
-          <View key={index} style={styles.document}>
+          <View
+            key={index}
+            style={[styles.document, { marginRight: marginRight }]}
+          >
             <View
               key={index}
               style={[
                 styles.input,
                 {
+                  marginHorizontal: marginHorizontal,
                   flexDirection: "row",
                   width: "75%",
-                  paddingVertical: Platform.OS === "ios" ? 14 : 12.4,
+                  paddingVertical: 14,
+                  backgroundColor: backgroundColor,
                 },
               ]}
             >
@@ -54,7 +67,7 @@ const DocumentViewComponent = ({ documents }: DocumentComponentProps) => {
               </Text>
             </View>
             <TouchableOpacity
-              onPress={() => DowloandFile(ruta, filename  )}
+              onPress={() => DowloandFile(ruta, filename)}
               style={styles.eliiminardocumento}
             >
               <Iconify
@@ -79,13 +92,7 @@ export const styles = StyleSheet.create({
     marginHorizontal: 5,
     paddingRight: 5,
   },
-  viewtitle2: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 6,
-    marginBottom: 6,
-    marginHorizontal: 25,
-  },
+
   input: {
     marginHorizontal: 24,
     marginVertical: 5,
@@ -93,6 +100,14 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 15,
     borderRadius: 12,
     fontSize: 14,
+    shadowColor: "#e5e5e5",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
   },
   placeholderStyle: {
     color: COLORS.gray,
@@ -104,9 +119,7 @@ export const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-
-    marginRight: 22,
-    backgroundColor: COLORS.white,
+    
     borderRadius: 14,
   },
   eliiminardocumento: {
@@ -114,10 +127,9 @@ export const styles = StyleSheet.create({
     borderRadius: 14,
     backgroundColor: COLORS.blue2,
   },
-  icon: {
-    marginRight: 5,
-  },
+
   content: {
     marginBottom: Platform.OS === "ios" ? 45 : 65,
+    backgroundColor: "transparent",
   },
 });

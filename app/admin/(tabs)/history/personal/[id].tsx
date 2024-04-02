@@ -12,9 +12,9 @@ import {
 import { COLORS } from "@/constants/Colors";
 import { Iconify } from "react-native-iconify";
 import { useLocalSearchParams } from "expo-router";
-import { differenceInDays, parseISO, parse, format } from "date-fns";
+import {  parseISO,  format } from "date-fns";
 import { usePersonalIDViewModel } from "@/src/Presentation/viewmodels/personal/data_id_personalViewModal";
-
+import DocumentViewComponent from "@/src/Presentation/components/documentView";
 export default function Personalid() {
   const { id } = useLocalSearchParams();
   const {
@@ -110,7 +110,7 @@ export default function Personalid() {
               ? ((color = COLORS.green), (backgroundColor = COLORS.green2))
               : ((color = COLORS.red2), (backgroundColor = COLORS.red));
 
-              const idConsecutivo = `SALARIO-${personal?._id.slice(-3)}${String(index + 1).padStart(4, '0')}`;
+              const idConsecutivo = `SALARIO-${personal?._id?.slice(-3)}${String(index + 1).padStart(4, '0')}`;
 
             return (
               <View style={styles.listItem}>
@@ -142,6 +142,12 @@ export default function Personalid() {
           }}
         />
         <Text style={styles.subtitle}>Documentos Adicionales</Text>
+        <DocumentViewComponent
+          documents={personal.documentos?.filter((doc): doc is string => doc !== null)}
+          marginHorizontal={0}
+          marginRight={0}
+          backgroundColor={COLORS.white}
+        />
       </View>
     </ScrollView>
   );
@@ -247,5 +253,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: COLORS.bg2,
   },
 });

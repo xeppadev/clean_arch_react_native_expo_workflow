@@ -18,7 +18,8 @@ const documents = {
     "\n  query obtenerPlacas {\n    obtener_info_placas {\n      placa\n    }\n  }\n": types.ObtenerPlacasDocument,
     "\n  query Query_getPropietarios {\n    obtener_info_placas {\n      propietario\n    }\n  }\n": types.Query_GetPropietariosDocument,
     "\n  mutation Crear_auto($createCarInput: CreateCarDto!) {\n    crear_auto(createCarInput: $createCarInput)\n  }\n": types.Crear_AutoDocument,
-    "\nquery Obtener_info_for_placa($placa: String!) {\n  obtener_info_for_placa(placa: $placa) {\n    _id\n    fechaSoat\n    kmActual\n    cliente\n  }\n}\n": types.Obtener_Info_For_PlacaDocument,
+    "\n  query Obtener_info_for_placa($placa: String!) {\n    obtener_info_for_placa(placa: $placa) {\n      _id\n      fechaSoat\n      kmActual\n      cliente\n    }\n  }\n": types.Obtener_Info_For_PlacaDocument,
+    "\n  query Obtener_info_placas_clientes {\n    obtener_info_placas_clientes {\n      _id\n      cliente\n      placa\n      fechaSoat\n    }\n  }\n": types.Obtener_Info_Placas_ClientesDocument,
     "\n  query Obtener_Todos_Clientes {\n    obtener_Todos_Clientes {\n      nombre\n      nombreCliente\n      _id\n      contratos {\n        fechaFin\n      }\n    }\n  }\n": types.Obtener_Todos_ClientesDocument,
     "\n  query Obtener_Cliente_ID($obtenerClienteIdId: String!) {\n    obtener_Cliente_ID(id: $obtenerClienteIdId) {\n      _id\n      contratos {\n        fechaFin\n        fechaInicio\n        numeroContrato\n      }\n      direccion\n      documentos\n      email\n      nombre\n      nombreCliente\n      numeroContacto\n      rubro\n      ruc\n    }\n  }\n": types.Obtener_Cliente_IdDocument,
     "\n  query Obtener_Solo_Clientes {\n    obtener_Todos_Clientes {\n      nombreCliente\n    }\n  }\n": types.Obtener_Solo_ClientesDocument,
@@ -81,7 +82,11 @@ export function gql(source: "\n  mutation Crear_auto($createCarInput: CreateCarD
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\nquery Obtener_info_for_placa($placa: String!) {\n  obtener_info_for_placa(placa: $placa) {\n    _id\n    fechaSoat\n    kmActual\n    cliente\n  }\n}\n"): (typeof documents)["\nquery Obtener_info_for_placa($placa: String!) {\n  obtener_info_for_placa(placa: $placa) {\n    _id\n    fechaSoat\n    kmActual\n    cliente\n  }\n}\n"];
+export function gql(source: "\n  query Obtener_info_for_placa($placa: String!) {\n    obtener_info_for_placa(placa: $placa) {\n      _id\n      fechaSoat\n      kmActual\n      cliente\n    }\n  }\n"): (typeof documents)["\n  query Obtener_info_for_placa($placa: String!) {\n    obtener_info_for_placa(placa: $placa) {\n      _id\n      fechaSoat\n      kmActual\n      cliente\n    }\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n  query Obtener_info_placas_clientes {\n    obtener_info_placas_clientes {\n      _id\n      cliente\n      placa\n      fechaSoat\n    }\n  }\n"): (typeof documents)["\n  query Obtener_info_placas_clientes {\n    obtener_info_placas_clientes {\n      _id\n      cliente\n      placa\n      fechaSoat\n    }\n  }\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

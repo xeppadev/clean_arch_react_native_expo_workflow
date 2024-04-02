@@ -12,6 +12,8 @@ export default function useSignInViewModel() {
         router.replace("/admin");
       } else if (userType === "tecnico") {
         router.replace("/tecnico");
+      } else if (userType === "cliente") {
+        router.replace("/cliente");
       }
     }, [userType]);
   
@@ -20,4 +22,4 @@ export default function useSignInViewModel() {
     };
   
     return { handleSubmit, formikRef };
-  }
+}

@@ -61,7 +61,7 @@ export default function Vehiculoid() {
       }
     >
       <View style={styles.container}>
-        <Text style={styles.subtitle}>Detalles</Text>
+       
         <View style={styles.column}>
           <View style={[styles.row, { marginBottom: 10 }]}>
             <View style={{ flexDirection: "row" }}>
@@ -206,6 +206,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
+     width: "100%",  
   },
   title: {
     fontSize: 18,
@@ -278,11 +279,10 @@ const styles = StyleSheet.create({
   },
   row2: {
     flexDirection: "row",
-    marginLeft: Platform.OS === "ios" ? 75 : 80,
     backgroundColor: COLORS.wellowlg,
     paddingHorizontal: 5,
     paddingVertical: 3,
     borderRadius: 9,
   },
-  center: { flex: 1, justifyContent: "center", alignItems: "center" },
+  center: { flex: 1, justifyContent: "center", alignItems: "center",backgroundColor: COLORS.bg2, },
 });

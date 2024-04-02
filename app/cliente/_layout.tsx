@@ -41,7 +41,7 @@ export default function AppLayout() {
     return <Redirect href="/" />;
   }
   // Check userType and redirect if necessary
-  if (userType !== "admin") {
+  if (userType !== "cliente") {
     return <Redirect href="/" />;
   }
 
@@ -59,71 +59,10 @@ export default function AppLayout() {
         name="perfil"
         options={{
           headerTitle: "Perfil",
-          headerBackTitleVisible: false, // Esto ocultará el título de la ruta a la que se regresa
+          headerBackTitle: "Inicio",
           headerShadowVisible: false,
           headerBlurEffect: "regular",
           headerTitleAlign: "center",
-        }}
-      />
-      <Stack.Screen
-        name="progrmantenimiento"
-        options={{
-          headerLargeTitle: true,
-          headerTitle: "Programar Mantenimiento",
-          headerTransparent: Platform.OS === "ios" ? true : false,
-          headerBlurEffect: "regular",
-
-          headerLargeTitleStyle: {
-            fontSize: 25,
-          },
-          headerShadowVisible: false,
-
-          headerBackTitle: "Inicio",
-        }}
-      />
-      <Stack.Screen
-        name="regisunidad"
-        options={{
-          headerLargeTitle: true,
-          headerTitle: "Registrar Unidad",
-          headerTransparent: Platform.OS === "ios" ? true : false,
-          headerBlurEffect: "regular",
-
-          headerLargeTitleStyle: {
-            fontSize: 25,
-          },
-          headerShadowVisible: false,
-
-          headerBackTitle: "Inicio",
-        }}
-      />
-      <Stack.Screen
-        name="registrarfactura"
-        options={{
-          headerLargeTitle: true,
-          headerTitle: "Registrar Facturación",
-          headerTransparent: Platform.OS === "ios" ? true : false,
-          headerBlurEffect: "regular",
-
-          headerLargeTitleStyle: {
-            fontSize: 25,
-          },
-          headerShadowVisible: false,
-
-          headerBackTitle: "Inicio",
-        }}
-      />
-      <Stack.Screen
-        name="[detalles]"
-        options={{
-          headerTitle: "Detalles Mantenimiento",
-          headerTransparent: Platform.OS === "ios" ? true : false,
-          headerBlurEffect: "regular",
-          presentation: "modal",
-
-          headerShadowVisible: false,
-
-          headerBackTitle: "Inicio",
         }}
       />
     </Stack>
@@ -135,5 +74,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: COLORS.white,
   },
 });

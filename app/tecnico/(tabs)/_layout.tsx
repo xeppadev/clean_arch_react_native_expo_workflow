@@ -2,13 +2,14 @@ import React from "react";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import TimeHeader from "@/src/Presentation/components/timeHeader";
 import { Link, Tabs } from "expo-router";
-import { Pressable, Platform, View, Modal, KeyboardAvoidingView } from "react-native";
+import { Pressable, Platform, View, Modal} from "react-native";
 import ScreenHeader from "@/src/Presentation/components/screenHeader";
 import Colors, { COLORS } from "@/constants/Colors";
-import { useColorScheme } from "@/components/useColorScheme";
+
 import { useClientOnlyValue } from "@/components/useClientOnlyValue";
 import DateHeader from "@/src/Presentation/components/screenDay";
 import ModalScreen from "@/src/Presentation/views/tecnico/modal";
+import { useSession } from "@/src/Presentation/hooks/useSession"
 
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
@@ -21,7 +22,9 @@ export function TabBarIcon(props: {
 }
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+
+  const { session, userType } = useSession();
+ 
 
   // useState nos permite manejar el estado del modal
   const [modalVisible, setModalVisible] = React.useState(false);
@@ -31,7 +34,7 @@ export default function TabLayout() {
     <View style={{ flex: 1 }}>
       <Tabs
         screenOptions={{
-          tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
+          tabBarActiveTintColor: COLORS.blue3,
       
           // to prevent a hydration error in React Navigation v6.
           headerShown: useClientOnlyValue(false, true),
@@ -63,8 +66,8 @@ export default function TabLayout() {
                 <Pressable>
                   {({ pressed }) => (
                     <ScreenHeader
-                      role="Técnico"
-                      profileName="Pedro Suarez"
+                    role={userType === "tecnico" ? "Tecnico" : ""}
+                    profileName={session?.toString() ?? "Usuario"}
                       style={{
                         display: "flex",
                         flexDirection: "row",

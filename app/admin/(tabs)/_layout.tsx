@@ -5,12 +5,11 @@ import { Link, Tabs } from "expo-router";
 import { Pressable, Platform, View, Modal } from "react-native";
 import ScreenHeader from "@/src/Presentation/components/screenHeader";
 import Colors, { COLORS } from "@/constants/Colors";
-import { useColorScheme } from "@/components/useColorScheme";
 import { useClientOnlyValue } from "@/components/useClientOnlyValue";
 import DateHeader from "@/src/Presentation/components/screenDay";
 import ModalScreen from "@/src/Presentation/views/admin/modal";
+import { useSession } from "@/src/Presentation/hooks/useSession";
 
-import { BlurView } from 'expo-blur';
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>["name"];
@@ -21,41 +20,37 @@ function TabBarIcon(props: {
 }
 
 export default function TabLayout() {
- 
-  // useColorScheme nos permite acceder al esquema de color de la aplicación
-  const colorScheme = useColorScheme();
+  const { session, userType } = useSession();
+
   // useState nos permite manejar el estado del modal
   const [modalVisible, setModalVisible] = React.useState(false);
 
   return (
     <View style={{ flex: 1 }}>
       <Tabs
-        
         screenOptions={{
-          tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
-          
+          tabBarActiveTintColor: COLORS.blue3,
+
           headerShown: useClientOnlyValue(false, true),
           headerStyle: { backgroundColor: "#f7f7f9" },
           headerShadowVisible: false,
           tabBarStyle: {
-            height: Platform.OS === 'android' ? 55 : 80, // Aumenta la altura para Android
+            height: Platform.OS === "android" ? 55 : 80, // Aumenta la altura para Android
           },
           tabBarLabelStyle: {
-            marginBottom: Platform.OS === 'android' ? 6 : 0, // Reduce el margen inferior para Android
+            marginBottom: Platform.OS === "android" ? 6 : 0, // Reduce el margen inferior para Android
           },
           tabBarIconStyle: {
-            marginTop: Platform.OS === 'android' ? 6 : 0, // Reduce el margen superior para Android
+            marginTop: Platform.OS === "android" ? 6 : 0, // Reduce el margen superior para Android
           },
-         
         }}
-        
       >
         <Tabs.Screen
           name="home"
           options={{
             headerTitle: "",
             title: "Home",
-            
+
             tabBarIcon: ({ color }) => (
               <TabBarIcon name="home" size={28} color={color} />
             ),
@@ -64,8 +59,8 @@ export default function TabLayout() {
                 <Pressable>
                   {({ pressed }) => (
                     <ScreenHeader
-                      role="Admin"
-                      profileName="Jesus Suarez"
+                      role={userType === "admin" ? "Admin" : ""}
+                      profileName={session?.toString() ?? "Usuario"}
                       style={{
                         display: "flex",
                         flexDirection: "row",
@@ -84,8 +79,6 @@ export default function TabLayout() {
                   flexDirection: "row",
                   alignItems: "center",
                   marginLeft: 20,
-                  
-                  
                 }}
               />
             ),
@@ -99,15 +92,15 @@ export default function TabLayout() {
             tabBarIcon: ({ color }) => (
               <TabBarIcon name="calendar" size={22} color={color} />
             ),
-            headerLeft: () => <TimeHeader
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              marginLeft: 20,
-              
-              
-            }}
-          />,
+            headerLeft: () => (
+              <TimeHeader
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginLeft: 20,
+                }}
+              />
+            ),
 
             headerRight: () => <DateHeader />,
           }}

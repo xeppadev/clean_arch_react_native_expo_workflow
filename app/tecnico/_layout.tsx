@@ -88,8 +88,7 @@ export default function AppLayout() {
           headerTitle: "Registrar Facturación",
           headerTransparent: Platform.OS === "ios" ? true : false,
           headerBlurEffect: "regular",
-
-          headerLargeTitleStyle: {
+            headerLargeTitleStyle: {
             fontSize: 25,
           },
           headerShadowVisible: false,
@@ -105,6 +104,7 @@ export default function AppLayout() {
           headerBackTitleVisible: false, // Esto ocultará el título de la ruta a la que se regresa
           headerShadowVisible: false,
           headerBlurEffect: "regular",
+          headerTitleAlign: "center",
           
         }}
       />

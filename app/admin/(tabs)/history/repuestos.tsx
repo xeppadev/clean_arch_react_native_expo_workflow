@@ -7,11 +7,13 @@ import {
   TextInput,
   RefreshControl,
   ActivityIndicator,
+  Text,
+  View,
 } from "react-native";
 import React from "react";
 import { COLORS } from "@/constants/Colors";
 import { Iconify } from "react-native-iconify";
-import { Text, View } from "@/components/Themed";
+
 import { useRepuestoViewModel } from "@/src/Presentation/viewmodels/repuestos/repuestoViewModel";
 
 export default function RepuestosScreen() {

@@ -7,7 +7,6 @@ export default function AppLayout() {
         name="[id]"
         options={{
           headerShown: false,
-          
         }}
       />
     </Stack>
