@@ -2,9 +2,8 @@ import { Redirect, Stack } from "expo-router";
 import { useSession } from "@/src/Presentation/hooks/useSession";
 import { ActivityIndicator, View, StyleSheet, Platform } from "react-native";
 import { COLORS } from "@/constants/Colors";
-import { LogLevel, OneSignal  } from "react-native-onesignal";
+import { LogLevel, OneSignal } from "react-native-onesignal";
 import Constants from "expo-constants";
-
 
 export default function AppLayout() {
   const { session, isLoading, userType } = useSession();
@@ -17,8 +16,6 @@ export default function AppLayout() {
   // If the user is logged in, set their ID and user type in OneSignal
   if (session) {
     OneSignal.User.addTags({ userType: userType });
-    
-    
   }
 
   // You can keep the splash screen open, or render a loading screen like we do here.
@@ -104,8 +101,11 @@ export default function AppLayout() {
       <Stack.Screen
         name="perfil"
         options={{
-          headerTitle: "",
+          headerTitle: "Perfil",
           headerBackTitleVisible: false, // Esto ocultará el título de la ruta a la que se regresa
+          headerShadowVisible: false,
+          headerBlurEffect: "regular",
+          
         }}
       />
       <Stack.Screen

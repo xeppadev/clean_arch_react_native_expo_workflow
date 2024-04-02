@@ -10,7 +10,7 @@ export function useBarChartViewModel(inputDate: string) {
   const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
   const transformedData = data?.grafica_gastos_generales.flatMap((item) => {
-    const monthNumber = parseInt(item.mesYear.split('/')[0]) - 1; // Resta 1 porque los arrays en JavaScript empiezan en 0
+    const monthNumber = parseInt((item.mesYear ?? '1').split('/')[0]) - 1; // Resta 1 porque los arrays en JavaScript empiezan en 0
     const monthName = monthNames[monthNumber];
 
     return [
