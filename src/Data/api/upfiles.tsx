@@ -40,6 +40,7 @@ export async function DowloandFile(ruta: string, filename: string) {
     FileSystem.documentDirectory + filename,
     { headers: { Authorization: `Bearer ${token}` } }
   );
-  const mimetype = result.headers["Content-Type"] || "application/octet-stream";
-  saveFile(result.uri, filename, mimetype);
+  const mimetype = result.headers["Content-Type"];
+  saveFile(result.uri, filename, result.headers["content-type"]);
+  console.log(result);
 }

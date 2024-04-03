@@ -96,15 +96,15 @@ export default function HomeView() {
             >
               <CircularProgress
                 key={data?.cantidadTotal}
-                value={data?.cantidadCompletada ?? 0}
-                maxValue={data?.cantidadTotal ?? 0}
+                value={data?.cantidadCompletada || 0}
+                maxValue={data?.cantidadTotal || 0}
                 duration={2000}
                 progressValueColor="#ffffff"
                 radius={55}
                 inActiveStrokeOpacity={0.3}
                 inActiveStrokeColor="#ffffff"
                 activeStrokeColor="#ffffff"
-                valueSuffix={"/" + data?.cantidadTotal ?? 0}
+                valueSuffix={"/" + data?.cantidadTotal  || "0"}
                 subtitle="Completos"
                 subtitleStyle={{ color: "#ffffff" }}
                 valueSuffixStyle={{ fontSize: 14 }}

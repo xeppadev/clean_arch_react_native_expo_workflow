@@ -37,7 +37,7 @@ const DocumentViewComponent = ({
       {documents?.map((document, index) => {
         const ruta = document.replace(/[\\/]/g, "/").replace(/ /g, "%20");
         const filename = ruta.split("/").pop() || "";
-      
+       
 
         return (
           <View
