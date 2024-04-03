@@ -40,7 +40,7 @@ export async function DowloandFile(ruta: string, filename: string) {
     FileSystem.documentDirectory + filename,
     { headers: { Authorization: `Bearer ${token}` } }
   );
-  const mimetype = result.headers["Content-Type"];
-  saveFile(result.uri, filename, result.headers["content-type"]);
+  const mimetype = result.headers["content-type"] || result.headers["Content-Type"];
+  saveFile(result.uri, filename, mimetype);
   console.log(result);
 }

@@ -5,6 +5,7 @@ import { useSession } from "@/src/Presentation/hooks/useSession";
 import { sendToExternalApi } from "@/src/Data/api/sendfiles";
 import { Platform } from "react-native";
 import { useSoloPlacasViewModel } from "../cars/soloplacasViewModel";
+import { useRouter } from "expo-router";
 import axios from "axios";
 // Define una interfaz para los valores del formulario
 interface FormValues {
@@ -16,6 +17,9 @@ interface FormValues {
 }
 
 export class ProgramarMantenimientoViewModel {
+  // Define el enrutador de la aplicación
+  router = useRouter();
+
   // Define las mutaciones de Apollo Client para programar un mantenimiento.
   programarMantenimiento = useProgramarMantenimientoViewModel();
 
@@ -72,5 +76,7 @@ export class ProgramarMantenimientoViewModel {
         console.error("Axios response:", error.response);
       }
     }
+    this.router.back();
+
   }
 }

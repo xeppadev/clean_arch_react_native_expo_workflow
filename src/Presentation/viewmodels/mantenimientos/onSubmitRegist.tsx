@@ -9,6 +9,7 @@ import { useMantenimientosPorPlacaViewModel } from "./mantenimiplacaViewModel";
 import { useSomeMantenimientoViewModel } from "../cars/infoSomeplaca";
 import { useRegistrarSinMantenimientoViewModel } from "./regisinprogramarViewModel";
 import { useSession } from "@/src/Presentation/hooks/useSession";
+import { useRouter } from "expo-router";
 // Define una interfaz para los valores del formulario
 interface FormValues {
   _id: string;
@@ -27,6 +28,8 @@ interface FormValues {
 }
 
 export class RegistrarMantenimientoViewModel {
+  // Define el enrutador de la aplicación
+  router = useRouter();
   // Define las mutaciones de Apollo Client para programar un mantenimiento.
   registrarMantenimiento = useRegistrarMantenimientoViewModel();
   registrarSinMantenimiento = useRegistrarSinMantenimientoViewModel();
@@ -136,5 +139,6 @@ export class RegistrarMantenimientoViewModel {
       query1: "mantenimientos",
       query2: dataFromMutation,
     });
+    this.router.back();
   }
 }

@@ -3,6 +3,7 @@ import { sendToExternalApi } from "@/src/Data/api/sendfiles";
 import { Platform } from "react-native";
 import { useRegistrarAutoViewModel } from "./registrarplacasViewModel";
 import { useSoloClientesViewModel } from "../clientes/soloclientesViewModel";
+import { useRouter } from "expo-router";
 // Define una interfaz para los valores del formulario
 interface FormValues {
   tipocontrato: string;
@@ -19,6 +20,8 @@ finalfecha: string | Date;
 }
 
 export class RegistrarAutoViewModel {
+  // Define el enrutador de la aplicación
+  router = useRouter();
   // Define las mutaciones de Apollo Client para registrar un auto.
   registrarAuto = useRegistrarAutoViewModel();
 
@@ -79,5 +82,6 @@ export class RegistrarAutoViewModel {
       query1: "cars",
       query2: dataFromMutation,
     });
+    this.router.back();
   }
 }

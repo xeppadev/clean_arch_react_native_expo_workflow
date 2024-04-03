@@ -25,8 +25,10 @@ import { RegistrarMantenimientoViewModel } from "../../viewmodels/mantenimientos
 import { Formik, FormikProps } from "formik";
 import { COLORS } from "@/constants/Colors";
 import { format, parseISO, set } from "date-fns";
+
 // Define el componente RegistroMantenimiento
 const RegistroMantenimiento = () => {
+
   // Define refeching para el formulario.
   const [refreshing, setRefreshing] = React.useState(false);
 

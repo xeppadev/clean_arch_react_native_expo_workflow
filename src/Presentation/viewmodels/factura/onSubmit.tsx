@@ -7,6 +7,7 @@ import { useRegistrarFacturaViewModel } from "./registrarFacturaViewModel";
 import { usePropietariosViewModel } from "../cars/propietariosViewModel";
 import { FacturaViewModel } from "./tipoFactura";
 import axios from "axios";
+import { useRouter } from "expo-router";
 // Define una interfaz para los valores del formulario
 interface FormValues {
     tipoFactura: string;
@@ -20,6 +21,9 @@ interface FormValues {
 }
 
 export class RegistrarFacturaViewModel {
+    // Define el enrutador de la aplicación
+    router = useRouter();
+
     // Define las mutaciones de Apollo Client para registrar una factura.
     registrarFactura = useRegistrarFacturaViewModel();
     
@@ -79,6 +83,7 @@ export class RegistrarFacturaViewModel {
               console.error("Axios response:", error.response);
             }
           }
+          this.router.back();
     }
 }
 

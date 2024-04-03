@@ -56,6 +56,6 @@ export async function DowloandReporte(
     { headers: { Authorization: `Bearer ${token}` } }
   );
 
-  const mimetype = result.headers["content-type"] || "application/pdf";
+  const mimetype = result.headers["content-type"] || result.headers["Content-Type"];
   saveFile(result.uri, filename, mimetype);
 }
