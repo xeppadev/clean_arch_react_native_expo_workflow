@@ -2,7 +2,9 @@ import { useQuery } from "@apollo/client";
 import { OBTENER_TODO_REPUESTOS } from "@/src/Data/repositories/repuestos/repuestosrepositorio";
 
 export function useSoloRepuestoViewModel() {
-  const { data, loading, error, refetch } = useQuery(OBTENER_TODO_REPUESTOS);
+  const { data, loading, error, refetch } = useQuery(OBTENER_TODO_REPUESTOS, {
+    fetchPolicy: "cache-and-network",
+  });
 
   const repuestos = data?.obtener_todos_los_repuestos.map((item) => {
     return {
@@ -10,7 +12,7 @@ export function useSoloRepuestoViewModel() {
       id: item.id,
       marca: item.marca,
       producto: item.producto,
-      precio : item.precio
+      precio: item.precio,
     };
   });
   return { repuestos, loading, error, refetch };

@@ -256,7 +256,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     backgroundColor: COLORS.bg,
     padding: 11,
-    borderRadius: 11,
+    paddingHorizontal: 15,
+    borderRadius: 15,
     width: "60%",
   },
   dropdownContainer: {

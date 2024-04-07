@@ -14,7 +14,6 @@ export class AuthenticationRepository implements AuthenticationUseCase {
       password,
     });
     const decodedToken = jwtDecode<MyToken>(response.data.access_token);
-    console.log(decodedToken);
     await SecureStore.setItemAsync("token", response.data.access_token);
     return decodedToken;
   }

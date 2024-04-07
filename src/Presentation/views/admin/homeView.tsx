@@ -7,6 +7,7 @@ import {
   View,
   Text,
   RefreshControl,
+  TouchableOpacity,
 } from "react-native";
 import React from "react";
 import { Skeleton } from "moti/skeleton";
@@ -18,7 +19,7 @@ import { useRouter } from "expo-router";
 const nowFormatted = new Date().toISOString();
 
 export default function HomeView() {
-   // Define el enrutador para navegar a otras vistas.
+  // Define el enrutador para navegar a otras vistas.
   const router = useRouter();
   // Define refeching para el formulario.
   const [refreshing, setRefreshing] = React.useState(false);
@@ -29,6 +30,9 @@ export default function HomeView() {
     setRefreshing(true);
     refetch().then(() => setRefreshing(false));
   }, []);
+  function capitalizeFirstLetter(string: string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
 
   return (
     <View style={styles.container}>
@@ -104,7 +108,7 @@ export default function HomeView() {
                 inActiveStrokeOpacity={0.3}
                 inActiveStrokeColor="#ffffff"
                 activeStrokeColor="#ffffff"
-                valueSuffix={"/" + data?.cantidadTotal  || "0"}
+                valueSuffix={"/" + data?.cantidadTotal || "0"}
                 subtitle="Completos"
                 subtitleStyle={{ color: "#ffffff" }}
                 valueSuffixStyle={{ fontSize: 14 }}
@@ -166,7 +170,7 @@ export default function HomeView() {
           ) : (
             data?.mantenimientos.map((item, index) => {
               const texColor =
-                item.estado === "completado"|| item.estado === "aprobado"
+                item.estado === "completado" || item.estado === "aprobado"
                   ? { color: COLORS.green, backgroundColor: COLORS.green2 }
                   : item.estado === "pendiente" || item.estado === "revision"
                   ? { color: COLORS.wellow, backgroundColor: COLORS.wellowlg }
@@ -175,7 +179,20 @@ export default function HomeView() {
                   : { color: COLORS.red2, backgroundColor: COLORS.red };
 
               return (
-                <View style={styles.listItem} key={index}>
+                <TouchableOpacity
+                  style={styles.listItem}
+                  key={index}
+                  onPress={() => {
+                    if (
+                      item.estado === "pendiente" ||
+                      item.estado === "revision"
+                    ) {
+                      router.push("/admin/" + item._id);
+                    } else {
+                      router.push("/admin/history/mantenimientos/" + item._id);
+                    }
+                  }}
+                >
                   <View style={styles.icon}>
                     <Iconify
                       icon="bxs:car-mechanic"
@@ -200,10 +217,10 @@ export default function HomeView() {
                     <Text
                       style={[styles.listItemStatus, { color: texColor.color }]}
                     >
-                      {item.estado}
+                      {item.estado ? capitalizeFirstLetter(item.estado) : ""}
                     </Text>
                   </View>
-                </View>
+                </TouchableOpacity>
               );
             })
           )}

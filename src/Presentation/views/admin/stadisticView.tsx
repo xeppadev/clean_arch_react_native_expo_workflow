@@ -1,65 +1,79 @@
-import { BarChart, LineChart, PieChart } from "react-native-gifted-charts";
-import CalendarHeatmap from "../../components/calendarHeatmap";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  RefreshControl,
+} from "react-native";
 import { COLORS } from "@/constants/Colors";
 import Barchart from "./stadistics/Barchart";
 import Linechart from "./stadistics/LineChart";
 import Piechart from "./stadistics/Piechart";
+import CalendarGrafica from "./stadistics/Calendar";
+import React from "react";
+import { useCalendarViewModel } from "@/src/Presentation/viewmodels/estadisticas/calendarViewModel";
+import { useBarChartViewModel } from "@/src/Presentation/viewmodels/estadisticas/barChartViewModel";
+import { useLineChartViewModel } from "@/src/Presentation/viewmodels/estadisticas/lineChartViewModel";
+import { usePieChartViewModel } from "@/src/Presentation/viewmodels/estadisticas/pieChartViewModel";
+import { format } from "date-fns";
 export default function StadisticsScreen() {
+  // Define refeching para las graficas calendar
+  const [refreshing, setRefreshing] = React.useState(false);
+  //Define el estado de la grafica Barchart
+  const nowFormatted = format(new Date(), "yyyy-MM-dd");
+  const {
+    data: dataBarchart,
+    loading: loadingBar,
+    refetch: refetchBar,
+    error: errorBar,
+  } = useBarChartViewModel(nowFormatted);
+  //Define el estado de la grafica Linechart
+  const {
+    ingresosData,
+    egresosData,
+    loading: loadingLinechart,
+    error: errorLinechart,
+    refetch: refetchLinechart,
+  } = useLineChartViewModel(nowFormatted);
+  //Define el estado de la grafica Piechart
+  const {
+    pieData,
+    loading: loadingPieChart,
+    error: errorPieChart,
+    refetch: refetchPieChart,
+  } = usePieChartViewModel(nowFormatted, 1);
 
-
+  const { transformedData, loading, refetch, error } = useCalendarViewModel();
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    Promise.all([
+      refetch(),
+      refetchBar(),
+      refetchLinechart(),
+      refetchPieChart,
+    ]).then(() => setRefreshing(false));
+  }, []);
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <Barchart />
-      <Linechart />
-      <Piechart />
-      
-      <View style={styles.contentchart}>
-        <Text style={styles.title}>Mantenimientos Realizados</Text>
-        <CalendarHeatmap />
-
-        <View style={styles.legend}>
-          <Text style={styles.subtitle}>Numero de{"\n"}Mantenimientos</Text>
-          <View style={styles.legendrow}>
-            <View style={[styles.legendItem, { flexDirection: "column" }]}>
-              <View
-                style={[
-                  styles.legendColor,
-                  { backgroundColor: COLORS.bluelg3, width: 20, height: 20 },
-                ]}
-              />
-              <Text style={styles.legendText}>1</Text>
-            </View>
-            <View style={[styles.legendItem, { flexDirection: "column" }]}>
-              <View
-                style={[
-                  styles.legendColor,
-                  { backgroundColor: COLORS.bluelg4, width: 20, height: 20 },
-                ]}
-              />
-              <Text style={styles.legendText}></Text>
-            </View>
-            <View style={[styles.legendItem, { flexDirection: "column" }]}>
-              <View
-                style={[
-                  styles.legendColor,
-                  { backgroundColor: COLORS.bluelg, width: 20, height: 20 },
-                ]}
-              />
-              <Text style={styles.legendText}></Text>
-            </View>
-            <View style={[styles.legendItem, { flexDirection: "column" }]}>
-              <View
-                style={[
-                  styles.legendColor,
-                  { backgroundColor: COLORS.blue, width: 20, height: 20 },
-                ]}
-              />
-              <Text style={styles.legendText}>6</Text>
-            </View>
-          </View>
-        </View>
-      </View>
+    <ScrollView
+      style={styles.container}
+      showsVerticalScrollIndicator={false}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
+      <Barchart data={dataBarchart} loading={loadingBar} error={errorBar} />
+      <Linechart
+        ingresosData={ingresosData}
+        egresosData={egresosData}
+        loading={loadingLinechart}
+        error={errorLinechart}
+      />
+      <Piechart
+        pieData={pieData}
+        loading={loadingPieChart}
+        error={errorPieChart}
+      />
+      <CalendarGrafica data={transformedData} loading={loading} error={error} />
     </ScrollView>
   );
 }
@@ -69,64 +83,5 @@ const styles = StyleSheet.create({
     flex: 1,
 
     backgroundColor: COLORS.bg,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 15,
-    fontFamily: "Inter_500Medium",
-  },
-  contentchart: {
-    backgroundColor: COLORS.white,
-    marginHorizontal: 18,
-    marginBottom: 15,
-    paddingHorizontal: 15,
-    paddingVertical: 15,
-    borderRadius: 15,
-    width: "91%",
-  },
-  legend: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginVertical: 10,
-  },
-  legendItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 5,
-  },
-  legendColor: {
-    width: 15,
-    height: 15,
-    marginRight: 5,
-    borderRadius: 5,
-  },
-  legendText: {
-    fontSize: 16,
-  },
-  chart: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  subtitle: {
-    fontSize: 16,
-    fontWeight: "400",
-  },
-  titlemain: {
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 10,
-  },
-  legend2: {
-    flexDirection: "column",
-    alignItems: "flex-start",
-    justifyContent: "center",
-    marginTop: 10,
-  },
-  row: { flexDirection: "row", alignItems: "center" },
-  legendrow: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginLeft: "auto",
   },
 });

@@ -39,7 +39,7 @@ const DetallesTask = () => {
   const viewModelDetalles = new RegistrarConfirmarMantenimiento();
 
   //Trae los mantenimientos por ID
-  const { data, loading, error } = viewModelDetalles.getMantenimientosforId(
+  const { data, loading, error, refetch } = viewModelDetalles.getMantenimientosforId(
     detalles as string
   );
   // Trae la funcion de de refetch para repuestos
@@ -84,6 +84,9 @@ const DetallesTask = () => {
   //define la funcion de refetch para refrescar los datos
   const onRefetch = React.useCallback(() => {
     setRefreshing(true);
+    Promise.all([refetch(), refetchrepuestos()]).then(() =>
+      setRefreshing(false)
+    );
   }, []);
 
   if (loading || loadingRepuestos) {

@@ -45,7 +45,7 @@ const CalendarComponent = ({
           editable={false}
         />
       ) : (
-        <Pressable onPressOut={() => setOpen(true)}>
+        <Pressable onPress={() => setOpen(true)}>
           <TextInputs
             placeholder="Seleccione la fecha y hora"
             value={

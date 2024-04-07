@@ -1,10 +1,10 @@
 import React from "react";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import TimeHeader from "@/src/Presentation/components/timeHeader";
-import { Link, Tabs } from "expo-router";
+import { Link, Tabs, useNavigation } from "expo-router";
 import { Pressable, Platform, View, Modal } from "react-native";
 import ScreenHeader from "@/src/Presentation/components/screenHeader";
-import Colors, { COLORS } from "@/constants/Colors";
+import { COLORS } from "@/constants/Colors";
 import { useClientOnlyValue } from "@/components/useClientOnlyValue";
 import DateHeader from "@/src/Presentation/components/screenDay";
 import ModalScreen from "@/src/Presentation/views/admin/modal";
@@ -20,6 +20,7 @@ function TabBarIcon(props: {
 }
 
 export default function TabLayout() {
+  const navigation = useNavigation();
   const { session, userType } = useSession();
 
   // useState nos permite manejar el estado del modal
@@ -154,11 +155,22 @@ export default function TabLayout() {
 
         <Tabs.Screen
           name="history"
+          listeners={{
+            tabPress: (e) => {
+              // Prevent the default action
+              e.preventDefault();
+              // Navigate to the profile screen
+              navigation.reset({
+                index: 0,
+                routes: [{ name: "history" as never }],
+              });
+            },
+          }}
           options={{
             headerTitle: "",
-            title: "History",
+            title: "Historial",
             headerShown: false,
-            tabBarIcon: ({ color }) => (
+            tabBarIcon: ({ color, focused }) => (
               <TabBarIcon name="list-alt" size={24} color={color} />
             ),
           }}
@@ -167,7 +179,8 @@ export default function TabLayout() {
           name="statistics"
           options={{
             headerTitle: "Estadísticas",
-            title: "Statistics",
+            title: "Estadísticas",
+            headerTitleAlign: "center",
             tabBarIcon: ({ color }) => (
               <TabBarIcon name="bar-chart-o" size={25} color={color} />
             ),

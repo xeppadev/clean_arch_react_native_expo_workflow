@@ -55,7 +55,7 @@ export default function Mantenimientoid() {
   }
 
   const texColor =
-    data.estado === "completado" || data.estado === "completado"
+    data.estado === "completado" || data.estado === "aprobado"
       ? { color: COLORS.green, backgroundColor: COLORS.green2 }
       : data.estado === "pendiente" || data.estado === "revision"
       ? { color: COLORS.wellow, backgroundColor: COLORS.wellowlg }

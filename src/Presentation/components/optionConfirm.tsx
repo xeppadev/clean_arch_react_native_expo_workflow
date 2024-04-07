@@ -1,5 +1,12 @@
 import React from "react";
-import { View, Text, StyleSheet, ScrollView, Platform } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Platform,
+  RefreshControl,
+} from "react-native";
 import { Iconify } from "react-native-iconify"; // Asegúrate de instalar esta librería
 import { COLORS } from "@/constants/Colors";
 import { format, addHours, parseISO } from "date-fns";
@@ -8,18 +15,32 @@ import { HomeMantDto } from "@/src/generated/graphql";
 // Define el tipo para los props de ConfirmadosPage
 interface ConfirmadosPageProps {
   data: (HomeMantDto | null | undefined)[];
+  refetch: () => Promise<any>;
 }
 
-const ConfirmadosPage: React.FC<ConfirmadosPageProps> = ({ data }) => {
+const ConfirmadosPage: React.FC<ConfirmadosPageProps> = ({ data, refetch }) => {
   function capitalizeFirstLetter(string: string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
+  // Define refeching para el formulario.
+  const [refreshing, setRefreshing] = React.useState(false);
+  // Define la función para refrescar los datos.
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    refetch().then(() => setRefreshing(false));
+  }, []);
   // Ordena los datos por fecha
   const sortedData = [...data].sort(
     (a, b) => new Date(b?.fecha).getTime() - new Date(a?.fecha).getTime()
   );
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <ScrollView
+      style={styles.container}
+      showsVerticalScrollIndicator={false}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
       <View style={styles.line} />
 
       {sortedData.map((time, index) => {

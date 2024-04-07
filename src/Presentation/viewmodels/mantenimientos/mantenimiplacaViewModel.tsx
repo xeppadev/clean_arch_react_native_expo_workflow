@@ -5,7 +5,8 @@ import { format, parseISO } from "date-fns";
 
 export function useMantenimientosPorPlacaViewModel() {
   const [get1InfoForPlaca, { data, loading, error }] = useLazyQuery(
-    MANTENIMIENTOS_POR_PLACA
+    MANTENIMIENTOS_POR_PLACA,
+    
   );
 
   let programacion: { label: string; value: string; id: string }[] = [];

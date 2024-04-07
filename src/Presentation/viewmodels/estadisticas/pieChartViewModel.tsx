@@ -5,6 +5,7 @@ import { COLORS } from "@/constants/Colors";
 export function usePieChartViewModel(startDate: string, months: number) {
   const { data, loading, error, refetch } = useQuery(OBTENER_INFO_PIECHART, {
     variables: { startDate, months },
+    fetchPolicy: "cache-and-network"
   });
 
   const pieData = data?.grafica_repuesto_xmeses.map((item) => {

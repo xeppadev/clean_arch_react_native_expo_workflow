@@ -82,12 +82,12 @@ export default function HomeView() {
           <Text
             style={[styles.title2, { color: COLORS.blue3, marginBottom: 5 }]}
           >
-            Reprogramar
+            Programar
           </Text>
           <Text
             style={[styles.title2, { color: COLORS.blue3, marginBottom: 35 }]}
           >
-            Mantenimientos
+            Mantenimiento
           </Text>
           <Iconify icon="solar:calendar-bold" size={90} color={COLORS.blue3} />
         </Pressable>

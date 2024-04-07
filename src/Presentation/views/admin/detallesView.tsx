@@ -26,14 +26,13 @@ import { Formik, FormikProps } from "formik";
 import { COLORS } from "@/constants/Colors";
 import { useLocalSearchParams } from "expo-router";
 import { format, parseISO } from "date-fns";
-import { RegistrarCalendarSolicitud } from "../../viewmodels/suscrripciones/onSubmit";
+import { RegistrarCalendarSolicitud } from "../../viewmodels/suscripciones/onSubmit";
 import StateInput from "../../components/inputState";
 
 // Define el componente RegistroMantenimiento
 const DetallesComponent = () => {
   // Obtiene el id de la ruta
   const { detalles } = useLocalSearchParams();
-  
 
   // Define refeching para el formulario.
   const [refreshing, setRefreshing] = React.useState(false);
@@ -41,7 +40,7 @@ const DetallesComponent = () => {
   const viewModelDetalles = new RegistrarCalendarSolicitud();
 
   //Trae los mantenimientos por ID
-  const { data, repuestosFormulario, loading, error } =
+  const { data, repuestosFormulario, loading, error, refetch } =
     viewModelDetalles.getMantenimientosforId(detalles as string);
 
   //Funcion mayuscula
@@ -71,6 +70,9 @@ const DetallesComponent = () => {
   //define la funcion de refetch para refrescar los datos
   const onRefetch = React.useCallback(() => {
     setRefreshing(true);
+    refetch().then(() => {
+      setRefreshing(false);
+    });
   }, []);
 
   if (loading) {
@@ -162,7 +164,11 @@ const DetallesComponent = () => {
                   <TitleIcon title="Vigencia SOAT" icon="id-card" />
 
                   <TextInputs
-                    value={format(parseISO(data?.fechaSoat), "dd/MM/yyyy")}
+                    value={
+                      data?.fechaSoat
+                        ? format(parseISO(data.fechaSoat), "dd/MM/yyyy")
+                        : ""
+                    }
                     editable={false}
                   />
 
@@ -172,13 +178,16 @@ const DetallesComponent = () => {
                   />
 
                   <TextInputs
-                    value={format(
-                      parseISO(data?.fechaInicio),
-                      "dd/MM/yyyy HH:mm "
-                    )}
+                    value={
+                      data?.fechaInicio
+                        ? format(
+                            parseISO(data.fechaInicio),
+                            "dd/MM/yyyy HH:mm "
+                          )
+                        : ""
+                    }
                     editable={false}
                   />
-
                   <TitleIcon
                     title=" Diagnostico de Estado de la unidad"
                     icon="pencil"
@@ -203,7 +212,7 @@ const DetallesComponent = () => {
                     onChange={(item) => handleChange("solicitud")(item.value)}
                   />
 
-                  {values.solicitud === "Si"  && (
+                  {values.solicitud === "Si" && (
                     <>
                       <TitleIcon
                         title="Correciones Solicitadas"
@@ -293,7 +302,7 @@ const DetallesComponent = () => {
           <Text style={styles.buttonText}>Confirmar</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.button, { backgroundColor: COLORS.red3}]}
+          style={[styles.button, { backgroundColor: COLORS.red3 }]}
           onPress={() => {
             // Cambia el estado de denegado a true
             formikRef.current?.setFieldValue("denegado", true);

@@ -4,6 +4,7 @@ import { Platform } from "react-native";
 import { sendToExternalApi } from "@/src/Data/api/sendfiles";
 import { useSoloRepuestoViewModel } from "../repuestos/filterRepuestosViewModel";
 import { useRegistrarMantenimientoViewModel } from "./registrarManteViewModel";
+import { useRouter } from "expo-router";
 // Define una interfaz para los valores del formulario
 interface FormValues {
   _id: string;
@@ -21,6 +22,8 @@ interface FormValues {
 }
 
 export class RegistrarConfirmarMantenimiento {
+  // Define el enrutador de la aplicación
+  router = useRouter();
   // Define las mutaciones de Apollo Client para cambiar el estado de un mantenimiento.
   completarEstadoMantenimiento = useCompletarMantenimientoViewModel();
   //Registrar mantenimiento
@@ -74,5 +77,7 @@ export class RegistrarConfirmarMantenimiento {
       query1: "mantenimientos",
       query2: dataFromMutation,
     });
+    this.router.back();
   }
+
 }

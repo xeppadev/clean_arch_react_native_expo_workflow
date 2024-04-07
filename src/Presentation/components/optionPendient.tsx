@@ -7,6 +7,7 @@ import {
   Platform,
   TouchableOpacity,
   Pressable,
+  RefreshControl,
 } from "react-native";
 import { Iconify } from "react-native-iconify"; // Asegúrate de instalar esta librería
 import { COLORS } from "@/constants/Colors";
@@ -17,11 +18,13 @@ import { useRouter } from "expo-router";
 // Define el tipo para los props de ConfirmadosPage
 interface ConfirmadosPageProps {
   data: (HomeMantDto | null | undefined)[];
+  refetch: () => Promise<any>; 
 }
 
-const PendientPage: React.FC<ConfirmadosPageProps> = ({ data }) => {
+const PendientPage: React.FC<ConfirmadosPageProps> = ({ data, refetch }) => {
   const [showRepuestos, setShowRepuestos] = React.useState<number | null>(null);
-  
+  // Define refeching para el formulario.
+  const [refreshing, setRefreshing] = React.useState(false);
 
   const router = useRouter();
 
@@ -29,15 +32,30 @@ const PendientPage: React.FC<ConfirmadosPageProps> = ({ data }) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
+  // Define la función para refrescar los datos.
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    refetch().then(() => setRefreshing(false));
+  }, []);
   // Ordena los datos por fecha
   const sortedData = [...data].sort(
-    (a, b) => new Date(a?.fecha).getTime() - new Date(b?.fecha).getTime()
+    (a, b) => new Date(b?.fecha).getTime() - new Date(a?.fecha).getTime()
   );
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <ScrollView
+      style={styles.container}
+      showsVerticalScrollIndicator={false}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+         
+        />
+      }
+    >
       <View style={styles.line} />
 
-      {(sortedData).map((time, index) => {
+      {sortedData.map((time, index) => {
         // Parse the date from ISO format
         const date = parseISO(time?.fecha);
         // Format the date
@@ -139,16 +157,14 @@ const PendientPage: React.FC<ConfirmadosPageProps> = ({ data }) => {
                 </Text>
               </View>
               {time?.estado === "pendiente" || time?.estado === "revision" ? (
-              <View style={styles.viewbuttons}>
-                <Pressable
-                  style={styles.buttons}
-                  onPress={() =>
-                    router.push("/admin/" + time?._id)
-                  }
-                >
-                  <Text style={styles.textbutton}>Ver Detalles</Text>
-                </Pressable>
-              </View>
+                <View style={styles.viewbuttons}>
+                  <Pressable
+                    style={styles.buttons}
+                    onPress={() => router.push("/admin/" + time?._id)}
+                  >
+                    <Text style={styles.textbutton}>Ver Detalles</Text>
+                  </Pressable>
+                </View>
               ) : null}
             </View>
           </View>

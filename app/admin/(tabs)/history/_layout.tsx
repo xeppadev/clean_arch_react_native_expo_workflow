@@ -4,6 +4,7 @@ import ScreenHeader from "@/src/Presentation/components/screenHeader";
 import TimeHeader from "@/src/Presentation/components/timeHeader";
 import { COLORS } from "@/constants/Colors";
 import { useSession } from "@/src/Presentation/hooks/useSession";
+import ButtonBack from "@/src/Presentation/components/buttonBack";
 export default function AppLayout() {
   const { session, userType } = useSession();
   return (
@@ -84,7 +85,10 @@ export default function AppLayout() {
           headerBlurEffect: "regular",
           headerBackTitle: "Vehiculo",
           headerShadowVisible: false,
+          headerBackVisible: false,
+          headerLeft: () =>  <ButtonBack />,
         }}
+        
       />
     </Stack>
   );

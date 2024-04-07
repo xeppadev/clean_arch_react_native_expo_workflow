@@ -407,6 +407,8 @@ export type Mutation = {
   borrar_Cliente: Scalars['Boolean']['output'];
   /** Esta Función elimina un personal de la base de datos y retorna un booleano indicando si se eliminó correctamente o no */
   borrar_Personal: Scalars['Boolean']['output'];
+  /** Esta Función elimina un proveedor de la base de datos y retorna un booleano indicando si se eliminó correctamente o no */
+  borrar_Proveedor: Scalars['Boolean']['output'];
   /** Esta Función elimina un usuario de la base de datos */
   borrar_usuario_por_id: Scalars['String']['output'];
   /** Esta función cambia el estado de un mantenimiento a "revision" y realiza una corrección de repuestos, esta corrección es quitar los repuestos que estaban reservados */
@@ -417,6 +419,8 @@ export type Mutation = {
   crear_Cliente: Scalars['String']['output'];
   /** Esta Función registra un nuevo persoanl en la base de datos y retorna el id del documento creado */
   crear_Personal: Scalars['String']['output'];
+  /** Esta Función registra un nuevo proveedor en la base de datos y retorna el id del documento creado */
+  crear_Proveedor: Scalars['String']['output'];
   /** Esta Función registra un auto en la base de datos */
   crear_auto: Scalars['String']['output'];
   /** Esta Función registra una factura en la base de datos y retorna el id de la factura creada */
@@ -493,6 +497,11 @@ export type MutationBorrar_PersonalArgs = {
 };
 
 
+export type MutationBorrar_ProveedorArgs = {
+  id: Scalars['String']['input'];
+};
+
+
 export type MutationBorrar_Usuario_Por_IdArgs = {
   _id: Scalars['String']['input'];
 };
@@ -521,6 +530,11 @@ export type MutationCrear_ClienteArgs = {
 
 export type MutationCrear_PersonalArgs = {
   input: PersonalUserInput;
+};
+
+
+export type MutationCrear_ProveedorArgs = {
+  input: ProveedorInput;
 };
 
 
@@ -660,6 +674,36 @@ export type PrograMantenimientoDto = {
   tipo: Scalars['String']['input'];
 };
 
+export type ProveedorDto = {
+  __typename?: 'ProveedorDto';
+  _id?: Maybe<Scalars['String']['output']>;
+  direccion: Scalars['String']['output'];
+  documentos?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  email?: Maybe<Scalars['String']['output']>;
+  nombre: Scalars['String']['output'];
+  nombreContacto?: Maybe<Scalars['String']['output']>;
+  numeroContacto?: Maybe<Scalars['Int']['output']>;
+  rubro?: Maybe<Scalars['String']['output']>;
+  ruc: Scalars['String']['output'];
+};
+
+export type ProveedorInput = {
+  _id?: InputMaybe<Scalars['String']['input']>;
+  direccion: Scalars['String']['input'];
+  email?: InputMaybe<Scalars['String']['input']>;
+  nombre: Scalars['String']['input'];
+  nombreContacto?: InputMaybe<Scalars['String']['input']>;
+  numeroContacto?: InputMaybe<Scalars['Int']['input']>;
+  rubro?: InputMaybe<Scalars['String']['input']>;
+  ruc: Scalars['String']['input'];
+};
+
+export type ProveedorResult = {
+  __typename?: 'ProveedorResult';
+  proveedor: Array<ProveedorDto>;
+  totalPages: Scalars['Int']['output'];
+};
+
 export type Query = {
   __typename?: 'Query';
   /** Esta funcion retorna los mantenimientos desde el día de hoy para la pestaña de actividades */
@@ -682,13 +726,15 @@ export type Query = {
   buscar_Clientes: ClientesResult;
   /** Esta función retorna la información del personal en base a su nombre */
   buscar_Pesonal: PersonalResult;
+  /** Esta función retorna la información del proveedor en base a su nombre */
+  buscar_Proveedor: ProveedorResult;
   /** Esta Función retorna las placas de los autos */
   buscar_placas_autos: Array<Scalars['String']['output']>;
   /** Esta función retorna la información de los repuestos que coincidan con el producto */
   buscar_repuestos: RepuestosResult;
   /** Esta función retorna una matriz con las fechas de los mantenimientos que tengan de estado "programado" */
   calendar: Array<Scalars['DateTime']['output']>;
-  /** Esta función retorna la cantidad de mantenimientos programados, pendientes, completados y denegados por mes */
+  /** Esta función retorna la cantidad de mantenimientos programados */
   calendar_grafica: Array<CalendarGrafica>;
   /** Obtiene el resumen mensual de ingresos y egresos */
   dashboard_web: Dashboard;
@@ -775,6 +821,12 @@ export type QueryBuscar_PesonalArgs = {
 };
 
 
+export type QueryBuscar_ProveedorArgs = {
+  nombre: Scalars['String']['input'];
+  page?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
 export type QueryBuscar_Placas_AutosArgs = {
   placa: Scalars['String']['input'];
 };
@@ -783,11 +835,6 @@ export type QueryBuscar_Placas_AutosArgs = {
 export type QueryBuscar_RepuestosArgs = {
   page?: InputMaybe<Scalars['Int']['input']>;
   producto: Scalars['String']['input'];
-};
-
-
-export type QueryCalendar_GraficaArgs = {
-  fechaInput?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
 
@@ -878,6 +925,7 @@ export type RepuestoDto = {
 };
 
 
+
 export type RepuestoSearchType = {
   __typename?: 'RepuestoSearchType';
   _id?: Maybe<Scalars['String']['output']>;
@@ -955,7 +1003,7 @@ export type UpdateMantenimientoDto = {
   fechaSoat: Scalars['DateTime']['input'];
   kmMedido: Scalars['Float']['input'];
   kmPrevio: Scalars['Float']['input'];
-  repuestos?: InputMaybe<Array<RepuestoDto>>;
+  repuestos: Array<RepuestoDto>;
 };
 
 export type UpdateOneMantenimientoDto = {
@@ -967,7 +1015,7 @@ export type UpdateOneMantenimientoDto = {
   kmMedido: Scalars['Float']['input'];
   kmPrevio: Scalars['Float']['input'];
   placa: Scalars['String']['input'];
-  repuestos?: InputMaybe<Array<RepuestoDto>>;
+  repuestos: Array<RepuestoDto>;
   tecnico: Scalars['String']['input'];
   tipo: Scalars['String']['input'];
 };
@@ -1095,6 +1143,11 @@ export type Query_PieChartQueryVariables = Exact<{
 
 
 export type Query_PieChartQuery = { __typename?: 'Query', grafica_repuesto_xmeses: Array<{ __typename?: 'MesRepuestos', mesYear?: string | null, prod1?: { __typename?: 'ProductoConsumido', cantidadConsumida: number, producto: string } | null, prod2?: { __typename?: 'ProductoConsumido', cantidadConsumida: number, producto: string } | null, prod3?: { __typename?: 'ProductoConsumido', cantidadConsumida: number, producto: string } | null, prod4?: { __typename?: 'ProductoConsumido', cantidadConsumida: number, producto: string } | null, prod5?: { __typename?: 'ProductoConsumido', cantidadConsumida: number, producto: string } | null, otros?: { __typename?: 'ProductoConsumido', cantidadConsumida: number, producto: string } | null }> };
+
+export type Calendar_GraficaQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type Calendar_GraficaQuery = { __typename?: 'Query', calendar_grafica: Array<{ __typename?: 'CalendarGrafica', cantidad?: number | null, fecha?: any | null }> };
 
 export type Mutation_RegistrarFacturaMutationVariables = Exact<{
   createFacturaInput: CreateFacturaDto;
@@ -1229,6 +1282,7 @@ export const Obtener_Solo_ClientesDocument = {"kind":"Document","definitions":[{
 export const Query_BarChartDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Query_BarChart"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"inputDate"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"grafica_gastos_generales"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"inputDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"inputDate"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fact"}},{"kind":"Field","name":{"kind":"Name","value":"mesYear"}},{"kind":"Field","name":{"kind":"Name","value":"otros"}},{"kind":"Field","name":{"kind":"Name","value":"personalTotal"}}]}}]}}]} as unknown as DocumentNode<Query_BarChartQuery, Query_BarChartQueryVariables>;
 export const Query_LineChartDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Query_LineChart"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"inputDate"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"grafica_ingresos_egresos"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"inputDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"inputDate"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mesYear"}},{"kind":"Field","name":{"kind":"Name","value":"ingresoFact"}},{"kind":"Field","name":{"kind":"Name","value":"egresosTotalFact"}}]}}]}}]} as unknown as DocumentNode<Query_LineChartQuery, Query_LineChartQueryVariables>;
 export const Query_PieChartDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Query_PieChart"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"months"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Float"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"grafica_repuesto_xmeses"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"startDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}}},{"kind":"Argument","name":{"kind":"Name","value":"months"},"value":{"kind":"Variable","name":{"kind":"Name","value":"months"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"prod1"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cantidadConsumida"}},{"kind":"Field","name":{"kind":"Name","value":"producto"}}]}},{"kind":"Field","name":{"kind":"Name","value":"prod2"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cantidadConsumida"}},{"kind":"Field","name":{"kind":"Name","value":"producto"}}]}},{"kind":"Field","name":{"kind":"Name","value":"prod3"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cantidadConsumida"}},{"kind":"Field","name":{"kind":"Name","value":"producto"}}]}},{"kind":"Field","name":{"kind":"Name","value":"prod4"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cantidadConsumida"}},{"kind":"Field","name":{"kind":"Name","value":"producto"}}]}},{"kind":"Field","name":{"kind":"Name","value":"prod5"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cantidadConsumida"}},{"kind":"Field","name":{"kind":"Name","value":"producto"}}]}},{"kind":"Field","name":{"kind":"Name","value":"otros"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cantidadConsumida"}},{"kind":"Field","name":{"kind":"Name","value":"producto"}}]}},{"kind":"Field","name":{"kind":"Name","value":"mesYear"}}]}}]}}]} as unknown as DocumentNode<Query_PieChartQuery, Query_PieChartQueryVariables>;
+export const Calendar_GraficaDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Calendar_grafica"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"calendar_grafica"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cantidad"}},{"kind":"Field","name":{"kind":"Name","value":"fecha"}}]}}]}}]} as unknown as DocumentNode<Calendar_GraficaQuery, Calendar_GraficaQueryVariables>;
 export const Mutation_RegistrarFacturaDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Mutation_registrarFactura"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"createFacturaInput"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateFacturaDto"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"crear_factura"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"createFacturaInput"},"value":{"kind":"Variable","name":{"kind":"Name","value":"createFacturaInput"}}}]}]}}]} as unknown as DocumentNode<Mutation_RegistrarFacturaMutation, Mutation_RegistrarFacturaMutationVariables>;
 export const ProgramarMantenimientoDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ProgramarMantenimiento"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"programarMantInput"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"PrograMantenimientoDto"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"programar_mantenimiento"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"programarMantInput"},"value":{"kind":"Variable","name":{"kind":"Name","value":"programarMantInput"}}}]}]}}]} as unknown as DocumentNode<ProgramarMantenimientoMutation, ProgramarMantenimientoMutationVariables>;
 export const MantenimientoInfoPorIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"mantenimientoInfoPorId"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"mantenimientoInfoPorIdId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"Mantenimiento_Info_por_ID"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"mantenimientoInfoPorIdId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"anotaciones"}},{"kind":"Field","name":{"kind":"Name","value":"cambiosSolicitados"}},{"kind":"Field","name":{"kind":"Name","value":"cliente"}},{"kind":"Field","name":{"kind":"Name","value":"diagnostico"}},{"kind":"Field","name":{"kind":"Name","value":"documentos"}},{"kind":"Field","name":{"kind":"Name","value":"diagnosticoFinal"}},{"kind":"Field","name":{"kind":"Name","value":"estado"}},{"kind":"Field","name":{"kind":"Name","value":"fecha"}},{"kind":"Field","name":{"kind":"Name","value":"fechaFin"}},{"kind":"Field","name":{"kind":"Name","value":"fechaInicio"}},{"kind":"Field","name":{"kind":"Name","value":"fechaSoat"}},{"kind":"Field","name":{"kind":"Name","value":"kmMedido"}},{"kind":"Field","name":{"kind":"Name","value":"kmPrevio"}},{"kind":"Field","name":{"kind":"Name","value":"placa"}},{"kind":"Field","name":{"kind":"Name","value":"repuestos"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cantidad"}},{"kind":"Field","name":{"kind":"Name","value":"cantidadReserva"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"marca"}},{"kind":"Field","name":{"kind":"Name","value":"precio"}},{"kind":"Field","name":{"kind":"Name","value":"producto"}}]}},{"kind":"Field","name":{"kind":"Name","value":"repuestosAjuste"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cantidad"}},{"kind":"Field","name":{"kind":"Name","value":"cantidadReserva"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"marca"}},{"kind":"Field","name":{"kind":"Name","value":"precio"}},{"kind":"Field","name":{"kind":"Name","value":"producto"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tecnico"}},{"kind":"Field","name":{"kind":"Name","value":"tipo"}}]}}]}}]} as unknown as DocumentNode<MantenimientoInfoPorIdQuery, MantenimientoInfoPorIdQueryVariables>;

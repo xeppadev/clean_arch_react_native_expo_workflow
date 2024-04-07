@@ -5,6 +5,7 @@ import {
   format,
   isToday,
   subDays,
+  startOfWeek,
 } from "date-fns";
 import { es } from "date-fns/locale";
 import React from "react";
@@ -19,39 +20,22 @@ import {
 import { COLORS } from "@/constants/Colors";
 import TabPage from "../../components/tabView";
 import PendientPage from "../../components/optionPendient";
-import { useCalendarViewModel } from "../../viewmodels/suscrripciones/calendarViewModel";
+import { useCalendarViewModel } from "../../viewmodels/suscripciones/calendarViewModel";
 // Genera un arreglo de fechas que representan cada semana en un intervalo de 14 días a partir de hoy.
-const dates = eachWeekOfInterval(
-  {
-    start: subDays(new Date(), 0),
-    end: addDays(new Date(), 14),
-  },
-  {
-    weekStartsOn: 0, // 0 es Domingo, 1 es Lunes, 2 es Martes, etc.
-  }
-).reduce((acc: Date[][][], cur: Date, index: number) => {
-  const allDays = eachDayOfInterval({
-    start: cur,
-    end: addDays(cur, 6), // 6 días después de la fecha actual
-  });
-
-  if (index % 3 === 0) {
-    acc.push([allDays]);
-  } else {
-    acc[acc.length - 1].push(allDays);
-  }
-
-  return acc;
-}, []);
+const dates = eachDayOfInterval({
+  start: startOfWeek(new Date()),
+  end: addDays(startOfWeek(new Date()), 6),
+});
 
 export default function CalendarView() {
   const {
-    TodosMantenimientos,
+    TodosMantenimientosRecientes,
     highlightedDates,
     loading,
     error,
     mantenimientosPendientes,
-    mantenimientosCompletos,
+    mantenimientoscompletosRecientes,
+    refetch,
   } = useCalendarViewModel();
 
   if (loading) {
@@ -61,94 +45,89 @@ export default function CalendarView() {
       </View>
     );
   }
+  if (error) {
+    return (
+      <View style={style.center}>
+        <Text>Hubo un error al cargar los datos</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={style.container}>
       <View style={style.container2}>
         {/* Mapea cada grupo de fechas a un componente de vista. */}
-        {dates.map((group, index) => (
-          <View key={index}>
-            {/* Mapea cada semana en el grupo a un componente de vista. */}
-            {group.map((week, weekIndex) => (
-              <View key={weekIndex} style={style.row}>
-                {/* Mapea cada día en la semana a un componente de vista. */}
-                {week.map((day, dayIndex) => {
-                  //define un el formateo de highlight para los días que se mostrarán en el calendario de otro color
-                  const dayform = format(day, "dd/MM/yyyy");
-                  const isHighlighted = highlightedDates.includes(dayform);
-                  return (
-                    // Renderiza un componente de vista para cada día.
-                    // Si el día actual es el día actual, se le aplica un estilo especial.
-                    <TouchableOpacity
-                      key={dayIndex}
-                      onPress={() => {
-                        if (isToday(day)) {
-                          // Aquí puedes agregar las acciones que quieras ejecutar cuando se presione el día actual
-                          console.log("El día actual fue presionado");
-                        }
-                      }}
+        <View style={style.row}>
+          {dates.map((day, dayIndex) => {
+            const dayform = format(day, "dd/MM/yyyy");
+            const isHighlighted = highlightedDates.includes(dayform);
+            return (
+              <TouchableOpacity
+                key={dayIndex}
+                onPress={() => {
+                  if (isToday(day)) {
+                    console.log("El día actual fue presionado");
+                  }
+                }}
+              >
+                <View style={isToday(day) ? style.today : null}>
+                  <View style={style.week}>
+                    <Text
+                      style={isToday(day) ? style.todayText : style.weekText}
                     >
-                      <View style={isToday(day) ? style.today : null}>
-                        <View style={style.week}>
-                          {weekIndex === 0 && (
-                            <Text
-                              style={
-                                isToday(day) ? style.todayText : style.weekText
-                              }
-                            >
-                              {format(day, "EEEE", { locale: es })
-                                .charAt(0)
-                                .toUpperCase()}
-                            </Text>
-                          )}
-                        </View>
+                      {format(day, "EEEE", { locale: es })
+                        .charAt(0)
+                        .toUpperCase()}
+                    </Text>
+                  </View>
 
-                        <View style={style.day}>
-                          <Text
-                            style={
-                              isToday(day)
-                                ? style.todayText
-                                : isHighlighted
-                                ? style.eventText
-                                : style.dayText
-                            }
-                          >
-                            {format(day, "dd")}
-                          </Text>
-                        </View>
-                      </View>
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
-            ))}
-          </View>
-        ))}
-
+                  <View style={style.day}>
+                    <Text
+                      style={
+                        isToday(day)
+                          ? style.todayText
+                          : isHighlighted
+                          ? style.eventText
+                          : style.dayText
+                      }
+                    >
+                      {format(day, "dd")}
+                    </Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
         {/* Muestra las pestañas para filtrar los eventos */}
         <TabPage
           tabs={[
             {
               key: "pendientes",
               title: "Pendientes",
-              component: () => <PendientPage
-              data={mantenimientosPendientes}
-              
-              />,
+              component: () => (
+                <PendientPage
+                  data={mantenimientosPendientes}
+                  refetch={refetch}
+                />
+              ),
             },
             {
               key: "todos",
               title: "Todos",
-              component: () => <PendientPage
-              data={TodosMantenimientos}
-              />,
+              component: () => (
+                <PendientPage data={TodosMantenimientosRecientes} refetch={refetch} />
+              ),
             },
             {
               key: "compleados",
               title: "Completados",
-              component: () => <PendientPage 
-              data={mantenimientosCompletos}
-              />,
+              component: () => (
+                <PendientPage
+                  data={mantenimientoscompletosRecientes}
+                  refetch={refetch}
+                />
+              ),
             },
           ]}
         />

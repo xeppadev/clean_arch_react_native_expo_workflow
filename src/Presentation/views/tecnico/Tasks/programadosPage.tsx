@@ -32,10 +32,9 @@ const ProgramadosPage: React.FC<ProgramadosPageProps> = ({
   // Define el hook para el enrutador
   const router = useRouter();
   // Ordena los datos por fecha
-  const sortedData = [...data].sort(
-    (a, b) => new Date(b?.fecha).getTime() - new Date(a?.fecha).getTime()
-  );
-
+   const sortedData = [...data].sort(
+      (a, b) => new Date(b?.fecha).getTime() - new Date(a?.fecha).getTime()
+    );
   // Renderiza el componente
 
   return (

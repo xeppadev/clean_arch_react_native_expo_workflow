@@ -1,6 +1,6 @@
 import { useMantenimientoInfoPorIdViewModel } from "../mantenimientos/mantenimientViewModel";
 import { useCambiarEstadoMantenimientoViewModel } from "../mantenimientos/revisionManteViewModel";
-
+import { useRouter } from "expo-router";
 // Define una interfaz para los valores del formulario
 interface FormValues {
   _id: string;
@@ -11,10 +11,10 @@ interface FormValues {
 }
 
 export class RegistrarCalendarSolicitud {
+  // Define el enrutador de la aplicación
+  router = useRouter();
   // Define las mutaciones de Apollo Client para cambiar el estado de un mantenimiento.
   cambiarEstadoMantenimiento = useCambiarEstadoMantenimientoViewModel();
-
-
 
   getMantenimientosforId(id: string) {
     return useMantenimientoInfoPorIdViewModel(id);
@@ -29,19 +29,16 @@ export class RegistrarCalendarSolicitud {
   }
 
   async onSubmit(values: FormValues) {
-
-    
-    const { data } = await this.cambiarEstadoMantenimiento.cambiarEstadoMantenimiento({
+    await this.cambiarEstadoMantenimiento.cambiarEstadoMantenimiento({
       variables: {
         denegado: values.denegado,
         revision: values.solicitud === "Si" ? true : false,
         cambiarEstadoRevisionODenegadoId: values._id,
         repuestosAjuste: values.repuestos,
         cambiosSolicitados: values.correciones,
-        
       },
-     
     });
-    return data;
+
+    this.router.back();
   }
 }

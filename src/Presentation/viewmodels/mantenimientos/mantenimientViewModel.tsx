@@ -8,6 +8,7 @@ export function useMantenimientoInfoPorIdViewModel(
 ) {
   const { data, loading, error, refetch } = useQuery(MANTEN_INFO_ID, {
     variables: { mantenimientoInfoPorIdId },
+    fetchPolicy: "cache-and-network"
   });
 
   const repuestosFormulario = data?.Mantenimiento_Info_por_ID?.repuestos?.map(

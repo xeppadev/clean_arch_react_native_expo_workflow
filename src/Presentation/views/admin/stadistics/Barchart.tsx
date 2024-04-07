@@ -2,24 +2,40 @@ import { Skeleton } from "moti/skeleton";
 import { BarChart } from "react-native-gifted-charts";
 import { View, Text, StyleSheet } from "react-native";
 import { COLORS } from "@/constants/Colors";
-import { useBarChartViewModel } from "@/src/Presentation/viewmodels/estadisticas/barChartViewModel";
-import { format } from "date-fns";
+
+type BarchartProps = {
+  data?:  {
+    value: number;
+    label?: string | undefined;
+    spacing?: number;
+    labelWidth?: number | undefined;
+    labelTextStyle?: { color: string } 
+    frontColor: string;
+  }[] | undefined;
+  loading: boolean;
+  error : any;
+};
 
 
-const nowFormatted = format(new Date(), "yyyy-MM-dd")
-
-export default function Barchart() {
-    const { data, loading, error } = useBarChartViewModel(nowFormatted);
- 
-
+export default function Barchart({data , loading, error}: BarchartProps) {
+  
+  
+  
+   if (error) {
+    return (
+      <View style={styles.contentchart}>
+        <Text>Error al cargar los datos</Text>
+      </View>
+    );
+  }
 
   return (
     <Skeleton.Group show={loading}>
       <View style={styles.contentchart}>
         <View style={styles.Viewtitle}>
-        <Skeleton colorMode="light" >
-          <Text style={styles.title}>Gastos Generales</Text>
-        </Skeleton>
+          <Skeleton colorMode="light">
+            <Text style={styles.title}>Gastos Generales (S/.)</Text>
+          </Skeleton>
         </View>
         <Skeleton colorMode="light">
           <View style={styles.barchart}>
@@ -35,7 +51,7 @@ export default function Barchart() {
               rulesType="solid"
               rulesColor={COLORS.bg}
               xAxisColor={COLORS.bg}
-              isAnimated={true}
+              
             />
           </View>
         </Skeleton>
@@ -88,15 +104,15 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     width: "91%",
   },
-    barchart: {
-     marginTop: 10,
-    },
-    Viewtitle: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-      marginBottom: 10,
-    },
+  barchart: {
+    marginTop: 10,
+  },
+  Viewtitle: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
+  },
   legend: {
     flexDirection: "row",
     justifyContent: "space-around",

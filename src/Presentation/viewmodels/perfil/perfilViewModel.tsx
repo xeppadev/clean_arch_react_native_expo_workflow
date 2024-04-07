@@ -4,6 +4,7 @@ import { PERFILES_USERS } from "@/src/Data/repositories/perfiles/perfilrepositor
 export function usePerfilViewModel(username: string) {
   const { data, loading, error, refetch } = useQuery(PERFILES_USERS, {
     variables: { username },
+    fetchPolicy: "cache-and-network"
   });
 
   return { data: data?.obtener_usuario_por_username, loading, error, refetch };

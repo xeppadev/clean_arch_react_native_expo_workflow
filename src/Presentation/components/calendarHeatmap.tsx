@@ -14,28 +14,16 @@ import {
 import { COLORS } from "@/constants/Colors";
 import { Iconify } from "react-native-iconify";
 
-const data = [
-  { day: new Date(2024, 1, 5), value: 9 },
-  { day: new Date(2024, 1, 3), value: 1 },
-  { day: new Date(2024, 1, 8), value: 3 },
-  { day: new Date(2024, 1, 1), value: 5 },
-  { day: new Date(2024, 1, 2), value: 1 },
-  { day: new Date(2024, 1, 6), value: 2 },
-  { day: new Date(2024, 1, 12), value: 3 },
-  { day: new Date(2024, 1, 10), value: 4 },
-  { day: new Date(2024, 1, 13), value: 1 },
-  { day: new Date(2024, 1, 14), value: 6 },
-  { day: new Date(2024, 1, 15), value: 7 },
-  { day: new Date(2024, 1, 16), value: 8 },
-  { day: new Date(2024, 1, 20), value: 9 },
-  { day: new Date(2024, 1, 21), value: 5 },
-  { day: new Date(2024, 1, 25), value: 1 },
-  { day: new Date(2024, 1, 28), value: 7 },
-  { day: new Date(2024, 1, 29), value: 3 },
-  { day: new Date(2024, 1, 4), value: 4 },
-];
+type CalendarHeatmapProps = {
+  data:
+    | {
+        value: number;
+        day: any;
+      }[]
+    | undefined;
+};
 
-const CalendarHeatmap = () => {
+const CalendarHeatmap = ({ data }: CalendarHeatmapProps) => {
   const [currentMonth, setCurrentMonth] = React.useState(new Date());
   const start = startOfMonth(currentMonth);
   const end = endOfMonth(currentMonth);
@@ -52,9 +40,11 @@ const CalendarHeatmap = () => {
         <Pressable onPress={() => setCurrentMonth(subMonths(currentMonth, 1))}>
           <Iconify icon="eva:arrow-left-fill" size={30} color={COLORS.blue2} />
         </Pressable>
-        <Text style={styles.monthText}>{format(currentMonth, 'MMMM yyyy')}</Text>
+        <Text style={styles.monthText}>
+          {format(currentMonth, "MMMM yyyy")}
+        </Text>
         <Pressable onPress={() => setCurrentMonth(addMonths(currentMonth, 1))}>
-        <Iconify icon="eva:arrow-right-fill" size={30} color={COLORS.blue2} />
+          <Iconify icon="eva:arrow-right-fill" size={30} color={COLORS.blue2} />
         </Pressable>
       </View>
 
@@ -67,7 +57,7 @@ const CalendarHeatmap = () => {
           ))}
         </View>
         {daysOfMonth.map((day, index) => {
-          const dayData = data.find((d) => isSameDay(d.day, day));
+          const dayData = data?.find((d) => isSameDay(d.day, day));
           const value = dayData ? dayData.value : 0;
           const backgroundColor =
             value > 6
@@ -82,9 +72,9 @@ const CalendarHeatmap = () => {
 
           return (
             <View key={index} style={[styles.day, { backgroundColor }]}>
-              {/* {day.getMonth() === start.getMonth() && (
+              {day.getMonth() === start.getMonth() && (
               <Text style={styles.dayText}>{format(day, 'd')}</Text>
-            )} */}
+            )}
             </View>
           );
         })}
@@ -118,13 +108,12 @@ const styles = StyleSheet.create({
   buttonsRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    
   },
-    monthText: {
-        fontSize: 18,
-        fontWeight: "600",
-        color: COLORS.blue,
-    },
+  monthText: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: COLORS.blue,
+  },
 });
 
 export default CalendarHeatmap;

@@ -34,11 +34,11 @@ const Layout = () => {
         lazy: true,
       }}
     >
-      <MaterialTopTabs.Screen name="revision" options={{ title: "Revision" }} />
+      <MaterialTopTabs.Screen name="programado" options={{ title: "Programados" }} />
       <MaterialTopTabs.Screen name="todos" options={{ title: "Todos" }} />
       <MaterialTopTabs.Screen
-        name="aprobados"
-        options={{ title: "Aprobados" }}
+        name="espera"
+        options={{ title: "En espera" }}
       />
     </MaterialTopTabs>
   );

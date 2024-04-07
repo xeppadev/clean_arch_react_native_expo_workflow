@@ -2,17 +2,19 @@ import { Skeleton } from "moti/skeleton";
 import { PieChart } from "react-native-gifted-charts";
 import { View, Text, StyleSheet } from "react-native";
 import { COLORS } from "@/constants/Colors";
-import { usePieChartViewModel } from "@/src/Presentation/viewmodels/estadisticas/pieChartViewModel";
-import { format } from "date-fns";
 
-const nowFormatted = format(new Date(), "yyyy-MM-dd");
+type PiechartProps = {
+  pieData: { product: string; 
+  value: number;
+  color: string; 
+  text: string }[] [] | undefined;
+  loading: boolean;
+  error: any;
+};
 
-export default function Piechart() {
-  const { pieData, loading, error } = usePieChartViewModel(
-    nowFormatted,
-    1
-  );
+export default function Piechart({ pieData, loading }: PiechartProps) {
  
+
   const data = pieData ? pieData.flat() : [];
   const totalValue = data.reduce((sum, item) => sum + item.value, 0);
   return (
@@ -55,12 +57,15 @@ export default function Piechart() {
                 styles.legendItem,
                 { justifyContent: "space-between", width: "100%" },
               ]}
-                key={index}
+              key={index}
             >
               <Skeleton colorMode="light">
-                <View style={styles.row} >
+                <View style={styles.row}>
                   <View
-                    style={[styles.legendColor, { backgroundColor: item.color }]}
+                    style={[
+                      styles.legendColor,
+                      { backgroundColor: item.color },
+                    ]}
                   />
                   <Text style={styles.legendText}>{item.product}</Text>
                 </View>

@@ -13,7 +13,7 @@ export   const validationSchemarRegis = yup.object().shape({
   fechaInicio: yup.string().required('Este campo es requerido'),
   fechaSoat: yup.string().required('Este campo es requerido'),
   diagnostico: yup.string().required('Este campo es requerido'),
-  repuestos: yup.array().required('Este campo es requerido'),
-  files: yup.array().required('Este campo es requerido'),
+  repuestos: yup.array().min(1, "Debe seleccionar al menos un repuesto."),
+  files: yup.array().min(1, "Debe subir al menos un documento."),
   
 });
