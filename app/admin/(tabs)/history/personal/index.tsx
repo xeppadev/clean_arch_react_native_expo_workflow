@@ -88,7 +88,7 @@ export default function PesonalScreen() {
                 <View style={styles.dates}>
                   <Text style={styles.listItemTitle}>{item.nombre}</Text>
                   <Text style={styles.listItemStatus}>
-                    salario: S/
+                    salario: $
                     {
                       item.salarioFecha
                         ?.slice()

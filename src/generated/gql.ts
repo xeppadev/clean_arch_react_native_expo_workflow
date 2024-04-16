@@ -23,11 +23,12 @@ const documents = {
     "\n  query Obtener_Todos_Clientes {\n    obtener_Todos_Clientes {\n      nombre\n      nombreCliente\n      _id\n      contratos {\n        fechaFin\n      }\n    }\n  }\n": types.Obtener_Todos_ClientesDocument,
     "\n  query Obtener_Cliente_ID($obtenerClienteIdId: String!) {\n    obtener_Cliente_ID(id: $obtenerClienteIdId) {\n      _id\n      contratos {\n        fechaFin\n        fechaInicio\n        numeroContrato\n      }\n      direccion\n      documentos\n      email\n      nombre\n      nombreCliente\n      numeroContacto\n      rubro\n      ruc\n    }\n  }\n": types.Obtener_Cliente_IdDocument,
     "\n  query Obtener_Solo_Clientes {\n    obtener_Todos_Clientes {\n      nombreCliente\n    }\n  }\n": types.Obtener_Solo_ClientesDocument,
+    "\n  mutation Mutation($emergencia: String!) {\n    emergencia_notificacion(emergencia: $emergencia)\n  }\n": types.MutationDocument,
     "\n  query Query_BarChart($inputDate: String!) {\n    grafica_gastos_generales(inputDate: $inputDate) {\n      fact\n      mesYear\n      otros\n      personalTotal\n    }\n  }\n": types.Query_BarChartDocument,
     "\n  query Query_LineChart($inputDate: String!) {\n    grafica_ingresos_egresos(inputDate: $inputDate) {\n      mesYear\n      ingresoFact\n      egresosTotalFact\n    }\n  }\n": types.Query_LineChartDocument,
     "\n  query Query_PieChart($startDate: String!, $months: Float!) {\n    grafica_repuesto_xmeses(startDate: $startDate, months: $months) {\n      prod1 {\n        cantidadConsumida\n        producto\n      }\n      prod2 {\n        cantidadConsumida\n        producto\n      }\n      prod3 {\n        cantidadConsumida\n        producto\n      }\n      prod4 {\n        cantidadConsumida\n        producto\n      }\n      prod5 {\n        cantidadConsumida\n        producto\n      }\n      otros {\n        cantidadConsumida\n        producto\n      }\n      mesYear\n    }\n  }\n": types.Query_PieChartDocument,
     "\n  query Calendar_grafica {\n    calendar_grafica {\n      cantidad\n      fecha\n    }\n  }\n": types.Calendar_GraficaDocument,
-    "\n    mutation Mutation_registrarFactura($createFacturaInput: CreateFacturaDto!) {\n        crear_factura(createFacturaInput: $createFacturaInput)\n      }\n    ": types.Mutation_RegistrarFacturaDocument,
+    "\n  mutation Mutation_registrarFactura($createFacturaInput: CreateFacturaDto!) {\n    crear_factura(createFacturaInput: $createFacturaInput)\n  }\n": types.Mutation_RegistrarFacturaDocument,
     "\n  mutation ProgramarMantenimiento(\n    $programarMantInput: PrograMantenimientoDto!\n  ) {\n    programar_mantenimiento(programarMantInput: $programarMantInput)\n  }\n": types.ProgramarMantenimientoDocument,
     "\n  query mantenimientoInfoPorId($mantenimientoInfoPorIdId: String!) {\n    Mantenimiento_Info_por_ID(id: $mantenimientoInfoPorIdId) {\n      anotaciones\n      cambiosSolicitados\n      cliente\n      diagnostico\n      documentos\n      diagnosticoFinal\n      estado\n      fecha\n      fechaFin\n      fechaInicio\n      fechaSoat\n      kmMedido\n      kmPrevio\n      placa\n      repuestos {\n        cantidad\n        cantidadReserva\n        id\n        marca\n        precio\n        producto\n      }\n      repuestosAjuste {\n        cantidad\n        cantidadReserva\n        id\n        marca\n        precio\n        producto\n      }\n      tecnico\n      tipo\n    }\n  }\n": types.MantenimientoInfoPorIdDocument,
     "\n  query Mantenimiento_Info_por_Placa($placa: String!) {\n    Mantenimiento_Info_por_Placa(placa: $placa) {\n      _id\n      tipo\n      fecha\n      estado\n      tecnico\n      kmPrevio\n      fechaSoat\n      anotaciones\n    }\n  }\n": types.Mantenimiento_Info_Por_PlacaDocument,
@@ -103,6 +104,10 @@ export function gql(source: "\n  query Obtener_Solo_Clientes {\n    obtener_Todo
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function gql(source: "\n  mutation Mutation($emergencia: String!) {\n    emergencia_notificacion(emergencia: $emergencia)\n  }\n"): (typeof documents)["\n  mutation Mutation($emergencia: String!) {\n    emergencia_notificacion(emergencia: $emergencia)\n  }\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function gql(source: "\n  query Query_BarChart($inputDate: String!) {\n    grafica_gastos_generales(inputDate: $inputDate) {\n      fact\n      mesYear\n      otros\n      personalTotal\n    }\n  }\n"): (typeof documents)["\n  query Query_BarChart($inputDate: String!) {\n    grafica_gastos_generales(inputDate: $inputDate) {\n      fact\n      mesYear\n      otros\n      personalTotal\n    }\n  }\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -119,7 +124,7 @@ export function gql(source: "\n  query Calendar_grafica {\n    calendar_grafica 
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\n    mutation Mutation_registrarFactura($createFacturaInput: CreateFacturaDto!) {\n        crear_factura(createFacturaInput: $createFacturaInput)\n      }\n    "): (typeof documents)["\n    mutation Mutation_registrarFactura($createFacturaInput: CreateFacturaDto!) {\n        crear_factura(createFacturaInput: $createFacturaInput)\n      }\n    "];
+export function gql(source: "\n  mutation Mutation_registrarFactura($createFacturaInput: CreateFacturaDto!) {\n    crear_factura(createFacturaInput: $createFacturaInput)\n  }\n"): (typeof documents)["\n  mutation Mutation_registrarFactura($createFacturaInput: CreateFacturaDto!) {\n    crear_factura(createFacturaInput: $createFacturaInput)\n  }\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

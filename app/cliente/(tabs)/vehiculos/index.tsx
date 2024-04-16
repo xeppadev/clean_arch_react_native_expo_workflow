@@ -207,5 +207,5 @@ const styles = StyleSheet.create({
     padding: 3,
     borderRadius: 7,
   },
-  center: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: COLORS.bg2},
+  center: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: COLORS.bg},
 });

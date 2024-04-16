@@ -6,10 +6,12 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   RefreshControl,
+  Text,
+  View,
 } from "react-native";
 import React from "react";
 
-import { Text, View } from "@/components/Themed";
+
 import { useSession } from "@/src/Presentation/hooks/useSession";
 import { Formik, FormikProps } from "formik";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";

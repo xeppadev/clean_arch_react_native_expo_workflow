@@ -25,7 +25,7 @@ export default function InventoryPage() {
   }, []);
   if (loading) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor:COLORS.bg }}>
         <ActivityIndicator size="large" color={COLORS.blue2} />
       </View>
     );

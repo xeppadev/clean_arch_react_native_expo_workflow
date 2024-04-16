@@ -59,8 +59,7 @@ export class ProgramarMantenimientoViewModel {
         type: Platform.OS === "android" ? file.mimeType : file.type,
       } as any);
     });
-   console.log(values.files);
-   console.log(formData);
+ 
     
     const dataFromMutation = result.data?.programar_mantenimiento;
     try {

@@ -28,7 +28,7 @@ export default function RepuestosScreen() {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" ,backgroundColor:COLORS.bg2 }}>
          <ActivityIndicator size="large" color={COLORS.blue2} />
       </View>
     );

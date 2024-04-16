@@ -210,7 +210,7 @@ const RegistrarFactura = ({ tipouser }: { tipouser: string }) => {
                     <Text style={styles.error}>{errors.fecha}</Text>
                   )}
 
-                  <TitleIcon title="Monto Parcial (S/.)" icon="money" />
+                  <TitleIcon title="Monto Parcial ($)" icon="money" />
 
                   <TextInputs
                     placeholder="Ingrese el monto parcial"
@@ -223,7 +223,7 @@ const RegistrarFactura = ({ tipouser }: { tipouser: string }) => {
                     <Text style={styles.error}>{errors.montoParcial}</Text>
                   )}
 
-                  <TitleIcon title="IGV" />
+                  <TitleIcon title="IGV ($)" />
                   <TextInputs
                     placeholder="Ingrese el IGV"
                     onChangeText={handleChange("igv")}
@@ -249,7 +249,7 @@ const RegistrarFactura = ({ tipouser }: { tipouser: string }) => {
                   ) : null}
                   {values.tipoFactura === "Factura a Propietario Vehicular" ? (
                     <>
-                      <TitleIcon title="Detraccion" />
+                      <TitleIcon title="Detraccion ($)" />
                       <TextInputs
                         placeholder="Ingrese la detraccion"
                         onChangeText={handleChange("detraccion")}
@@ -323,7 +323,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     width: "90%",
     position: "absolute",
-    bottom: 15,
+    bottom: Platform.OS === "ios" ? 15 : 0,
     marginHorizontal: 20,
   },
   buttonText: {

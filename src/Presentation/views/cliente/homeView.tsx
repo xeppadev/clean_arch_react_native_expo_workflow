@@ -6,7 +6,7 @@ import { DowloandReporte } from "@/src/Data/api/reporte";
 import { useSession } from "@/src/Presentation/hooks/useSession";
 
 const fechaDesde= "2022-01-01"
-const fechaHasta= "2028-12-31"
+const fechaHasta= "3000-12-31"
 export default function HomeView() {
   const router = useRouter();
   const { session, userType } = useSession();
@@ -113,7 +113,7 @@ export default function HomeView() {
           </View>
         </Pressable>
         {/* Segunda caja en la segunda columna: proporciona una opción para contactar con el soporte */}
-        <View
+        <Pressable
           style={[
             styles.box,
             {
@@ -124,6 +124,9 @@ export default function HomeView() {
               elevation: 5,
             },
           ]}
+          onPress={() => {
+            router.push("https://api.whatsapp.com/send/?phone=%2B51933735851&text&type=phone_number&app_absent=0")
+          }}
         >
           <View
             style={[styles.centeredContent, { backgroundColor: COLORS.blue3 }]}
@@ -142,9 +145,9 @@ export default function HomeView() {
               Contáctanos
             </Text>
           </View>
-        </View>
+        </Pressable>
         {/* Tercera caja en la segunda columna: proporciona una opción para reportar una emergencia */}
-        <View
+        <Pressable
           style={[
             styles.box,
             {
@@ -156,6 +159,9 @@ export default function HomeView() {
               elevation: 5,
             },
           ]}
+          onPress={() => 
+            router.push("/cliente/emergencia")
+          }
         >
           <View
             style={[styles.centeredContent, { backgroundColor: COLORS.red }]}
@@ -167,7 +173,7 @@ export default function HomeView() {
             </Text>
             <Iconify icon="solar:danger-bold" size={76} color="#910C0C" />
           </View>
-        </View>
+        </Pressable>
       </View>
     </View>
   );

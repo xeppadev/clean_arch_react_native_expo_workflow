@@ -43,6 +43,20 @@ export type CarInfo = {
   vigenciaContrato: Scalars['DateTime']['output'];
 };
 
+export type Cliente2Dto = {
+  __typename?: 'Cliente2Dto';
+  _id?: Maybe<Scalars['String']['output']>;
+  contratos?: Maybe<Array<Maybe<Contrato2Dto>>>;
+  direccion: Scalars['String']['output'];
+  documentos?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  email: Scalars['String']['output'];
+  nombre: Scalars['String']['output'];
+  nombreCliente?: Maybe<Scalars['String']['output']>;
+  numeroContacto?: Maybe<Scalars['Float']['output']>;
+  rubro: Scalars['String']['output'];
+  ruc: Scalars['String']['output'];
+};
+
 export type ClienteDto = {
   __typename?: 'ClienteDto';
   _id?: Maybe<Scalars['String']['output']>;
@@ -81,6 +95,14 @@ export type ClientesResult = {
   totalPages: Scalars['Int']['output'];
 };
 
+export type Contrato2Dto = {
+  __typename?: 'Contrato2Dto';
+  clienteId: Scalars['String']['output'];
+  fechaFin: Scalars['DateTime']['output'];
+  fechaInicio: Scalars['DateTime']['output'];
+  numeroContrato: Scalars['String']['output'];
+};
+
 export type ContratoDto = {
   __typename?: 'ContratoDto';
   fechaFin: Scalars['DateTime']['output'];
@@ -89,6 +111,12 @@ export type ContratoDto = {
 };
 
 export type ContratoInput = {
+  fechaFin: Scalars['DateTime']['input'];
+  fechaInicio: Scalars['DateTime']['input'];
+  numeroContrato: Scalars['String']['input'];
+};
+
+export type ContratoIntDto = {
   fechaFin: Scalars['DateTime']['input'];
   fechaInicio: Scalars['DateTime']['input'];
   numeroContrato: Scalars['String']['input'];
@@ -112,6 +140,14 @@ export type CreateCarDto = {
   puntaje?: InputMaybe<Scalars['Float']['input']>;
   tipoContrato: Scalars['String']['input'];
   vigenciaContrato: Scalars['DateTime']['input'];
+};
+
+export type CreateClientUserDto = {
+  email: Scalars['String']['input'];
+  idCliente?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+  username: Scalars['String']['input'];
 };
 
 export type CreateFacturaDto = {
@@ -197,6 +233,25 @@ export type EstadisticWebDto = {
   repuestosConsumidos?: Maybe<RepuestosMasConsumidosPorMes>;
 };
 
+export type FacturaDto = {
+  __typename?: 'FacturaDto';
+  detraccion?: Maybe<Scalars['Float']['output']>;
+  documentos?: Maybe<Array<Scalars['String']['output']>>;
+  fecha: Scalars['DateTime']['output'];
+  igv?: Maybe<Scalars['Float']['output']>;
+  involucrado?: Maybe<Scalars['String']['output']>;
+  monto: Scalars['Float']['output'];
+  notificacion: Scalars['Boolean']['output'];
+  numeroFactura: Scalars['String']['output'];
+  tipo: Scalars['String']['output'];
+};
+
+export type FacturasResult = {
+  __typename?: 'FacturasResult';
+  facturas: Array<FacturaDto>;
+  totalPages: Scalars['Int']['output'];
+};
+
 export type GeneralReportDto = {
   __typename?: 'GeneralReportDto';
   fact?: Maybe<Scalars['Float']['output']>;
@@ -207,13 +262,13 @@ export type GeneralReportDto = {
 
 export type GetForPlacasDto = {
   __typename?: 'GetForPlacasDto';
-  _id: Scalars['String']['output'];
-  cliente: Scalars['String']['output'];
-  fechaSoat: Scalars['DateTime']['output'];
-  kmActual: Scalars['Float']['output'];
-  placa: Scalars['String']['output'];
-  propietario: Scalars['String']['output'];
-  tipoContrato: Scalars['String']['output'];
+  _id?: Maybe<Scalars['String']['output']>;
+  cliente?: Maybe<Scalars['String']['output']>;
+  fechaSoat?: Maybe<Scalars['DateTime']['output']>;
+  kmActual?: Maybe<Scalars['Float']['output']>;
+  placa?: Maybe<Scalars['String']['output']>;
+  propietario?: Maybe<Scalars['String']['output']>;
+  tipoContrato?: Maybe<Scalars['String']['output']>;
 };
 
 export type GetPlacasClientDto = {
@@ -251,6 +306,11 @@ export type HomeAdminDto = {
   cantidadRevision: Scalars['Int']['output'];
   cantidadTotal: Scalars['Int']['output'];
   mantenimientos: Array<MantenimientoInfoDto2>;
+};
+
+export type IngresoRepuestosStringDto = {
+  repuestosActualizar?: InputMaybe<Array<UpdateRepuestoStringDto>>;
+  repuestosNuevos?: InputMaybe<Array<NuevoRepuestoStringDto>>;
 };
 
 export type IngresosDtoOut = {
@@ -391,10 +451,12 @@ export type MonthlySummaryDto = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  /** Esta Función agrega un nuevo contrato al cliente en la base de datos y retorna el documento actualizado */
-  Agregar_Contrato_Cliente: ClienteDto;
   /** Esta Función agrega un nuevo salario y una fecha al personal en la base de datos y retorna el documento actualizado */
   Agregar_Salario_Fecha: PersonalDto;
+  /** Función para borrar repuestos */
+  Borrar_Repuesto: Scalars['String']['output'];
+  /** Función para ingresar repuestos desde la web */
+  Ingreso_Repuestos_Web: Scalars['String']['output'];
   /** Esta Función actualizar un cliente en la base de datos por su id */
   actualizar_Cliente: Scalars['String']['output'];
   /** Esta función actualiza uno o mas parametros de un personal en la base de datos */
@@ -403,6 +465,8 @@ export type Mutation = {
   actualizar_datos_usuario: Scalars['Boolean']['output'];
   /** Esta Función actualiza la información de un usuario en la base de datos */
   actualizar_datos_usuario_por_id: Scalars['String']['output'];
+  /** Esta Función agrega un contrato a un cliente en la base de datos */
+  agregar_Contrato: Scalars['String']['output'];
   /** Esta Función elimina un cliente de la base de datos y retorna un booleano indicando si se eliminó correctamente o no */
   borrar_Cliente: Scalars['Boolean']['output'];
   /** Esta Función elimina un personal de la base de datos y retorna un booleano indicando si se eliminó correctamente o no */
@@ -429,9 +493,13 @@ export type Mutation = {
   crear_multiples_users: Scalars['Boolean']['output'];
   /** Esta Función registra un repuesto en la base de datos y retorna true si se registro correctamente */
   crear_repuesto: Scalars['Boolean']['output'];
+  /** Esta Función registra un nuevo usuario en la base de datos y lo asocia a un cliente */
+  crear_usuario_cliente: Scalars['String']['output'];
   createUser: Scalars['Boolean']['output'];
   /** Esta Función elimina un contrato de un cliente en la base de datos y retorna el documento actualizado */
   eliminar_Contrato: Scalars['Boolean']['output'];
+  /** envia un string de notificación de emergencia */
+  emergencia_notificacion: Scalars['Boolean']['output'];
   /** Esta funcion programa un mantenimiento */
   programar_mantenimiento: Scalars['String']['output'];
   /** Esta Función es para probar las notifaciones */
@@ -446,15 +514,19 @@ export type Mutation = {
 };
 
 
-export type MutationAgregar_Contrato_ClienteArgs = {
-  contrato: ContratoInput;
+export type MutationAgregar_Salario_FechaArgs = {
+  id: Scalars['String']['input'];
+  salarioFecha: SalarioFechaInput;
+};
+
+
+export type MutationBorrar_RepuestoArgs = {
   id: Scalars['String']['input'];
 };
 
 
-export type MutationAgregar_Salario_FechaArgs = {
-  id: Scalars['String']['input'];
-  salarioFecha: SalarioFechaInput;
+export type MutationIngreso_Repuestos_WebArgs = {
+  data: IngresoRepuestosStringDto;
 };
 
 
@@ -473,9 +545,9 @@ export type MutationActualizar_Info_PersonalArgs = {
 
 export type MutationActualizar_Datos_UsuarioArgs = {
   newEmail: Scalars['String']['input'];
-  newName: Scalars['String']['input'];
+  newName?: InputMaybe<Scalars['String']['input']>;
   newPassword: Scalars['String']['input'];
-  newUsername: Scalars['String']['input'];
+  newUsername?: InputMaybe<Scalars['String']['input']>;
   oldUsername: Scalars['String']['input'];
 };
 
@@ -484,6 +556,12 @@ export type MutationActualizar_Datos_Usuario_Por_IdArgs = {
   _id: Scalars['String']['input'];
   newPassword?: InputMaybe<Scalars['String']['input']>;
   newUsername?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type MutationAgregar_ContratoArgs = {
+  contrato: ContratoIntDto;
+  id: Scalars['String']['input'];
 };
 
 
@@ -558,6 +636,11 @@ export type MutationCrear_RepuestoArgs = {
 };
 
 
+export type MutationCrear_Usuario_ClienteArgs = {
+  input: CreateClientUserDto;
+};
+
+
 export type MutationCreateUserArgs = {
   username: CreateUserDto;
 };
@@ -566,6 +649,11 @@ export type MutationCreateUserArgs = {
 export type MutationEliminar_ContratoArgs = {
   clienteId: Scalars['String']['input'];
   numeroContrato: Scalars['String']['input'];
+};
+
+
+export type MutationEmergencia_NotificacionArgs = {
+  emergencia: Scalars['String']['input'];
 };
 
 
@@ -610,6 +698,13 @@ export type NotificacionDto = {
   titulo: Scalars['String']['output'];
 };
 
+export type NuevoRepuestoStringDto = {
+  cantidad: Scalars['String']['input'];
+  marca: Scalars['String']['input'];
+  precio: Scalars['String']['input'];
+  producto: Scalars['String']['input'];
+};
+
 export type OperatividadOut = {
   __typename?: 'OperatividadOut';
   operatividadHoras?: Maybe<Scalars['Float']['output']>;
@@ -631,6 +726,7 @@ export type PersonalDto = {
   nombre: Scalars['String']['output'];
   numero?: Maybe<Scalars['Int']['output']>;
   salarioFecha?: Maybe<Array<Maybe<SalarioFechaDto>>>;
+  username: Scalars['String']['output'];
 };
 
 export type PersonalInput = {
@@ -641,6 +737,7 @@ export type PersonalInput = {
   nombre: Scalars['String']['input'];
   numero?: InputMaybe<Scalars['Int']['input']>;
   salarioFecha?: InputMaybe<Array<InputMaybe<SalarioFechaInput>>>;
+  username: Scalars['String']['input'];
 };
 
 export type PersonalResult = {
@@ -728,6 +825,10 @@ export type Query = {
   buscar_Pesonal: PersonalResult;
   /** Esta función retorna la información del proveedor en base a su nombre */
   buscar_Proveedor: ProveedorResult;
+  /** Esta Función retorna una lista de facturas que coinciden con el numero de factura */
+  buscar_factura: FacturasResult;
+  /** Esta Función retorna las placas de los autos */
+  buscar_info_placas_tabla: SearchPlacas;
   /** Esta Función retorna las placas de los autos */
   buscar_placas_autos: Array<Scalars['String']['output']>;
   /** Esta función retorna la información de los repuestos que coincidan con el producto */
@@ -751,7 +852,7 @@ export type Query = {
   /** Esta funcion retorna la cantidad de mantenimientos por estado y los mantenimientos (información compleja) por estado y fecha */
   mantenimientoChanges: MantenimientoResult;
   /** Esta Función retorna la información de un cliente en base a su ID */
-  obtener_Cliente_ID: ClienteDto;
+  obtener_Cliente_ID: Cliente2Dto;
   /** Esta Función retorna la información de un personal por su id */
   obtener_Personal_Por_Id: PersonalDto;
   /** Esta Función retorna el total de salarios de todo el personal en la base de dato */
@@ -768,10 +869,14 @@ export type Query = {
   obtener_info_placas: Array<GetPlacasDto>;
   /** Esta Función retorna la información de los carros (id, placa, cliente, propietarios fechaSoat) */
   obtener_info_placas_clientes: Array<GetPlacasClientDto>;
+  /** Esta función retorna un arreglo con los nombres de los proveedores */
+  obtener_nombres_proveedor: Array<Scalars['String']['output']>;
   /** Esta Función retorna la información de las notificaciones no leidas */
   obtener_notificaciones_no_leidas: Array<NotificacionDto>;
   /** Esta Función retorna la información de todos los repuestos (id, producto, marca, cantidad, cantidadReserva, precio) */
   obtener_todos_los_repuestos: Array<RepuestoType>;
+  /** Esta Función obtiene un usuario por su id */
+  obtener_usuario_por_id: UserOutput;
   /** Esta Función obtiene un usuario por su username */
   obtener_usuario_por_username: UserOutput;
   /** Esta función retorna los mantenimientos que cumplan con los criterios de busqueda */
@@ -824,6 +929,18 @@ export type QueryBuscar_PesonalArgs = {
 export type QueryBuscar_ProveedorArgs = {
   nombre: Scalars['String']['input'];
   page?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryBuscar_FacturaArgs = {
+  numeroFactura: Scalars['String']['input'];
+  page?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryBuscar_Info_Placas_TablaArgs = {
+  page?: InputMaybe<Scalars['Int']['input']>;
+  plate: Scalars['String']['input'];
 };
 
 
@@ -893,6 +1010,11 @@ export type QueryObtener_Usuarios_Por_IDclienteArgs = {
 
 export type QueryObtener_Info_For_PlacaArgs = {
   placa: Scalars['String']['input'];
+};
+
+
+export type QueryObtener_Usuario_Por_IdArgs = {
+  _id: Scalars['String']['input'];
 };
 
 
@@ -983,6 +1105,12 @@ export type SalarioFechaInput = {
   salario: Scalars['Float']['input'];
 };
 
+export type SearchPlacas = {
+  __typename?: 'SearchPlacas';
+  cars: Array<GetPlacasDto>;
+  totalPages: Scalars['Float']['output'];
+};
+
 export type Subscription = {
   __typename?: 'Subscription';
   /** Esta funcion retorna los mantenimientos desde el día de hoy para la pestaña de actividades */
@@ -992,6 +1120,8 @@ export type Subscription = {
   Personal: Array<PersonalDto>;
   /** Esta Función retorna la información de las notificaciones admin */
   notificaciones_admin: NotificacionDto;
+  /** Esta Función retorna la información de las notificaciones tecnico */
+  notificaciones_tecnico: NotificacionDto;
 };
 
 export type UpdateMantenimientoDto = {
@@ -1025,6 +1155,12 @@ export type UpdatePersonalInput = {
   fechaIngreso?: InputMaybe<Scalars['DateTime']['input']>;
   nombre?: InputMaybe<Scalars['String']['input']>;
   numero?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type UpdateRepuestoStringDto = {
+  _id: Scalars['String']['input'];
+  cantidad: Scalars['String']['input'];
+  precio: Scalars['String']['input'];
 };
 
 export type UserOutput = {
@@ -1098,7 +1234,7 @@ export type Obtener_Info_For_PlacaQueryVariables = Exact<{
 }>;
 
 
-export type Obtener_Info_For_PlacaQuery = { __typename?: 'Query', obtener_info_for_placa: { __typename?: 'GetForPlacasDto', _id: string, fechaSoat: any, kmActual: number, cliente: string } };
+export type Obtener_Info_For_PlacaQuery = { __typename?: 'Query', obtener_info_for_placa: { __typename?: 'GetForPlacasDto', _id?: string | null, fechaSoat?: any | null, kmActual?: number | null, cliente?: string | null } };
 
 export type Obtener_Info_Placas_ClientesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1115,12 +1251,19 @@ export type Obtener_Cliente_IdQueryVariables = Exact<{
 }>;
 
 
-export type Obtener_Cliente_IdQuery = { __typename?: 'Query', obtener_Cliente_ID: { __typename?: 'ClienteDto', _id?: string | null, direccion: string, documentos?: Array<string | null> | null, email: string, nombre: string, nombreCliente?: string | null, numeroContacto?: number | null, rubro: string, ruc: string, contratos?: Array<{ __typename?: 'ContratoDto', fechaFin: any, fechaInicio: any, numeroContrato: string } | null> | null } };
+export type Obtener_Cliente_IdQuery = { __typename?: 'Query', obtener_Cliente_ID: { __typename?: 'Cliente2Dto', _id?: string | null, direccion: string, documentos?: Array<string | null> | null, email: string, nombre: string, nombreCliente?: string | null, numeroContacto?: number | null, rubro: string, ruc: string, contratos?: Array<{ __typename?: 'Contrato2Dto', fechaFin: any, fechaInicio: any, numeroContrato: string } | null> | null } };
 
 export type Obtener_Solo_ClientesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type Obtener_Solo_ClientesQuery = { __typename?: 'Query', obtener_Todos_Clientes: Array<{ __typename?: 'ClienteDto', nombreCliente?: string | null }> };
+
+export type MutationMutationVariables = Exact<{
+  emergencia: Scalars['String']['input'];
+}>;
+
+
+export type MutationMutation = { __typename?: 'Mutation', emergencia_notificacion: boolean };
 
 export type Query_BarChartQueryVariables = Exact<{
   inputDate: Scalars['String']['input'];
@@ -1279,6 +1422,7 @@ export const Obtener_Info_Placas_ClientesDocument = {"kind":"Document","definiti
 export const Obtener_Todos_ClientesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Obtener_Todos_Clientes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"obtener_Todos_Clientes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nombre"}},{"kind":"Field","name":{"kind":"Name","value":"nombreCliente"}},{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"contratos"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fechaFin"}}]}}]}}]}}]} as unknown as DocumentNode<Obtener_Todos_ClientesQuery, Obtener_Todos_ClientesQueryVariables>;
 export const Obtener_Cliente_IdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Obtener_Cliente_ID"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"obtenerClienteIdId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"obtener_Cliente_ID"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"obtenerClienteIdId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"contratos"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fechaFin"}},{"kind":"Field","name":{"kind":"Name","value":"fechaInicio"}},{"kind":"Field","name":{"kind":"Name","value":"numeroContrato"}}]}},{"kind":"Field","name":{"kind":"Name","value":"direccion"}},{"kind":"Field","name":{"kind":"Name","value":"documentos"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"nombre"}},{"kind":"Field","name":{"kind":"Name","value":"nombreCliente"}},{"kind":"Field","name":{"kind":"Name","value":"numeroContacto"}},{"kind":"Field","name":{"kind":"Name","value":"rubro"}},{"kind":"Field","name":{"kind":"Name","value":"ruc"}}]}}]}}]} as unknown as DocumentNode<Obtener_Cliente_IdQuery, Obtener_Cliente_IdQueryVariables>;
 export const Obtener_Solo_ClientesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Obtener_Solo_Clientes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"obtener_Todos_Clientes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nombreCliente"}}]}}]}}]} as unknown as DocumentNode<Obtener_Solo_ClientesQuery, Obtener_Solo_ClientesQueryVariables>;
+export const MutationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Mutation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"emergencia"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"emergencia_notificacion"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"emergencia"},"value":{"kind":"Variable","name":{"kind":"Name","value":"emergencia"}}}]}]}}]} as unknown as DocumentNode<MutationMutation, MutationMutationVariables>;
 export const Query_BarChartDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Query_BarChart"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"inputDate"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"grafica_gastos_generales"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"inputDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"inputDate"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"fact"}},{"kind":"Field","name":{"kind":"Name","value":"mesYear"}},{"kind":"Field","name":{"kind":"Name","value":"otros"}},{"kind":"Field","name":{"kind":"Name","value":"personalTotal"}}]}}]}}]} as unknown as DocumentNode<Query_BarChartQuery, Query_BarChartQueryVariables>;
 export const Query_LineChartDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Query_LineChart"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"inputDate"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"grafica_ingresos_egresos"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"inputDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"inputDate"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mesYear"}},{"kind":"Field","name":{"kind":"Name","value":"ingresoFact"}},{"kind":"Field","name":{"kind":"Name","value":"egresosTotalFact"}}]}}]}}]} as unknown as DocumentNode<Query_LineChartQuery, Query_LineChartQueryVariables>;
 export const Query_PieChartDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Query_PieChart"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"months"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Float"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"grafica_repuesto_xmeses"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"startDate"},"value":{"kind":"Variable","name":{"kind":"Name","value":"startDate"}}},{"kind":"Argument","name":{"kind":"Name","value":"months"},"value":{"kind":"Variable","name":{"kind":"Name","value":"months"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"prod1"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cantidadConsumida"}},{"kind":"Field","name":{"kind":"Name","value":"producto"}}]}},{"kind":"Field","name":{"kind":"Name","value":"prod2"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cantidadConsumida"}},{"kind":"Field","name":{"kind":"Name","value":"producto"}}]}},{"kind":"Field","name":{"kind":"Name","value":"prod3"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cantidadConsumida"}},{"kind":"Field","name":{"kind":"Name","value":"producto"}}]}},{"kind":"Field","name":{"kind":"Name","value":"prod4"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cantidadConsumida"}},{"kind":"Field","name":{"kind":"Name","value":"producto"}}]}},{"kind":"Field","name":{"kind":"Name","value":"prod5"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cantidadConsumida"}},{"kind":"Field","name":{"kind":"Name","value":"producto"}}]}},{"kind":"Field","name":{"kind":"Name","value":"otros"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cantidadConsumida"}},{"kind":"Field","name":{"kind":"Name","value":"producto"}}]}},{"kind":"Field","name":{"kind":"Name","value":"mesYear"}}]}}]}}]} as unknown as DocumentNode<Query_PieChartQuery, Query_PieChartQueryVariables>;

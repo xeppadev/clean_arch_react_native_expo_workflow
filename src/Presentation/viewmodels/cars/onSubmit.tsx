@@ -29,11 +29,11 @@ export class RegistrarAutoViewModel {
   getContratos() {
     return [
       {
-        label: "Pago Mantenimiento Parcial",
-        value: "Pago Mantenimiento Parcial",
+        label: "Alquiler a todo costo",
+        value: "Alquiler a todo costo",
       },
-      { label: "Pago Mantenimiento 2", value: "Pago Mantenimiento 2" },
-      { label: "Pago Mantenimiento 3", value: "Pago Mantenimiento 3" },
+      { label: "Alquiler con valorizaciones", value: "Alquiler con valorizaciones" },
+    
     ];
   }
 

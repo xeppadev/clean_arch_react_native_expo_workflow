@@ -265,7 +265,7 @@ const DetallesComponent = () => {
                               </Text>
                             </View>
                           </View>
-                          <Text style={styles.title2}> Precio (S/.) </Text>
+                          <Text style={styles.title2}> Precio ($) </Text>
                           <TextInput
                             placeholder="Ingrese el precio actual"
                             style={styles.listItem2}
@@ -379,6 +379,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: COLORS.white,
   },
   titlemodal: {
     fontSize: 18,

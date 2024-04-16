@@ -42,7 +42,7 @@ export default function Linechart({
         <View style={styles.Viewtitle}>
           <Skeleton colorMode="light">
             <Text style={styles.title}>
-              Ingresos vs Egresos(miles de soles)
+              Ingresos vs Egresos(miles de dolares)
             </Text>
           </Skeleton>
         </View>

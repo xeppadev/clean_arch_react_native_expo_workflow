@@ -65,6 +65,16 @@ export default function AppLayout() {
           headerTitleAlign: "center",
         }}
       />
+      <Stack.Screen
+        name="emergencia"
+        options={{
+          headerTitle: "Emergencia",
+          headerBackTitle: "Inicio",
+          headerShadowVisible: false,
+          headerBlurEffect: "regular",
+          headerTitleAlign: "center",
+        }}
+      />
     </Stack>
   );
 }

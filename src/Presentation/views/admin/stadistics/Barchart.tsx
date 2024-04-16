@@ -34,7 +34,7 @@ export default function Barchart({data , loading, error}: BarchartProps) {
       <View style={styles.contentchart}>
         <View style={styles.Viewtitle}>
           <Skeleton colorMode="light">
-            <Text style={styles.title}>Gastos Generales (S/.)</Text>
+            <Text style={styles.title}>Gastos Generales ($)</Text>
           </Skeleton>
         </View>
         <Skeleton colorMode="light">

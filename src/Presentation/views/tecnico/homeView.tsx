@@ -131,7 +131,37 @@ export default function HomeView() {
           </View>
         </View>
         {/* Segunda caja en la segunda columna: proporciona una opción para contactar con el soporte */}
-        <View
+        <Pressable
+          style={[
+            styles.box,
+            {
+              backgroundColor: COLORS.white,
+              shadowColor: "#d5d5d5",
+              shadowOpacity: Platform.OS === "ios" ? 0.5 : 0.8,
+              shadowRadius: 5,
+              shadowOffset: { height: 2, width: 0 },
+              elevation: 5,
+            },
+          ]}
+          onPress={() => {
+            router.push("tecnico/tasks");
+          }}
+          
+        >
+          <View
+            style={[styles.centeredContent, { backgroundColor: COLORS.white,  }]}
+          >
+            <Text
+              style={[styles.title4, { color: COLORS.blue3, marginTop: 0,alignSelf: "center"  }]}
+            >
+              Tareas
+            </Text>
+            <Iconify icon="solar:checklist-minimalistic-bold" size={85} color={COLORS.blue3} />
+          </View>
+        </Pressable>
+      
+        {/* Tercera caja en la segunda columna: proporciona una opción para reportar una emergencia */}
+        <Pressable
           style={[
             styles.box,
             {
@@ -142,6 +172,9 @@ export default function HomeView() {
               elevation: 5,
             },
           ]}
+          onPress={() => {
+            router.push("https://api.whatsapp.com/send/?phone=%2B51933735851&text&type=phone_number&app_absent=0");
+          }}
         >
           <View
             style={[styles.centeredContent, { backgroundColor: COLORS.blue3 }]}
@@ -160,32 +193,7 @@ export default function HomeView() {
               Contáctanos
             </Text>
           </View>
-        </View>
-        {/* Tercera caja en la segunda columna: proporciona una opción para reportar una emergencia */}
-        <View
-          style={[
-            styles.box,
-            {
-              backgroundColor: COLORS.red,
-              shadowColor: COLORS.red,
-              shadowOpacity: 0.2,
-              shadowRadius: 4,
-              shadowOffset: { height: 2, width: 0 },
-              elevation: 5,
-            },
-          ]}
-        >
-          <View
-            style={[styles.centeredContent, { backgroundColor: COLORS.red }]}
-          >
-            <Text
-              style={[styles.title4, { color: COLORS.redst, marginTop: 0 }]}
-            >
-              Reportar Emergencia
-            </Text>
-            <Iconify icon="solar:danger-bold" size={76} color="#910C0C" />
-          </View>
-        </View>
+        </Pressable>
       </View>
     </View>
   );

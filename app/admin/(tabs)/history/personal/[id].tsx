@@ -74,12 +74,7 @@ export default function Personalid() {
             <Text style={styles.title2}>{personal?.numero}</Text>
           </View>
 
-          {/* <View style={styles.column2}>
-            <Text style={styles.title2}>Direccion:</Text>
-            <Text style={styles.title2}></Text>
-          </View> */}
-
-          <View style={styles.column2}>
+            <View style={styles.column2}>
             <Text style={styles.title2}>Correo de Contacto:</Text>
             <Text style={styles.title2}>{personal?.email}</Text>
           </View>
@@ -124,7 +119,7 @@ export default function Personalid() {
                 <View style={styles.dates}>
                   <Text style={styles.listItemTitle}>{idConsecutivo}</Text>
                   <Text style={styles.listItemTitle}>
-                    Salario: S/.{item?.salario}
+                    Salario: $ {item?.salario}
                   </Text>
                 </View>
                 <View
