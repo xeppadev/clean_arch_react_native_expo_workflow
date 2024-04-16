@@ -25,9 +25,9 @@
     "production": {
       
       "env": {
-        "EXPO_PUBLIC_API_GRAPHQL_URL": "https://espejo.workflowdt.cloud/graphql",
-        "EXPO_PUBLIC_WS_GRAPHQL_URL": "https://espejo.workflowdt.cloud/graphql",
-        "EXPO_PUBLIC_API_URL": "https://espejo.workflowdt.cloud"
+        "EXPO_PUBLIC_API_GRAPHQL_URL": "https://demo-work.app.workflowdt.cloud",
+        "EXPO_PUBLIC_WS_GRAPHQL_URL": "https://demo-work.app.workflowdt.cloud",
+        "EXPO_PUBLIC_API_URL": "https://demo-work.app.workflowdt.cloud"
       }
     }
   },
