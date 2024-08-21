@@ -67,4 +67,4 @@ Follow these steps to configure the project on your local machine:
    expo start
  ## Screenshot
 
- <img src="./screenshot/app_workflow.png" alt="application" width="300"/>
+ <img src="./screenshots/app_workflow.png" alt="application" width="300"/>
