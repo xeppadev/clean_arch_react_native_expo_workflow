@@ -66,12 +66,7 @@ export default function SignIn() {
           <Text style={styles.buttonText}>Iniciar sesión</Text>
         </Pressable>
       </View>
-      <View style={styles.imageContainer}>
-        <Image
-          style={styles.image2}
-          source={require("../../../assets/images/logoespejo.png")}
-        />
-      </View>
+      
     </View>
   );
 }

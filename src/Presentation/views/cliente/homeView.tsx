@@ -125,7 +125,7 @@ export default function HomeView() {
             },
           ]}
           onPress={() => {
-            router.push("https://api.whatsapp.com/send/?phone=%2B51933735851&text&type=phone_number&app_absent=0")
+            router.push("https://api.whatsapp.com/send?phone=51933721755&text=")
           }}
         >
           <View
